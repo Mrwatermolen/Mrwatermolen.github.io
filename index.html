@@ -201,19 +201,44 @@
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">graph TD;</span><br><span class="line">A(有向无环图)</span><br><span class="line">B(描述运算表达式)</span><br><span class="line">C(拓扑排序)</span><br><span class="line">D(关键路径)</span><br><span class="line">A&#x3D;&#x3D;&gt;B;A&#x3D;&#x3D;&gt;C;A&#x3D;&#x3D;&gt;D;</span><br><span class="line">C1(AOV网);C2(拓扑排序);C3(逆拓扑排序);C--&gt;C1;C--&gt;C2;C--&gt;C3;</span><br><span class="line">D1(AOE);D2(求解);D3(特性);D--&gt;D1;D--&gt;D2;D--&gt;D3;</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph TD;
+A(有向无环图)
+B(描述运算表达式)
+C(拓扑排序)
+D(关键路径)
+A==>B;A==>C;A==>D;
+C1(AOV网);C2(拓扑排序);C3(逆拓扑排序);C-->C1;C-->C2;C-->C3;
+D1(AOE);D2(求解);D3(特性);D-->D1;D-->D2;D-->D3;</pre>
 
 <h3 id="描述运算表达式"><a href="#描述运算表达式" class="headerlink" title="描述运算表达式"></a>描述运算表达式</h3><p>先上一道真题<br><img src="https://i.loli.net/2021/03/16/ATzbDeQf958mBjx.png" alt="真题"></p>
 <p>来一个复杂一点的例子看看<br>$((a+b）*(b*(c+d))+(c+d)<em>e)</em>((c+D)*e)$<br><img src="https://i.loli.net/2021/03/16/3Rcmrk4I5nGpTKo.png" alt="例子"><br>最后应该为<br><img src="https://i.loli.net/2021/03/16/MliWwZqHky5GKDE.png" alt="ans"></p>
 <p>那么对于真题$(x+y)((x+y)/y)$ 五个顶点</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">graph TD;</span><br><span class="line">A(*)--&gt;C;</span><br><span class="line">A--&gt;B;</span><br><span class="line">B(&#x2F;)--&gt;C;</span><br><span class="line">B--&gt;y;</span><br><span class="line">C(+);</span><br><span class="line">C--&gt;x;</span><br><span class="line">C--&gt;y;</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph TD;
+A(*)-->C;
+A-->B;
+B(/)-->C;
+B-->y;
+C(+);
+C-->x;
+C-->y;</pre>
 
 <h3 id="拓扑排序"><a href="#拓扑排序" class="headerlink" title="拓扑排序"></a>拓扑排序</h3><p>定义:在图论中，由⼀个有向⽆环图 的顶点组成的序列，当且仅当满⾜下列条件时，称为该图的⼀个拓扑排序： ① 每个顶点出现且只出现⼀次。 ② 若顶点A在序列中排在顶点B的前⾯，则在图中不存在从顶点B到顶点A的路径。</p>
 <p>直接看AOV网</p>
 <h4 id="AOV网"><a href="#AOV网" class="headerlink" title="AOV网"></a>AOV网</h4><ul>
 <li>定义: 用DAG图表示一个工程。顶点表示活动，有向边$&lt;V_i,V_j&gt;$表示活动$V_i$必须先于活动$V_j$进行</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">graph TD;</span><br><span class="line">A(准备餐具);</span><br><span class="line">B(买菜);</span><br><span class="line">C(打鸡蛋);</span><br><span class="line">D(洗番茄);</span><br><span class="line">E(切番茄);</span><br><span class="line">F(炒菜);</span><br><span class="line">H(吃);</span><br><span class="line">A--&gt;C--&gt;F;</span><br><span class="line">B--&gt;C;</span><br><span class="line">B--&gt;D--&gt;E--&gt;F;</span><br><span class="line">F--&gt;H;</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph TD;
+A(准备餐具);
+B(买菜);
+C(打鸡蛋);
+D(洗番茄);
+E(切番茄);
+F(炒菜);
+H(吃);
+A-->C-->F;
+B-->C;
+B-->D-->E-->F;
+F-->H;</pre>
 
 <p>对AOV网构造其顶点的拓扑有序序列：<br>准备餐具-&gt;打鸡蛋-&gt;买菜-&gt;洗番茄-&gt;切番茄-&gt;炒菜-&gt;吃<br>(一种拓扑排列)</p>
 <h4 id="AOV网拓扑排序"><a href="#AOV网拓扑排序" class="headerlink" title="AOV网拓扑排序"></a>AOV网拓扑排序</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ERROR 0;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> OK 1;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> Status int;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> vexnum;</span><br><span class="line">    AdjList vex;</span><br><span class="line">    <span class="comment">/* data */</span></span><br><span class="line">&#125; ALGraph;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">&#125; Stack;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">ArcNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> adjvex;</span><br><span class="line">    <span class="keyword">int</span> info;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ArcNode</span> *<span class="title">nextArc</span>;</span></span><br><span class="line">&#125; ArcNode;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">VNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ArcNode</span> *<span class="title">firstArc</span>;</span></span><br><span class="line">&#125; VNode, AdjList[<span class="number">10</span>];</span><br><span class="line"></span><br><span class="line"><span class="function">Status <span class="title">TopologicalSort</span><span class="params">(ALGraph G)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *indegree = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">int</span>) * G.vexnum);</span><br><span class="line">    Stack S;</span><br><span class="line">    <span class="keyword">int</span> counter = <span class="number">0</span>;</span><br><span class="line">    FindInDegree(G, indegree);</span><br><span class="line">    InitStack(S);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; G.vexnum; ++i)</span><br><span class="line">        <span class="keyword">if</span> (!indegree[i])</span><br><span class="line">            Push(S, i);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (!StackEmpty(S))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> k;</span><br><span class="line">        Pop(S, k);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\t&quot;</span>, k);</span><br><span class="line">        ++counter;</span><br><span class="line">        <span class="keyword">for</span> (ArcNode *p = G.vex[k].firstArc; p; p = p-&gt;nextArc)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> i = p-&gt;adjvex;</span><br><span class="line">            <span class="keyword">if</span> (--indegree[k] == <span class="number">0</span>)</span><br><span class="line">                Push(S, k);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (counter &lt; G.vexnum)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ERROR;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> OK;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -424,7 +449,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="最小生成树"><a href="#最小生成树" class="headerlink" title="最小生成树"></a>最小生成树</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">graph TD;</span><br><span class="line">A[最小生成树]&#x3D;&#x3D;&gt;B1[最小生成树概念]</span><br><span class="line">A&#x3D;&#x3D;&gt;B2[Prim算法]</span><br><span class="line">A&#x3D;&#x3D;&gt;B3[Kruskal算法]</span><br></pre></td></tr></table></figure>
+          <h2 id="最小生成树"><a href="#最小生成树" class="headerlink" title="最小生成树"></a>最小生成树</h2><pre class="mermaid">graph TD;
+A[最小生成树]==>B1[最小生成树概念]
+A==>B2[Prim算法]
+A==>B3[Kruskal算法]</pre>
 
 <h3 id="最小生成树概念"><a href="#最小生成树概念" class="headerlink" title="最小生成树概念"></a>最小生成树概念</h3><ul>
 <li>连通图的生成树是包含图中全部顶点的一个<strong>极小连通子图</strong>(砍去一条边则为非连通图，加上一条边为回路)</li>
@@ -758,7 +786,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">graph TD;</span><br><span class="line">A(图的存储);;</span><br><span class="line">A--&gt;B1(邻接矩阵)&#x3D;&#x3D;&gt;C1[数组实现,空间复杂度高];</span><br><span class="line">A--&gt;B2(邻接表)&#x3D;&#x3D;&gt;C2[顺序存储+链表实现];</span><br><span class="line">A--&gt;B3(十字链表)&#x3D;&#x3D;&gt;C3[存储有向图];</span><br><span class="line">A--&gt;B4(邻接多重表)&#x3D;&#x3D;&gt;C4[存储无向图];</span><br><span class="line">C3--&gt;D1(代码复杂考研很少考);</span><br><span class="line">C4--&gt;D1;</span><br></pre></td></tr></table></figure>
+          <pre class="mermaid">graph TD;
+A(图的存储);;
+A-->B1(邻接矩阵)==>C1[数组实现,空间复杂度高];
+A-->B2(邻接表)==>C2[顺序存储+链表实现];
+A-->B3(十字链表)==>C3[存储有向图];
+A-->B4(邻接多重表)==>C4[存储无向图];
+C3-->D1(代码复杂考研很少考);
+C4-->D1;</pre>
 
 <h2 id="邻接矩阵法"><a href="#邻接矩阵法" class="headerlink" title="邻接矩阵法"></a>邻接矩阵法</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> VertexType int</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXVertexNum 100</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INFINITY 100<span class="comment">//如果边的权值大于等于该值，称该边无穷长</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MGraph</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    VertexType Vex[MAXVertexNum];<span class="comment">//顶点</span></span><br><span class="line">    <span class="keyword">int</span> Edge[MAXVertexNum][MAXVertexNum];<span class="comment">//邻接矩阵</span></span><br><span class="line">    <span class="keyword">int</span> vexnum;<span class="comment">//当期顶点树</span></span><br><span class="line">    <span class="keyword">int</span> arcnum;<span class="comment">//当前边数/弧数</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
