@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="说明一下数组长度为n，是从1-n，0的位置拿来做哨兵查找表概念 同一类型的数据元素构成的集合 含有的操作有 查询某个特定的元素是否在表中 检索某个特定元素的各种属性 插入或删除某个元素    将含有插入删除操作的查找表称为动态查找表，只有1,2的称为静态查找表 关键字概念(Key)数据元素某个数据项的值如果该关键字可以唯一的标识这个元素，称为主关键字 否则为次关键字  操作CreatDestroy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="查找">
+<meta property="og:url" content="http://example.com/2021/03/29/%E6%9F%A5%E6%89%BE/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="说明一下数组长度为n，是从1-n，0的位置拿来做哨兵查找表概念 同一类型的数据元素构成的集合 含有的操作有 查询某个特定的元素是否在表中 检索某个特定元素的各种属性 插入或删除某个元素    将含有插入删除操作的查找表称为动态查找表，只有1,2的称为静态查找表 关键字概念(Key)数据元素某个数据项的值如果该关键字可以唯一的标识这个元素，称为主关键字 否则为次关键字  操作CreatDestroy">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2021/03/29/N2JyepGPC9QaKEA.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/29/jE5X4RQDzp8MSl6.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/29/Y8wGo94TWLH7FDq.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/29/UEaQizKq8TDXucP.png">
+<meta property="article:published_time" content="2021-03-29T15:09:56.000Z">
+<meta property="article:modified_time" content="2021-03-29T15:09:56.197Z">
+<meta property="article:author" content="MH">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/03/29/N2JyepGPC9QaKEA.png">
+
+<link rel="canonical" href="http://example.com/2021/03/29/%E6%9F%A5%E6%89%BE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>查找 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/29/%E6%9F%A5%E6%89%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          查找
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-29 23:09:56" itemprop="dateCreated datePublished" datetime="2021-03-29T23:09:56+08:00">2021-03-29</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="说明一下数组长度为n，是从1-n，0的位置拿来做哨兵"><a href="#说明一下数组长度为n，是从1-n，0的位置拿来做哨兵" class="headerlink" title="说明一下数组长度为n，是从1-n，0的位置拿来做哨兵"></a>说明一下数组长度为n，是从1-n，0的位置拿来做哨兵</h2><h2 id="查找表"><a href="#查找表" class="headerlink" title="查找表"></a>查找表</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><ul>
+<li>同一类型的数据元素构成的集合</li>
+<li>含有的操作有<ol>
+<li>查询某个特定的元素是否在表中</li>
+<li>检索某个特定元素的各种属性</li>
+<li>插入或删除某个元素</li>
+</ol>
+</li>
+</ul>
+<p>将含有插入删除操作的查找表称为动态查找表，只有1,2的称为静态查找表</p>
+<h4 id="关键字概念-Key"><a href="#关键字概念-Key" class="headerlink" title="关键字概念(Key)"></a>关键字概念(Key)</h4><p>数据元素某个数据项的值<br><strong>如果该关键字可以唯一的标识这个元素，称为主关键字</strong> 否则为次关键字</p>
+<hr>
+<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><p>Creat<br>Destroy<br>Search<br>Traverse</p>
+<hr>
+<h3 id="查找的性能分析"><a href="#查找的性能分析" class="headerlink" title="查找的性能分析"></a>查找的性能分析</h3><p>ASL:平均查找长度</p>
+<ul>
+<li>成功时平均查找长度</li>
+<li>失败时平均查找长度</li>
+</ul>
+<p>$ASL=\sum_{i=1}^n{P_iC_i}$<br>$P_i$为查找第i个元素的概率$C_i$为找到与key相等时比较的次数(针对成功查找而言)</p>
+<hr>
+<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><h3 id="顺序表的查找"><a href="#顺序表的查找" class="headerlink" title="顺序表的查找"></a>顺序表的查找</h3><p>顺序表：顺序存储</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">SearchSeq</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> key, <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">array</span>[<span class="number">0</span>] = key;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = length; <span class="built_in">array</span>[i] != key; --i)</span><br><span class="line">        ;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分析ASL<br>成功：$P_i=1; C_i=n-i+1; ASL=\frac{n+1}{2}$<br>失败：$P_i=1; C_i=n; ASL=n$</p>
+<p>优化：把被查找概率大的元素放比较早被比较 对被概率不相等时</p>
+<hr>
+<h3 id="有序表的查找"><a href="#有序表的查找" class="headerlink" title="有序表的查找"></a>有序表的查找</h3><p>表内元素有序排列(递增，递减都可)<br>用 <strong>递增</strong> 做例子<br>可采用顺序查找,加个判断大小</p>
+<h4 id="折半查找"><a href="#折半查找" class="headerlink" title="折半查找"></a>折半查找</h4><p>仅适用于有序的 <strong>顺序表</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">SearchBin</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> key, <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> low = <span class="number">1</span>, height = length;</span><br><span class="line">    <span class="keyword">while</span> (low &lt; height)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> mid = ((height - low) &gt;&gt; <span class="number">1</span>) + low;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">array</span>[mid] == key)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">array</span>[mid] &lt; key)</span><br><span class="line">        &#123;</span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            height = mid + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>循环跳出条件为l&lt;h，且注意((height - low) &gt;&gt; 1) + low是向下取整的，也就是在区间有偶数个元素时说左边比右边少一个元素</p>
+<h5 id="对折半查找的分析"><a href="#对折半查找的分析" class="headerlink" title="对折半查找的分析"></a>对折半查找的分析</h5><p>就算把表划分成了一个完全二叉树(编号与位置相同)<br>对一棵有n个节点的完全二叉数的高度$h=[log_2n]+1$,因此折半查找最多对比h次</p>
+<ol>
+<li>查找成功时<br>$ASL=\frac{1}{n}\sum_{i=1}^{h}{i*2^{i-1}} \leq \frac{h}{n}\frac{1-2^h}{1-2}=O(log_2n)$<br>课本上给了一个一个更好的证明$ASL=\frac{n+1}{n}log_2(n+1)-1$<br>有h层，第i层的查找长度为i，且第i层有$2^{i-1}$个节点 当然这个节点数是对满二叉树而言</li>
+<li>查找失败时<br>失败的可能为n+1种情况，因为n个数划分出了n+1个区间,每一次都要比较h次 $ASL=h(n+1)$</li>
+</ol>
+<p>时间复杂度$O(log_2n)$</p>
+<p><img src="https://i.loli.net/2021/03/29/N2JyepGPC9QaKEA.png" alt="使用 Documents 打开 7.2_2_折半查找●"></p>
+<hr>
+<h3 id="分块查找"><a href="#分块查找" class="headerlink" title="分块查找"></a>分块查找</h3><p><img src="https://i.loli.net/2021/03/29/jE5X4RQDzp8MSl6.png" alt="截屏 2021-03-29 下午9.27.33"></p>
+<p>索引顺序查找<br>先在索引表中确定代查元素所属分块，再在分块内找</p>
+<h4 id="用折半查找查找索引"><a href="#用折半查找查找索引" class="headerlink" title="用折半查找查找索引"></a>用折半查找查找索引</h4><p>难点在于给出的key不一定在索引表中，要根据索引表的性质判断key可能在的区块<br>key在索引表中时：拿到区块后，再去区块中寻找<br>key不在索引表中时：首先假设key对应区块的最大值为maxVal，$key&lt;maxVal$,所以折半查找的最后一步一定是heigh=mid-1; 倒数第二步一定是l=h=mid,对应的区块一定为low指向的区间，当然这key没有大于表里最大值的情况，如果key比表中最大值还大，那么最后一定是low超出界限，所以也要用low</p>
+<p>$ASL=L_i+L_s$ 只考虑成功情况下</p>
+<p><img src="https://i.loli.net/2021/03/29/Y8wGo94TWLH7FDq.png" alt="截屏 2021-03-29 下午9.42.13"></p>
+<hr>
+<h3 id="B树-只要求会手算"><a href="#B树-只要求会手算" class="headerlink" title="B树(只要求会手算)"></a>B树(只要求会手算)</h3><p>m阶B树<br>如果不是空树这一定要满足</p>
+<p><img src="https://i.loli.net/2021/03/29/UEaQizKq8TDXucP.png" alt="截屏 2021-03-29 下午10.52.58"></p>
+<h4 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h4><ol>
+<li>一个结点(不是根节点)含有的子树数量$\in [[m/2],m]$，含有的关键字数量$\in [[m/2]-1,m-1]$ <strong>注意这里的取整函数是向上取整的我也不知道要这样</strong></li>
+<li>若根结点不是终端结点，则至少有两棵子树，即子树数量$\in [2,m]$，关键字数量$\in [1,m-1]$</li>
+<li>任一一个结点，其子树高度都相同，即极度平衡完全平衡</li>
+<li>叶子结点不带信息</li>
+<li>关键字大小排列：子树0&lt;关键字0&lt;子树1。。。</li>
+</ol>
+<p>注意终端结点和叶子结点的区别</p>
+<p>叶子结点代表失败情况为n+1种</p>
+<h4 id="对B树的树高进行分析"><a href="#对B树的树高进行分析" class="headerlink" title="对B树的树高进行分析"></a>对B树的树高进行分析</h4><p>n个key的m阶B树,注意高度一般不包括叶子结点</p>
+<ol>
+<li>最大高度$h_{max}$最大高度要求结点含的元素尽可能的少<br>第i层含有的结点数为$p_i; p_1=1$<br>第i层含有的子树$l_i; l_1=2$<br>$p_i=l_{i-1}; l_i=p_i*[m/2]; k_i=p_i*([m/2]-1) i \gt 1$<br>有$l_i=2*[m/2]^{i-1} \rightarrow n = \sum_{i=1}^{h_{max}}{p_i*([m/2]-1)}=1+\sum_{i=1}^{h_{max}-1}{(l_i*([m/2]-1))}$<br>这也太傻了，用叶子结点算 $p_{h_{max}+1}=n+1 \rightarrow n+1 = 2*[m/2]^{h_{max}-1} \rightarrow h_{max} = log_{[m/2]}{\frac{n+1}{2}}+1$</li>
+<li>最小高度$h_{min}$要求结点含的元素尽可能的多<br>$l_i=m^i; n=(m-1)+\sum_{i=1}^{h_{min}-1}(m-1)l_i=(m-1)\sum_{i=0}^{h_{min}-1}m^i \rightarrow h_{min}=log_m(n+1)$</li>
+<li>$log_m(n+1) \le h \le log_{[m/2]}{(\frac{n+1}{2})}+1$</li>
+</ol>
+<h4 id="B树的插入删除"><a href="#B树的插入删除" class="headerlink" title="B树的插入删除"></a>B树的插入删除</h4>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/17/%E6%9C%89%E5%90%91%E6%97%A0%E7%8E%AF%E5%9B%BE/" rel="prev" title="有向无环图">
+      <i class="fa fa-chevron-left"></i> 有向无环图
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E%E4%B8%80%E4%B8%8B%E6%95%B0%E7%BB%84%E9%95%BF%E5%BA%A6%E4%B8%BAn%EF%BC%8C%E6%98%AF%E4%BB%8E1-n%EF%BC%8C0%E7%9A%84%E4%BD%8D%E7%BD%AE%E6%8B%BF%E6%9D%A5%E5%81%9A%E5%93%A8%E5%85%B5"><span class="nav-number">1.</span> <span class="nav-text">说明一下数组长度为n，是从1-n，0的位置拿来做哨兵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E8%A1%A8"><span class="nav-number">2.</span> <span class="nav-text">查找表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">2.1.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97%E6%A6%82%E5%BF%B5-Key"><span class="nav-number">2.1.1.</span> <span class="nav-text">关键字概念(Key)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C"><span class="nav-number">2.2.</span> <span class="nav-text">操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E7%9A%84%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">2.3.</span> <span class="nav-text">查找的性能分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE"><span class="nav-number">3.</span> <span class="nav-text">查找</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE"><span class="nav-number">3.1.</span> <span class="nav-text">顺序表的查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E5%BA%8F%E8%A1%A8%E7%9A%84%E6%9F%A5%E6%89%BE"><span class="nav-number">3.2.</span> <span class="nav-text">有序表的查找</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8A%98%E5%8D%8A%E6%9F%A5%E6%89%BE"><span class="nav-number">3.2.1.</span> <span class="nav-text">折半查找</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%B9%E6%8A%98%E5%8D%8A%E6%9F%A5%E6%89%BE%E7%9A%84%E5%88%86%E6%9E%90"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">对折半查找的分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%9D%97%E6%9F%A5%E6%89%BE"><span class="nav-number">3.3.</span> <span class="nav-text">分块查找</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E6%8A%98%E5%8D%8A%E6%9F%A5%E6%89%BE%E6%9F%A5%E6%89%BE%E7%B4%A2%E5%BC%95"><span class="nav-number">3.3.1.</span> <span class="nav-text">用折半查找查找索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B%E6%A0%91-%E5%8F%AA%E8%A6%81%E6%B1%82%E4%BC%9A%E6%89%8B%E7%AE%97"><span class="nav-number">3.4.</span> <span class="nav-text">B树(只要求会手算)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%A7%E8%B4%A8"><span class="nav-number">3.4.1.</span> <span class="nav-text">性质</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9B%E6%A0%91%E7%9A%84%E6%A0%91%E9%AB%98%E8%BF%9B%E8%A1%8C%E5%88%86%E6%9E%90"><span class="nav-number">3.4.2.</span> <span class="nav-text">对B树的树高进行分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B%E6%A0%91%E7%9A%84%E6%8F%92%E5%85%A5%E5%88%A0%E9%99%A4"><span class="nav-number">3.4.3.</span> <span class="nav-text">B树的插入删除</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

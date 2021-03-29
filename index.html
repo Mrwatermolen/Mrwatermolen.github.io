@@ -145,6 +145,126 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/29/%E6%9F%A5%E6%89%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/29/%E6%9F%A5%E6%89%BE/" class="post-title-link" itemprop="url">查找</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-29 23:09:56" itemprop="dateCreated datePublished" datetime="2021-03-29T23:09:56+08:00">2021-03-29</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="说明一下数组长度为n，是从1-n，0的位置拿来做哨兵"><a href="#说明一下数组长度为n，是从1-n，0的位置拿来做哨兵" class="headerlink" title="说明一下数组长度为n，是从1-n，0的位置拿来做哨兵"></a>说明一下数组长度为n，是从1-n，0的位置拿来做哨兵</h2><h2 id="查找表"><a href="#查找表" class="headerlink" title="查找表"></a>查找表</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><ul>
+<li>同一类型的数据元素构成的集合</li>
+<li>含有的操作有<ol>
+<li>查询某个特定的元素是否在表中</li>
+<li>检索某个特定元素的各种属性</li>
+<li>插入或删除某个元素</li>
+</ol>
+</li>
+</ul>
+<p>将含有插入删除操作的查找表称为动态查找表，只有1,2的称为静态查找表</p>
+<h4 id="关键字概念-Key"><a href="#关键字概念-Key" class="headerlink" title="关键字概念(Key)"></a>关键字概念(Key)</h4><p>数据元素某个数据项的值<br><strong>如果该关键字可以唯一的标识这个元素，称为主关键字</strong> 否则为次关键字</p>
+<hr>
+<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><p>Creat<br>Destroy<br>Search<br>Traverse</p>
+<hr>
+<h3 id="查找的性能分析"><a href="#查找的性能分析" class="headerlink" title="查找的性能分析"></a>查找的性能分析</h3><p>ASL:平均查找长度</p>
+<ul>
+<li>成功时平均查找长度</li>
+<li>失败时平均查找长度</li>
+</ul>
+<p>$ASL=\sum_{i=1}^n{P_iC_i}$<br>$P_i$为查找第i个元素的概率$C_i$为找到与key相等时比较的次数(针对成功查找而言)</p>
+<hr>
+<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><h3 id="顺序表的查找"><a href="#顺序表的查找" class="headerlink" title="顺序表的查找"></a>顺序表的查找</h3><p>顺序表：顺序存储</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">SearchSeq</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> key, <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">array</span>[<span class="number">0</span>] = key;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = length; <span class="built_in">array</span>[i] != key; --i)</span><br><span class="line">        ;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分析ASL<br>成功：$P_i=1; C_i=n-i+1; ASL=\frac{n+1}{2}$<br>失败：$P_i=1; C_i=n; ASL=n$</p>
+<p>优化：把被查找概率大的元素放比较早被比较 对被概率不相等时</p>
+<hr>
+<h3 id="有序表的查找"><a href="#有序表的查找" class="headerlink" title="有序表的查找"></a>有序表的查找</h3><p>表内元素有序排列(递增，递减都可)<br>用 <strong>递增</strong> 做例子<br>可采用顺序查找,加个判断大小</p>
+<h4 id="折半查找"><a href="#折半查找" class="headerlink" title="折半查找"></a>折半查找</h4><p>仅适用于有序的 <strong>顺序表</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">SearchBin</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> key, <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> low = <span class="number">1</span>, height = length;</span><br><span class="line">    <span class="keyword">while</span> (low &lt; height)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> mid = ((height - low) &gt;&gt; <span class="number">1</span>) + low;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">array</span>[mid] == key)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">array</span>[mid] &lt; key)</span><br><span class="line">        &#123;</span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            height = mid + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>循环跳出条件为l&lt;h，且注意((height - low) &gt;&gt; 1) + low是向下取整的，也就是在区间有偶数个元素时说左边比右边少一个元素</p>
+<h5 id="对折半查找的分析"><a href="#对折半查找的分析" class="headerlink" title="对折半查找的分析"></a>对折半查找的分析</h5><p>就算把表划分成了一个完全二叉树(编号与位置相同)<br>对一棵有n个节点的完全二叉数的高度$h=[log_2n]+1$,因此折半查找最多对比h次</p>
+<ol>
+<li>查找成功时<br>$ASL=\frac{1}{n}\sum_{i=1}^{h}{i*2^{i-1}} \leq \frac{h}{n}\frac{1-2^h}{1-2}=O(log_2n)$<br>课本上给了一个一个更好的证明$ASL=\frac{n+1}{n}log_2(n+1)-1$<br>有h层，第i层的查找长度为i，且第i层有$2^{i-1}$个节点 当然这个节点数是对满二叉树而言</li>
+<li>查找失败时<br>失败的可能为n+1种情况，因为n个数划分出了n+1个区间,每一次都要比较h次 $ASL=h(n+1)$</li>
+</ol>
+<p>时间复杂度$O(log_2n)$</p>
+<p><img src="https://i.loli.net/2021/03/29/N2JyepGPC9QaKEA.png" alt="使用 Documents 打开 7.2_2_折半查找●"></p>
+<hr>
+<h3 id="分块查找"><a href="#分块查找" class="headerlink" title="分块查找"></a>分块查找</h3><p><img src="https://i.loli.net/2021/03/29/jE5X4RQDzp8MSl6.png" alt="截屏 2021-03-29 下午9.27.33"></p>
+<p>索引顺序查找<br>先在索引表中确定代查元素所属分块，再在分块内找</p>
+<h4 id="用折半查找查找索引"><a href="#用折半查找查找索引" class="headerlink" title="用折半查找查找索引"></a>用折半查找查找索引</h4><p>难点在于给出的key不一定在索引表中，要根据索引表的性质判断key可能在的区块<br>key在索引表中时：拿到区块后，再去区块中寻找<br>key不在索引表中时：首先假设key对应区块的最大值为maxVal，$key&lt;maxVal$,所以折半查找的最后一步一定是heigh=mid-1; 倒数第二步一定是l=h=mid,对应的区块一定为low指向的区间，当然这key没有大于表里最大值的情况，如果key比表中最大值还大，那么最后一定是low超出界限，所以也要用low</p>
+<p>$ASL=L_i+L_s$ 只考虑成功情况下</p>
+<p><img src="https://i.loli.net/2021/03/29/Y8wGo94TWLH7FDq.png" alt="截屏 2021-03-29 下午9.42.13"></p>
+<hr>
+<h3 id="B树-只要求会手算"><a href="#B树-只要求会手算" class="headerlink" title="B树(只要求会手算)"></a>B树(只要求会手算)</h3><p>m阶B树<br>如果不是空树这一定要满足</p>
+<p><img src="https://i.loli.net/2021/03/29/UEaQizKq8TDXucP.png" alt="截屏 2021-03-29 下午10.52.58"></p>
+<h4 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h4><ol>
+<li>一个结点(不是根节点)含有的子树数量$\in [[m/2],m]$，含有的关键字数量$\in [[m/2]-1,m-1]$ <strong>注意这里的取整函数是向上取整的我也不知道要这样</strong></li>
+<li>若根结点不是终端结点，则至少有两棵子树，即子树数量$\in [2,m]$，关键字数量$\in [1,m-1]$</li>
+<li>任一一个结点，其子树高度都相同，即极度平衡完全平衡</li>
+<li>叶子结点不带信息</li>
+<li>关键字大小排列：子树0&lt;关键字0&lt;子树1。。。</li>
+</ol>
+<p>注意终端结点和叶子结点的区别</p>
+<p>叶子结点代表失败情况为n+1种</p>
+<h4 id="对B树的树高进行分析"><a href="#对B树的树高进行分析" class="headerlink" title="对B树的树高进行分析"></a>对B树的树高进行分析</h4><p>n个key的m阶B树,注意高度一般不包括叶子结点</p>
+<ol>
+<li>最大高度$h_{max}$最大高度要求结点含的元素尽可能的少<br>第i层含有的结点数为$p_i; p_1=1$<br>第i层含有的子树$l_i; l_1=2$<br>$p_i=l_{i-1}; l_i=p_i*[m/2]; k_i=p_i*([m/2]-1) i \gt 1$<br>有$l_i=2*[m/2]^{i-1} \rightarrow n = \sum_{i=1}^{h_{max}}{p_i*([m/2]-1)}=1+\sum_{i=1}^{h_{max}-1}{(l_i*([m/2]-1))}$<br>这也太傻了，用叶子结点算 $p_{h_{max}+1}=n+1 \rightarrow n+1 = 2*[m/2]^{h_{max}-1} \rightarrow h_{max} = log_{[m/2]}{\frac{n+1}{2}}+1$</li>
+<li>最小高度$h_{min}$要求结点含的元素尽可能的多<br>$l_i=m^i; n=(m-1)+\sum_{i=1}^{h_{min}-1}(m-1)l_i=(m-1)\sum_{i=0}^{h_{min}-1}m^i \rightarrow h_{min}=log_m(n+1)$</li>
+<li>$log_m(n+1) \le h \le log_{[m/2]}{(\frac{n+1}{2})}+1$</li>
+</ol>
+<h4 id="B树的插入删除"><a href="#B树的插入删除" class="headerlink" title="B树的插入删除"></a>B树的插入删除</h4>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/17/%E6%9C%89%E5%90%91%E6%97%A0%E7%8E%AF%E5%9B%BE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1102,96 +1222,6 @@ C4-->D1;</pre>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/19/%E4%BD%BF%E7%94%A8pandoc%E5%B0%86markdown%E8%BD%AC%E4%B8%BApdf%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="MH">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MH's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/19/%E4%BD%BF%E7%94%A8pandoc%E5%B0%86markdown%E8%BD%AC%E4%B8%BApdf%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">使用pandoc将markdown转为pdf遇到的问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-11-19 00:00:00" itemprop="dateCreated datePublished" datetime="2020-11-19T00:00:00+08:00">2020-11-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-12-09 12:08:57" itemprop="dateModified" datetime="2020-12-09T12:08:57+08:00">2020-12-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44375591/article/details/103992360?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~first_rank_v2~rank_v28-3-103992360.nonecase&utm_term=pdflatex%20%E6%A8%A1%E6%9D%BF&spm=1000.2123.3001.4430">pandoc转pdf文件用的latex模板介绍（Linux环境）</a></p>
-<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><blockquote>
-<p>Error: Command failed: pandoc -f markdown+tex_math_single_backslash<br>Error producing PDF.<br>! Package inputenc Error: Unicode character 的 (U+7684)<br>(inputenc)                not set up for use with LaTeX.<br>See the inputenc package documentation for explanation.<br>Type  H for immediate help.<br>Try running pandoc with –pdf-engine=xelatex.</p>
-</blockquote>
-<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>pdflatex，是不支持中文的，因此需要手动设置编译时所用的引擎为xelatex<br>安装xelatex<br> <code>sudo apt-get install texlive-xetex</code></p>
-<p>编译命令改为：<br> <code>pandoc i.md -o o.pdf --pdf-engine=xelatex&quot;</code></p>
-<p>这时就能够成功了但打开pdf会发现没有中文, 还要设置编译的时候的字体</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pandoc i.md -o o.pdf --pdf-engine=xelatex -V mainfont=&quot;Noto Sans CJK SC&quot; #这里我使用了思源字体</span><br><span class="line">fc-list #可列出所所有字体</span><br></pre></td></tr></table></figure>
-
-<h2 id="更好的方法"><a href="#更好的方法" class="headerlink" title="更好的方法"></a>更好的方法</h2><p>使用Latex模板<br>模板的话去网上找别人的来用一下就好<br>我用的是<br><a target="_blank" rel="noopener" href="https://github.com/tzengyuxio/pages/blob/gh-pages/pandoc/pm-template.latex">pm-template</a></p>
-<p>把下载下来的pm-template.latex放在$HOME/Templates/下(个人习惯)</p>
-<p> <code>pandoc i.md -o o.pdf --pdf-engine=xelatex --template=$HOME/Templates/pm-template.latex</code></p>
-<p>这样就完美了, 但是我还是踩了坑</p>
-<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">报错kpathsea:make_tex: Invalid filename `LiHei Pro/OT&#x27;, contains &#x27; &#x27;</span><br><span class="line"></span><br><span class="line">我看了一下pm-template.latex文件　它规定用的字体我没有为了省事我全部改成了Noto Sans CJK SC</span><br><span class="line">  \setCJKmainfont&#123;Noto Sans CJK SC&#125;  % 設定中文字型</span><br><span class="line">  \setmainfont&#123;Noto Sans CJK SC&#125;  % 設定英文字型</span><br><span class="line">  \setromanfont&#123;Noto Sans CJK SC&#125;  % 字型</span><br><span class="line">  \setmonofont&#123;Noto Sans CJK SC&#125;</span><br></pre></td></tr></table></figure>
-
-<p>eisvogel.tex 模板</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">! LaTeX Error: File `sourcesanspro.sty<span class="string">&#x27; not found.</span></span><br><span class="line"><span class="string">sudo texhash</span></span><br><span class="line"><span class="string">! Package fontspec Error: The font &quot;SourceSansPro-Regular&quot; cannot be found.</span></span><br><span class="line"><span class="string">sudo apt install texlive-fonts-extra</span></span><br><span class="line"><span class="string">pandoc 308.md -o 308.pdf --template=/home/pi/Templates/eisvogel.tex --pdf-engine=xelatex  -VCJKmainfont=&quot;Noto Sans CJK SC&quot;</span></span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1261,7 +1291,7 @@ C4-->D1;</pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
