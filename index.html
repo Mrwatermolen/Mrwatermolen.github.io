@@ -171,6 +171,22 @@
 
               <time title="Created: 2021-03-29 23:09:56" itemprop="dateCreated datePublished" datetime="2021-03-29T23:09:56+08:00">2021-03-29</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-30 19:30:14" itemprop="dateModified" datetime="2021-03-30T19:30:14+08:00">2021-03-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
 
           
 
@@ -232,7 +248,7 @@
 <h3 id="B树-只要求会手算"><a href="#B树-只要求会手算" class="headerlink" title="B树(只要求会手算)"></a>B树(只要求会手算)</h3><p>m阶B树<br>如果不是空树这一定要满足</p>
 <p><img src="https://i.loli.net/2021/03/29/UEaQizKq8TDXucP.png" alt="截屏 2021-03-29 下午10.52.58"></p>
 <h4 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h4><ol>
-<li>一个结点(不是根节点)含有的子树数量$\in [[m/2],m]$，含有的关键字数量$\in [[m/2]-1,m-1]$ <strong>注意这里的取整函数是向上取整的我也不知道要这样</strong></li>
+<li>一个结点(不是根节点)含有的子树数量$\in [[m/2],m]$，含有的关键字数量$\in [[m/2]-1,m-1]$ <strong>注意这里的取整函数是向上取整的！！</strong></li>
 <li>若根结点不是终端结点，则至少有两棵子树，即子树数量$\in [2,m]$，关键字数量$\in [1,m-1]$</li>
 <li>任一一个结点，其子树高度都相同，即极度平衡完全平衡</li>
 <li>叶子结点不带信息</li>
@@ -241,12 +257,31 @@
 <p>注意终端结点和叶子结点的区别</p>
 <p>叶子结点代表失败情况为n+1种</p>
 <h4 id="对B树的树高进行分析"><a href="#对B树的树高进行分析" class="headerlink" title="对B树的树高进行分析"></a>对B树的树高进行分析</h4><p>n个key的m阶B树,注意高度一般不包括叶子结点</p>
+<h5 id="最大高度-h-max"><a href="#最大高度-h-max" class="headerlink" title="最大高度$h_{max}$"></a>最大高度$h_{max}$</h5><p>最大高度要求结点含的元素尽可能的少<br>第i层含有的子树$l_i$且假定$l_0=1$<br>第i层含有的结点数为$p_i$<br>第i层含有的key$k_i$<br>$p_i=l_{i-1}  \ l_i=p_i*[m/2] \ k_i=p_i*([m/2]-1) ; i \gt 1$<br>有<br>$l_i=2*[m/2]^{i-1} \rightarrow n = \sum_{i=1}^{h_{max}}{p_i*([m/2]-1)}=1+\sum_{i=1}^{h_{max}-1}{(l_i*([m/2]-1))}=1+2*([m/2]-1)<em>\frac{1-[m/2]^{h_{max}-1}}{1-[m/2]} \ h_{max}=log_{[m/2]}{\frac{n+1}{2}}+1$<br>这也太傻了，用叶子结点算 $p_{h_{max}+1}=n+1 \rightarrow n+1 = 2</em>[m/2]^{h_{max}-1} \rightarrow h_{max} = log_{[m/2]}{\frac{n+1}{2}}+1$</p>
+<h5 id="最小高度-h-min"><a href="#最小高度-h-min" class="headerlink" title="最小高度$h_{min}$"></a>最小高度$h_{min}$</h5><p>要求结点含的元素尽可能的多。类似于m叉树<br>$l_i=m^i; n=(m-1)+\sum_{i=1}^{h_{min}-1}(m-1)l_i=(m-1)\sum_{i=0}^{h_{min}-1}m^i \rightarrow h_{min}=log_m(n+1)$<br>3. $log_m(n+1) \le h \le log_{[m/2]}{(\frac{n+1}{2})}+1$</p>
+<h4 id="B树的插入删除"><a href="#B树的插入删除" class="headerlink" title="B树的插入删除"></a>B树的插入删除</h4><h5 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h5><p>先插入吧，插入一个元素一定是在终端结点插入，插入到非终端结点也能被等效到插入终端结点</p>
+<p>几种插入情况</p>
 <ol>
-<li>最大高度$h_{max}$最大高度要求结点含的元素尽可能的少<br>第i层含有的结点数为$p_i; p_1=1$<br>第i层含有的子树$l_i; l_1=2$<br>$p_i=l_{i-1}; l_i=p_i*[m/2]; k_i=p_i*([m/2]-1) i \gt 1$<br>有$l_i=2*[m/2]^{i-1} \rightarrow n = \sum_{i=1}^{h_{max}}{p_i*([m/2]-1)}=1+\sum_{i=1}^{h_{max}-1}{(l_i*([m/2]-1))}$<br>这也太傻了，用叶子结点算 $p_{h_{max}+1}=n+1 \rightarrow n+1 = 2*[m/2]^{h_{max}-1} \rightarrow h_{max} = log_{[m/2]}{\frac{n+1}{2}}+1$</li>
-<li>最小高度$h_{min}$要求结点含的元素尽可能的多<br>$l_i=m^i; n=(m-1)+\sum_{i=1}^{h_{min}-1}(m-1)l_i=(m-1)\sum_{i=0}^{h_{min}-1}m^i \rightarrow h_{min}=log_m(n+1)$</li>
-<li>$log_m(n+1) \le h \le log_{[m/2]}{(\frac{n+1}{2})}+1$</li>
+<li><p>不溢出<br>插入结点key个数$\in[[m/2],m]$<br>不做调整</p>
+</li>
+<li><p>溢出<br>key个数为m个<br>取中间位置，位置是从1-m，中间位位置[m/2]还是向上取整<br><img src="https://i.loli.net/2021/03/30/4drc2C1p3I6DTim.png" alt="截屏 2021-03-30 下午5.01.24"><br>如图插入87，那么应该把80移动到父结点那，83、87成为一个新的结点，与80的右子树相连<br><img src="https://i.loli.net/2021/03/30/kS3NPHwZGq7vRp1.png" alt="截屏 2021-03-30 下午5.04.30"></p>
+</li>
 </ol>
-<h4 id="B树的插入删除"><a href="#B树的插入删除" class="headerlink" title="B树的插入删除"></a>B树的插入删除</h4>
+<p>但是如果父结点也溢出了怎么办？<br>父结点也进行尚书步骤，把一个结点扔给父父结点，分裂。一直重复，该操作有可能使得树的高度加一。</p>
+<h5 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h5><p>删除一个非终端结点等价于用直接前驱或直接后继代替他的位置，然后删除原来的直接前驱或直接后继<br>直接前驱或直接后继肯定是终端结点了<br>非终端结点的</p>
+<p>只看删除终端结点就好了而且只用看结点只有[m/2]-1个key的情况</p>
+<p>删除后不满足性质了，得去用一个直接前驱或直接后继去填补这个位置</p>
+<ol>
+<li>右兄弟够借<br>用它的后继代替它，再用后继的后继代替后继<br><img src="https://i.loli.net/2021/03/30/ERqjy86fQDnehIm.png" alt="截屏 2021-03-30 下午7.01.07"><br>删除25,用49去填补空缺，再用70去填补父结点的空缺</li>
+<li>左兄弟够借<br>用它的前驱代替它，再用前驱的前驱代替前驱</li>
+<li>都不够借<br><img src="https://i.loli.net/2021/03/30/GP3L1YaJAOIi46c.png" alt="截屏 2021-03-30 下午7.23.37"><br>可以将该结点与左(右)兄弟以及连接他们的父结点的key合并成一个结点。如果结束后父结点不满足性质，且父结点的兄弟也不够用，重复之前的步骤，直至满足性质，或者达到根结点，把根结点合并成另一个新结点作为新结点，如果合并到根结点树的高度减1<br><img src="https://i.loli.net/2021/03/30/FZo4dNU7TwcIMlQ.png" alt="截屏 2021-03-30 下午7.08.59"></li>
+</ol>
+<h5 id="B树总结"><a href="#B树总结" class="headerlink" title="B树总结"></a>B树总结</h5><p><img src="https://i.loli.net/2021/03/30/HskS649xDoAczmQ.png" alt="截屏 2021-03-30 下午7.12.17"></p>
+<hr>
+<h2 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h2><p>看一下分块查找</p>
+<p><img src="https://i.loli.net/2021/03/30/HWzInPQt5d8CM2N.jpg" alt="IMG_1329"></p>
+<p>B+树的查找就像分块查找一样必须查找到最后一层，才能获得信息<br><img src="https://i.loli.net/2021/03/30/MBLPXnHYe5s16vW.png" alt="使用 Documents 打开 7.3_3_B+树●"></p>
+
       
     </div>
 
@@ -1300,7 +1335,7 @@ C4-->D1;</pre>
         <span class="site-state-item-name">categories</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
