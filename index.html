@@ -168,10 +168,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-06-08 21:37:16 / Modified: 21:38:55" itemprop="dateCreated datePublished" datetime="2021-06-08T21:37:16+08:00">2021-06-08</time>
+              <time title="Created: 2021-06-08 21:37:16" itemprop="dateCreated datePublished" datetime="2021-06-08T21:37:16+08:00">2021-06-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-06-10 15:38:42" itemprop="dateModified" datetime="2021-06-10T15:38:42+08:00">2021-06-10</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -221,7 +227,15 @@
 <li>介质谐振器实例分析。<br>置于一段截止波导中的谐振器，它与传输波导之间的耦合程度取决于两者之间的距离l，改变l就可以调节耦合的大小</li>
 <li>圆形介质谐振器中的模式，和波形指数的含义。与金属谐振腔对比记忆<br>圆柱型介质谐振器，这里上个图好了<br><img src="https://i.loli.net/2021/06/08/CR2nbHqrUJlmgiD.png" alt="圆柱型介质谐振器"></li>
 </ol>
-<h2 id="第六章-微波网络基础"><a href="#第六章-微波网络基础" class="headerlink" title="第六章 微波网络基础"></a>第六章 微波网络基础</h2><h2 id="第七章-微波谐振器"><a href="#第七章-微波谐振器" class="headerlink" title="第七章 微波谐振器"></a>第七章 微波谐振器</h2><ol>
+<h2 id="第六章-微波网络基础"><a href="#第六章-微波网络基础" class="headerlink" title="第六章 微波网络基础"></a>第六章 微波网络基础</h2><ol>
+<li>阻抗矩阵、导纳矩阵元素的定义及含义。<br>$Z_{ij}=\frac{V_i}{I_j}|<em>{I_k=0,k\neq j}$含义：其它所有端口都开路的情况下从端口j到端口i的转移阻抗<br>$Y</em>{ij}=\frac{I_i}{V_j}|<em>{V_k=0,k\neq j}$含义：其它所有端口都短路的情况下从端口j到端口i的转移导纳<br>$Z</em>{ii}=\frac{V_i}{I_i}|<em>{I_k=0,k\neq i}$含义：其它所有端口都开路的情况下从端口i看过去的输入阻抗<br>$Y</em>{ii}$同理</li>
+<li>转移矩阵，散射矩阵的各元素的定义及含义。<br>先散射矩阵，即S矩阵。微波中电压电流没有明确物理意义。设对端口而言反射波为$b_k$，入射波为$a_k$，且是已经归一化了。<br>提一嘴（还是挺重要的）：$v_i=\frac{V_i}{\sqrt{Z_{0i}}},i_i={I_i}{\sqrt{Z_{0i}}}$<br>$S_{ij}=\frac{b_i}{a_j}|<em>{a_k=0,k\neq j}$含义：其它所有端口都匹配(即端口的负载无反射波,对负载而言反射波为$a_k$)的情况下从端口j到端口i的传输系数<br>$S</em>{ii}=\frac{b_i}{a_i}|<em>{b_k=0,k\neq j}$含义：其它所有端口都匹配(即端口无反射波)的情况下从端口i的反射系数<br>对一二端口网络有：$\Gamma</em>{in}=S_{11}+\frac{S_{12}S_{21}\Gamma_L}{1-S_{22}\Gamma_L}$<br>对线性互易网络负载匹配，开路，短路即可解出$S_{11},S_{22},S_{21}=S_{12}$<br>转移矩阵ABCD：对二端口网络<br>$$<br>\left{<br>\begin{array}{c}<br>V_1=AV_2+BI_2\<br>I_1=CV_2+DI_2<br>\end{array}<br>\right.<br>\<br>\left[<br> \begin{matrix}<br> A&amp;B\<br> C&amp;D<br> \end{matrix}<br>\right]<br>$$</li>
+<li>无耗网络，互易网络 散射矩阵性质，参考面平移对矩阵元素影响。<br>阻抗，导纳：互易：对称;无耗：纯虚数<br>散射矩阵特性：<br>如果网络是互易的，则矩阵是对称的：$[S]^t=[S]$<br>如果网络是无耗的，则矩阵满足幺正性：$[S]^t[S]^*=[E]$<br>如果二端口网络是对称的，则满足：$S_{11}=S_{22}$<br>线性互易无耗的二端口网络有：$|S_{11}|=|S_{22}|=\sqrt{1-|S_{12}|^2},\theta_{12}-(\theta_{11}+\theta_{22})=\pm \pi$<br>参考面向外移动（远离负载j方向，比如左边是负载，右边是端口，远离就是向右动）$l_i$，记$\theta_j=2\pi l_j/\lambda_{gj}$<br>入射波超前+，反射波滞后-（相位看谁先到0谁超前），有<br>$$<br>[S^{‘}]=[P][S][P]<br>\<br>[P]=\left[<br> \begin{matrix}<br> e^{-\jmath \theta_1}&amp;0&amp;\cdots &amp;0\<br> 0&amp;e^{-\jmath \theta_2}&amp;\cdots &amp;0\<br> 0&amp;0&amp;\cdots &amp;e^{-\jmath \theta_n}<br> \end{matrix}<br>\right]<br>$$</li>
+<li>转移矩阵和散射矩阵的转化关系。（主要是如何由转移矩阵获得散射矩阵）<br>先求归一化abcd，然后套公式</li>
+<li>常用二端口网络的转移矩阵和散射矩阵的计算（为计算复杂结构准备）</li>
+<li>插入损耗和插入相移的定义。<br>$L_I=10lg\frac{P_{Lb}}{P_{La}}(dB)$<br>在信号内阻和负载都匹配时<br>$L_I=-10lg|S_{21}|^2$<br>$\theta_I=\theta_a-\theta_b$ 正值说明引起相位落后</li>
+</ol>
+<h2 id="第七章-微波谐振器"><a href="#第七章-微波谐振器" class="headerlink" title="第七章 微波谐振器"></a>第七章 微波谐振器</h2><ol>
 <li>谐振器的含义，特点<br>微波谐振器通常由一定形状的“电壁”或“磁壁”限<br>定的体积内，产生电磁振荡。<br>它是一种储能和选频谐振元件，用于滤波器、振<br>荡器、频率计、调谐放大器等。<br>特点：一、多谐性：微波谐振器可以存在无穷多不同振荡模式的自由振荡不同振荡模式具有不同的振荡频率;二、对某一模式，电场和磁场相位相差$\frac{\pi}{2}$，两者最大储能相等。</li>
 <li>谐振器的基本参数和定义式。（主要是谐振波长，品质因数）<br>$$<br>l=\frac{p\lambda_g}{2}\quad p=1,2,3,\cdots \<br>\lambda_0=\frac{1}{\sqrt{\frac{1}{\lambda_c^2}+\frac{1}{\lambda_p^2}}}\<br>Q=2\pi \frac{W}{W_T}=\omega_0\frac{W}{P_l}<br>$$</li>
 <li>谐振器的最大电能储能和最大磁能储能表达式和关系。<br>$W_e=W_m=\frac{1}{2}\int_ve|E|^2dv=\frac{1}{2}\int_v\mu|H|^2dv$<br>一周期内的平均则再取0.5</li>
