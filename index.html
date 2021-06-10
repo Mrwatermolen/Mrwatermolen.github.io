@@ -176,7 +176,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-06-10 15:38:42" itemprop="dateModified" datetime="2021-06-10T15:38:42+08:00">2021-06-10</time>
+                <time title="Modified: 2021-06-10 19:34:45" itemprop="dateModified" datetime="2021-06-10T19:34:45+08:00">2021-06-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -204,16 +204,36 @@
 <li>微波的特点<br>似光、似声性，穿透性，非电离性、信息性</li>
 <li>导行波的种类与特点<br>种类：TE、TM:能量拘束在金属管内;TEM、准TEM波：能量拘束在导体之间的空间;</li>
 </ol>
-<h2 id="第二章-传输线理论"><a href="#第二章-传输线理论" class="headerlink" title="第二章 传输线理论"></a>第二章 传输线理论</h2><h2 id="第三章-金属波导"><a href="#第三章-金属波导" class="headerlink" title="第三章 金属波导"></a>第三章 金属波导</h2><ol>
-<li>矩形波导，圆波导各自的主模，单模传输条件<br>矩形波导：<br>$$<br>TE_{10}:H_z、H_x、E_y\<br>\lambda_c=2a,f_c=\frac{v}{\lambda_c},k_c^2=(\frac{\pi}{a})^2\<br>a&lt;\lambda &lt;2a,\lambda &lt;2b<br>$$<br>圆形波导：<br>$$<br>TE_{11}:H_z、H_r、H_{\Phi}、E_r、E_{\Phi}\<br>\lambda_c=2\pi a/u_{11}^{‘},f_c=\frac{v}{\lambda_c},k_c^2=(\frac{u_{11}^{‘}}{a})^2\<br>$$</li>
-<li>在矩形波导和圆波导中$TE_{mn}、TM_{mn}$模的场结构如何描述，即波形指数m、n的含义。<br>矩形波导：中m和n分别代表场强沿x轴和y轴方向分布的半波数。<br>圆形波导：<br>m代表沿圆周φ分布的整驻波数；<br>n代表沿半径r分布场的最大值个数（TE、TM都是）</li>
-<li>矩形波导的传输特性。传输常数，截止波长，截止频率，传播条件，相速度，群速度，波导波长，波阻抗（$TE_{mn}、TM_{mn}$模不同）<br>矩形波导TE中mn不能同时为0,TM中mn不能为0.<br>$$<br>\beta_{mn}=\sqrt{(k)^2-(\frac{m\pi}{a})^2-(\frac{n\pi}{b})^2}\<br>k_{cmn}^2=(\frac{m\pi}{a})^2+(\frac{n\pi}{b})^2\<br>f_{cmn}=\frac{k_{cmn}}{2\pi \sqrt{\mu\epsilon}}\<br>\lambda_{cmn}=\frac{2\pi}{k_{cmn}}\<br>g=\sqrt{1-(\frac{\lambda}{\lambda_{cmn}})^2}\<br>v_p=v/g,v_g=vg\<br>\lambda_g=\lambda/g\<br>Z_{TEmn}=\eta /g\<br>Z_{TM_{mn}}=\eta g<br>$$</li>
-<li>矩形波导，圆波导中典型模式的场表达式（比如矩形波导 TE10，圆形波导的TE01，TM01等，主要搞清楚纵向场的关系）。</li>
-<li>矩形波导中的波形简并，圆形波导中的两种不同简并形式，解释其区别<br>矩形波导的简并是：$\lambda_{cTE_{mn}} =\lambda_{cTM_{mn}}$<br>圆形波导的简并是：1.$m\neq 0$时，$TE_{mn},TM_{mn}$的极化简并2.$\lambda_{cTE_{0n}} =\lambda_{cTM_{1n}}$</li>
-<li>圆波导中截止波长，截止频率和传播常数的计算公式<br>$$<br>TE_{mn}:k_{cmn}=\frac{u_{mn}^{‘}}{a},\lambda_{cmn}=\frac{2\pi}{k_{cmn}}==\frac{2a\pi}{u_{mn}^{‘}}\<br>TM_{mn}:k_{cmn}=\frac{u_{mn}}{a},\lambda_{cmn}=\frac{2\pi}{k_{cmn}}==\frac{2a\pi}{u_{mn}}<br>$$<br>$u_{mn}^{‘}$m阶Bessel函数的导数的第n个根<br>$u_{mn}$m阶Bessel函数的第n个根</li>
-<li>同轴线主要传输的模式：TEM模</li>
-<li>保证同轴线只传输主模的条件<br>$\lambda_{min} &gt; (a+b)\pi$</li>
+<h2 id="第二章-传输线理论"><a href="#第二章-传输线理论" class="headerlink" title="第二章 传输线理论"></a>第二章 传输线理论</h2><h3 id="1-传输线方程与其解，重点关注终端解的形式"><a href="#1-传输线方程与其解，重点关注终端解的形式" class="headerlink" title="1.传输线方程与其解，重点关注终端解的形式"></a>1.传输线方程与其解，重点关注终端解的形式</h3><p>对时谐场，由传输线的等效分布参数可得<br>$$<br>v(z,t)=Re{V(z)e^{j\omega t}}\<br>i(z,t)=Re{I(z)e^{j\omega t}}\<br>\frac{dV}{dz}=-(R+j\omega L)I=-ZI\<br>\frac{dI}{dz}=-(Y+j\omega C)V=-YV\<br>\Rightarrow \frac{d^2V}{dz^2}-ZYV=0\<br>\gamma = \sqrt{ZY} \Rightarrow V(z)=A_1e^{-\gamma z}+A_2e^{\gamma z}\<br>Z_0=\sqrt{\frac{Z}{Y}} \Rightarrow I(z)=(A_1e^{-\gamma z}-A_2e^{\gamma z})/Z_0<br>$$<br>得出一般解后，由条件解得系数。</p>
+<h4 id="终端解：z-l时，条件已知"><a href="#终端解：z-l时，条件已知" class="headerlink" title="终端解：z=l时，条件已知"></a>终端解：z=l时，条件已知</h4><p>我只求终端解，其他解都一样<br>已知：$V(l)=V_L,I(l)=I_L$<br>为方便求解设:$d=l-z$这里+d方向就是向电源方向（即-z方向）<br>得<br>$$<br>\left[<br>    \begin{matrix}<br>    V(d)\<br>    I(d)<br>    \end{matrix}<br>\right]=<br>\left[<br>    \begin{matrix}<br>    ch; \gamma d&amp;Z_0sh; \gamma d\<br>    \frac{sh; \gamma d}{Z_0}&amp;ch ; \gamma d<br>    \end{matrix}<br>\right]<br>\left[<br>    \begin{matrix}<br>    V_L\<br>    I_L<br>    \end{matrix}<br>\right]<br>$$</p>
+<h3 id="2-特性阻抗，传播常数的定义"><a href="#2-特性阻抗，传播常数的定义" class="headerlink" title="2. 特性阻抗，传播常数的定义"></a>2. 特性阻抗，传播常数的定义</h3><p>特性阻抗：$Z_0=\sqrt{\frac{R+j\omega L_1}{G+j\omega C}}$<br>一般情况下是个复数，如果其与频率无关，则为纯电;如果是无耗线则$Z_0=\sqrt{L/C}$<br>传播常数，描绘导行波传播过程中 的衰减（实部）和相位变化（虚部）：$\gamma =\sqrt{(R+j\omega L_1)(G+j\omega C)}=\alpha +j\beta$<br>对无耗线：$\alpha =0,\beta =\omega \sqrt{LC}$</p>
+<h3 id="3-任一点的输入阻抗的定义及性质，会计算。（半波长重复性，四分之一波长变换性）"><a href="#3-任一点的输入阻抗的定义及性质，会计算。（半波长重复性，四分之一波长变换性）" class="headerlink" title="3. 任一点的输入阻抗的定义及性质，会计算。（半波长重复性，四分之一波长变换性）"></a>3. 任一点的输入阻抗的定义及性质，会计算。（半波长重复性，四分之一波长变换性）</h3><p>输入阻抗$Z_{in}(d)=\frac{V(d)}{I(d)}$，对无耗线<br>$Z_{in}(d)=Z_0\frac{Z_L+Z_0tg; \beta d}{Z_0+Z_Ltg; \beta d}$<br>则对无耗线而言有：</p>
+<ol>
+<li>$\lambda /4$的变换性：$Z_{in}(d+\lambda /4)=\frac{Z_0^2}{Z_{in}}$</li>
+<li>$\lambda /2$的不变：$Z_{in}(d+\lambda /2)=Z_{in}(d)$</li>
 </ol>
+<h3 id="4-反射参量定义表达式。（电压反射系数定义式，任一点反射系数与重大-UN反射系数的关系，重点是无耗线）"><a href="#4-反射参量定义表达式。（电压反射系数定义式，任一点反射系数与重大-UN反射系数的关系，重点是无耗线）" class="headerlink" title="4. 反射参量定义表达式。（电压反射系数定义式，任一点反射系数与重大 UN反射系数的关系，重点是无耗线）"></a>4. 反射参量定义表达式。（电压反射系数定义式，任一点反射系数与重大 UN反射系数的关系，重点是无耗线）</h3><p>定义电压反射系数$\Gamma_v(d)=\frac{V^-(d)}{V^+(d)}$<br>负号表示反射波，一般的话是-d方向也就是+z（注意具体情况具体分析）<br>希望还记得那个终端解,<br>$$<br>\Gamma_v(d)=\frac{((V_L-Z_0I)/2)e^{-\gamma d}}{((V_L+Z_0I)/2)e^{\gamma d}}=\frac{Z_L-Z_0}{Z_L+Z_0}e^{-2\gamma d}\<br>\Gamma_L=\frac{Z_L-Z_0}{Z_L+Z_0}=|\Gamma_L|e^{j\psi}\<br>\rightarrow \Gamma_v(d)=|\Gamma_L|e^{j\psi -2(\alpha +j\beta )d}<br>$$<br>考虑无耗线(有耗线其实就是加个衰减系数)<br>$\Gamma_v(d)=|\Gamma_L|e^{j(\psi -2\beta d)}$</p>
+<h3 id="5-反射参量与输入阻抗的关系"><a href="#5-反射参量与输入阻抗的关系" class="headerlink" title="5. 反射参量与输入阻抗的关系"></a>5. 反射参量与输入阻抗的关系</h3><p>$$<br>Z_in(d)=Z_0\frac{1+\Gamma_v(d)}{1-\Gamma_v(d)}\<br>\Gamma_v(d)=\frac{Z_in(d)-Z_0}{Z_in(d)+Z_0}<br>$$<br>上定义即可</p>
+<h3 id="6-驻波比和行波系数的定义。（波节点，波腹点阻抗的大小）"><a href="#6-驻波比和行波系数的定义。（波节点，波腹点阻抗的大小）" class="headerlink" title="6. 驻波比和行波系数的定义。（波节点，波腹点阻抗的大小）"></a>6. 驻波比和行波系数的定义。（波节点，波腹点阻抗的大小）</h3><p>驻波比：$\rho =\frac{|V|<em>{max}}{|V|</em>{min}}=\frac{1+|T_L|}{!_|T_L|}$<br>推出和反射系数的方法就是，把终端解换成用反射系数去表示的，然后求模<br>行波系数就是驻波比取个倒数</p>
+<h3 id="7-无耗线的三种工作状态特点。（工作条件，线上的电压、电流、阻抗分布特点，特别是终端短路，终端开路的情况，短路线和开路线的阻抗大小等）"><a href="#7-无耗线的三种工作状态特点。（工作条件，线上的电压、电流、阻抗分布特点，特别是终端短路，终端开路的情况，短路线和开路线的阻抗大小等）" class="headerlink" title="7. 无耗线的三种工作状态特点。（工作条件，线上的电压、电流、阻抗分布特点，特别是终端短路，终端开路的情况，短路线和开路线的阻抗大小等）"></a>7. 无耗线的三种工作状态特点。（工作条件，线上的电压、电流、阻抗分布特点，特别是终端短路，终端开路的情况，短路线和开路线的阻抗大小等）</h3><p>emem，这个就大略一提吧，公式就少写，但是 这块就真的很重要！！！！</p>
+<ol>
+<li>行波状态：无反射<br>无反射，反射系数就为0,驻波比为1,条件$Z_L=Z_0 \rightarrow Z_{in}=Z_0$<br>各点幅值相等</li>
+<li>驻波：全反射<br>负载短路时，哎呀算了$Z_{in}^{sc}(d)=jZ_0tg; \beta d$，且此时负载为电压最小点<br>负载开路路时，哎呀算了$Z_{in}^{oc}(d)=-jZ_0ctg; \beta d$，且此时负载为电压最大点,上面那个变换性<br>有$Z_0=\sqrt{Z_{in}^{oc}Z_{in}^{sc}}$<br>接纯电抗<br>其实就是归一化斯密斯图<br>$l=\frac{\lambda}{2\pi}arctg(\frac{X_L}{Z_0})$</li>
+<li>行驻波：$Z_L=R_L+JX_L$<br>我就写一个：<br>$$<br>|V|<em>{max}=|V_L^+|+[1+|T_L|],V_L^+=\frac{V_L+I_LZ_0}{2}e^{\gamma d}<br>d</em>{max}=\frac{\lambda}{4\pi}\psi<br>R_{max}=Z_0\rho<br>R_{max}R_{min}=Z_0^2<br>$$</li>
+</ol>
+<h3 id="8-史密斯圆图的依据关系式2"><a href="#8-史密斯圆图的依据关系式2" class="headerlink" title="8. 史密斯圆图的依据关系式2"></a>8. 史密斯圆图的依据关系式2</h3><p>用归一化阻抗和反射系数，求虚部和实部</p>
+<h3 id="9-圆图上的三个圆的表达式。（不需要记住表达式，目的：明确圆图中圆和相应弧线的含义）"><a href="#9-圆图上的三个圆的表达式。（不需要记住表达式，目的：明确圆图中圆和相应弧线的含义）" class="headerlink" title="9. 圆图上的三个圆的表达式。（不需要记住表达式，目的：明确圆图中圆和相应弧线的含义）"></a>9. 圆图上的三个圆的表达式。（不需要记住表达式，目的：明确圆图中圆和相应弧线的含义）</h3><p>明确！！</p>
+<h3 id="11-圆图上三个特殊点，两个特殊线，两个旋转方向。（使用圆图基础）"><a href="#11-圆图上三个特殊点，两个特殊线，两个旋转方向。（使用圆图基础）" class="headerlink" title="11. 圆图上三个特殊点，两个特殊线，两个旋转方向。（使用圆图基础）"></a>11. 圆图上三个特殊点，两个特殊线，两个旋转方向。（使用圆图基础）</h3><p>明确！！</p>
+<h3 id="12-λ-4-的波长匹配器的计算（终端为非电阻型阻抗的情况该如何处理），单、双枝节匹配会用圆图求解（掌握求解步骤）"><a href="#12-λ-4-的波长匹配器的计算（终端为非电阻型阻抗的情况该如何处理），单、双枝节匹配会用圆图求解（掌握求解步骤）" class="headerlink" title="12. λ/4 的波长匹配器的计算（终端为非电阻型阻抗的情况该如何处理），单、双枝节匹配会用圆图求解（掌握求解步骤）"></a>12. λ/4 的波长匹配器的计算（终端为非电阻型阻抗的情况该如何处理），单、双枝节匹配会用圆图求解（掌握求解步骤）</h3><p>明确！！你要干啥，就是要落在$r=1,x=0$上</p>
+<h2 id="第三章-金属波导"><a href="#第三章-金属波导" class="headerlink" title="第三章 金属波导"></a>第三章 金属波导</h2><h3 id="1-矩形波导，圆波导各自的主模，单模传输条件"><a href="#1-矩形波导，圆波导各自的主模，单模传输条件" class="headerlink" title="1. 矩形波导，圆波导各自的主模，单模传输条件"></a>1. 矩形波导，圆波导各自的主模，单模传输条件</h3><ol>
+<li>矩形波导：<br>$$<br>TE_{10}:H_z、H_x、E_y\<br>\lambda_c=2a,f_c=\frac{v}{\lambda_c},k_c^2=(\frac{\pi}{a})^2\<br>a&lt;\lambda &lt;2a,\lambda &lt;2b<br>$$</li>
+<li>圆形波导：<br>$$<br>TE_{11}:H_z、H_r、H_{\Phi}、E_r、E_{\Phi}\<br>\lambda_c=2\pi a/u_{11}^{‘},f_c=\frac{v}{\lambda_c},k_c^2=(\frac{u_{11}^{‘}}{a})^2\<br>$$</li>
+</ol>
+<h3 id="2-在矩形波导和圆波导中-TE-mn-、TM-mn-模的场结构如何描述，即波形指数m、n的含义"><a href="#2-在矩形波导和圆波导中-TE-mn-、TM-mn-模的场结构如何描述，即波形指数m、n的含义" class="headerlink" title="2. 在矩形波导和圆波导中$TE_{mn}、TM_{mn}$模的场结构如何描述，即波形指数m、n的含义"></a>2. 在矩形波导和圆波导中$TE_{mn}、TM_{mn}$模的场结构如何描述，即波形指数m、n的含义</h3><p>矩形波导：中m和n分别代表场强沿x轴和y轴方向分布的半波数。<br>圆形波导：<br>m代表沿圆周φ分布的整驻波数；<br>n代表沿半径r分布场的最大值个数（TE、TM都是）</p>
+<h3 id="3-矩形波导的传输特性。传输常数，截止波长，截止频率，传播条件，相速度，群速度，波导波长，波阻抗（-TE-mn-、TM-mn-模不同）"><a href="#3-矩形波导的传输特性。传输常数，截止波长，截止频率，传播条件，相速度，群速度，波导波长，波阻抗（-TE-mn-、TM-mn-模不同）" class="headerlink" title="3. 矩形波导的传输特性。传输常数，截止波长，截止频率，传播条件，相速度，群速度，波导波长，波阻抗（$TE_{mn}、TM_{mn}$模不同）"></a>3. 矩形波导的传输特性。传输常数，截止波长，截止频率，传播条件，相速度，群速度，波导波长，波阻抗（$TE_{mn}、TM_{mn}$模不同）</h3><p>矩形波导TE中mn不能同时为0,TM中mn不能为0.<br>$$<br>\beta_{mn}=\sqrt{(k)^2-(\frac{m\pi}{a})^2-(\frac{n\pi}{b})^2}\<br>k_{cmn}^2=(\frac{m\pi}{a})^2+(\frac{n\pi}{b})^2\<br>f_{cmn}=\frac{k_{cmn}}{2\pi \sqrt{\mu\epsilon}}\<br>\lambda_{cmn}=\frac{2\pi}{k_{cmn}}\<br>g=\sqrt{1-(\frac{\lambda}{\lambda_{cmn}})^2}\<br>v_p=v/g,v_g=vg\<br>\lambda_g=\lambda/g\<br>Z_{TEmn}=\eta /g\<br>Z_{TM_{mn}}=\eta g<br>$$</p>
+<h3 id="4-矩形波导，圆波导中典型模式的场表达式（比如矩形波导-TE10，圆形波导的TE01，TM01等，主要搞清楚纵向场的关系）"><a href="#4-矩形波导，圆波导中典型模式的场表达式（比如矩形波导-TE10，圆形波导的TE01，TM01等，主要搞清楚纵向场的关系）" class="headerlink" title="4. 矩形波导，圆波导中典型模式的场表达式（比如矩形波导 TE10，圆形波导的TE01，TM01等，主要搞清楚纵向场的关系）"></a>4. 矩形波导，圆波导中典型模式的场表达式（比如矩形波导 TE10，圆形波导的TE01，TM01等，主要搞清楚纵向场的关系）</h3><h3 id="5-矩形波导中的波形简并，圆形波导中的两种不同简并形式，解释其区别"><a href="#5-矩形波导中的波形简并，圆形波导中的两种不同简并形式，解释其区别" class="headerlink" title="5. 矩形波导中的波形简并，圆形波导中的两种不同简并形式，解释其区别"></a>5. 矩形波导中的波形简并，圆形波导中的两种不同简并形式，解释其区别</h3><p>矩形波导的简并是：$\lambda_{cTE_{mn}} =\lambda_{cTM_{mn}}$<br>圆形波导的简并是：1.$m\neq 0$时，$TE_{mn},TM_{mn}$的极化简并2.$\lambda_{cTE_{0n}} =\lambda_{cTM_{1n}}$</p>
+<h3 id="6-圆波导中截止波长，截止频率和传播常数的计算公式"><a href="#6-圆波导中截止波长，截止频率和传播常数的计算公式" class="headerlink" title="6. 圆波导中截止波长，截止频率和传播常数的计算公式"></a>6. 圆波导中截止波长，截止频率和传播常数的计算公式</h3><p>$$<br>TE_{mn}:k_{cmn}=\frac{u_{mn}^{‘}}{a},\lambda_{cmn}=\frac{2\pi}{k_{cmn}}==\frac{2a\pi}{u_{mn}^{‘}}\<br>TM_{mn}:k_{cmn}=\frac{u_{mn}}{a},\lambda_{cmn}=\frac{2\pi}{k_{cmn}}==\frac{2a\pi}{u_{mn}}<br>$$<br>$u_{mn}^{‘}$m阶Bessel函数的导数的第n个根<br>$u_{mn}$m阶Bessel函数的第n个根</p>
+<h3 id="7-同轴线主要传输的模式：TEM模"><a href="#7-同轴线主要传输的模式：TEM模" class="headerlink" title="7. 同轴线主要传输的模式：TEM模"></a>7. 同轴线主要传输的模式：TEM模</h3><h3 id="8-保证同轴线只传输主模的条件"><a href="#8-保证同轴线只传输主模的条件" class="headerlink" title="8. 保证同轴线只传输主模的条件"></a>8. 保证同轴线只传输主模的条件</h3><p>$\lambda_{min} &gt; (a+b)\pi$</p>
 <h2 id="第四章-微带线和带状线"><a href="#第四章-微带线和带状线" class="headerlink" title="第四章 微带线和带状线"></a>第四章 微带线和带状线</h2><ol>
 <li>带状线的场结构。（会画简单示意图）</li>
 <li>带状线的工作模式，传输 TEM 波。</li>
