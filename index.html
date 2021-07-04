@@ -145,6 +145,92 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/04/ffmpeg%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/04/ffmpeg%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">ffmpeg使用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-04 12:42:00 / Modified: 12:43:38" itemprop="dateCreated datePublished" datetime="2021-07-04T12:42:00+08:00">2021-07-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ffmpeg/" itemprop="url" rel="index"><span itemprop="name">ffmpeg</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="使用FFmpeg合并MP4视频"><a href="#使用FFmpeg合并MP4视频" class="headerlink" title="使用FFmpeg合并MP4视频"></a>使用FFmpeg合并MP4视频</h2><h3 id="使用mpeg拼接"><a href="#使用mpeg拼接" class="headerlink" title="使用mpeg拼接"></a>使用mpeg拼接</h3><p>速度慢，文件大</p>
+<p>将 mp4 先转码为 mpeg文件，mpeg是支持简单拼接的，然后再转回 mp4。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i 1.mp4 -qscale 4 1.mpg</span><br><span class="line">ffmpeg -i 2.mp4 -qscale 4 2.mpg</span><br><span class="line">cat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -qscale 6 -vcodec mpeg4 output.mp4</span><br><span class="line"><span class="comment">#-qscale &lt;数值&gt; 以&lt;数值&gt;质量为基础的VBR，取值0.01-255，约小质量越好</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用ts拼接"><a href="#使用ts拼接" class="headerlink" title="使用ts拼接"></a>使用ts拼接</h3><p>速度快，文件小</p>
+<p>先将 mp4 转化为同样编码形式的 ts 流，因为 ts流是可以 concate 的，先把 mp4 封装成 ts ，然后 concate ts 流， 最后再把 ts 流转化为 mp4。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i 1.mp4 -vcodec copy -acodec copy -vbsf h264_mp4toannexb 1.ts</span><br><span class="line">ffmpeg -i 2.mp4 -vcodec copy -acodec copy -vbsf h264_mp4toannexb 2.ts</span><br><span class="line">ffmpeg -i <span class="string">&quot;concat:1.ts|2.ts&quot;</span> -acodec copy -vcodec copy -absf aac_adtstoasc output.mp4</span><br></pre></td></tr></table></figure>
+
+<p>————————————————<br>版权声明：本文为CSDN博主「熊观鱼」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。<br>原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/east196/article/details/79821361">https://blog.csdn.net/east196/article/details/79821361</a></p>
+<h3 id="使用mpeg拼接（另一种方法）"><a href="#使用mpeg拼接（另一种方法）" class="headerlink" title="使用mpeg拼接（另一种方法）"></a>使用mpeg拼接（另一种方法）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i 1.mp4 –f mpeg 1.mpg</span><br><span class="line">ffmpeg -i 2.mp4 –f mpeg 2.mpg</span><br></pre></td></tr></table></figure>
+
+<p>win10，打开cmd（copy命令在powershell和gitbash里都不好使）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">copy &#x2F;b 1.mpg + 2.mpg 3.mpg</span><br><span class="line">ffmpeg -i 3.mpg -f mp4 3.mp4</span><br></pre></td></tr></table></figure>
+
+<h3 id="FFmpeg合并MP4视频总结"><a href="#FFmpeg合并MP4视频总结" class="headerlink" title="FFmpeg合并MP4视频总结"></a>FFmpeg合并MP4视频总结</h3><p>ts是真的又快又好</p>
+<h2 id="FFmpeg批量处理mp4-win"><a href="#FFmpeg批量处理mp4-win" class="headerlink" title="FFmpeg批量处理mp4 win"></a>FFmpeg批量处理mp4 win</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">setlocal enabledelayedexpansion</span><br><span class="line"><span class="built_in">set</span> n=0</span><br><span class="line"><span class="keyword">for</span> %%i <span class="keyword">in</span> (*.mp4) <span class="keyword">do</span> (</span><br><span class="line">    <span class="built_in">set</span> /a n+=1</span><br><span class="line">    <span class="built_in">echo</span> %%i</span><br><span class="line">    <span class="built_in">echo</span> !n!</span><br><span class="line">    ffmpeg -i <span class="string">&quot;%%i&quot;</span> -c copy <span class="string">&quot;%%~ni.ts&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">if</span> !n! geq 10 (</span><br><span class="line">    <span class="built_in">set</span> /a n=0</span><br><span class="line">    <span class="keyword">for</span> %%i <span class="keyword">in</span> (*.ts) <span class="keyword">do</span> (</span><br><span class="line">        <span class="built_in">echo</span> %%i</span><br><span class="line">        <span class="built_in">set</span> /a n+=1</span><br><span class="line">        <span class="keyword">if</span> !n! geq 10 (</span><br><span class="line">            rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;file !n!.ts&quot;</span></span><br><span class="line">        ) <span class="keyword">else</span> (</span><br><span class="line">        	rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;file 0!n!.ts&quot;</span></span><br><span class="line">        )</span><br><span class="line">    )</span><br><span class="line">) <span class="keyword">else</span> (</span><br><span class="line">    <span class="built_in">set</span> /a n=0</span><br><span class="line">    <span class="keyword">for</span> %%i <span class="keyword">in</span> (*.ts) <span class="keyword">do</span> (</span><br><span class="line">        <span class="built_in">set</span> /a n+=1</span><br><span class="line">        rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;file !n!.ts&quot;</span></span><br><span class="line">    )</span><br><span class="line">)</span><br><span class="line">dir *.ts /B &gt;filelist.txt</span><br><span class="line"><span class="keyword">if</span> !n! geq 10 (</span><br><span class="line">    <span class="built_in">set</span> /a n=0</span><br><span class="line">    <span class="keyword">for</span> %%i <span class="keyword">in</span> (*.ts) <span class="keyword">do</span> (</span><br><span class="line">        <span class="built_in">echo</span> %%i</span><br><span class="line">        <span class="built_in">set</span> /a n+=1</span><br><span class="line">        <span class="keyword">if</span> !n! geq 10 (</span><br><span class="line">            rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;!n!.ts&quot;</span></span><br><span class="line">        ) <span class="keyword">else</span> (</span><br><span class="line">        	rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;0!n!.ts&quot;</span></span><br><span class="line">        )</span><br><span class="line">    )</span><br><span class="line">) <span class="keyword">else</span> (</span><br><span class="line">    <span class="built_in">set</span> /a n=0</span><br><span class="line">    <span class="keyword">for</span> %%i <span class="keyword">in</span> (*.ts) <span class="keyword">do</span> (</span><br><span class="line">        <span class="built_in">set</span> /a n+=1</span><br><span class="line">        rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;!n!.ts&quot;</span></span><br><span class="line">    )</span><br><span class="line">)</span><br><span class="line">ffmpeg -f concat -i filelist.txt -acodec copy -vcodec copy -absf aac_adtstoasc output.mp4</span><br><span class="line">del *.ts</span><br></pre></td></tr></table></figure>
+
+<h2 id="FFmpeg提取字幕流"><a href="#FFmpeg提取字幕流" class="headerlink" title="FFmpeg提取字幕流"></a>FFmpeg提取字幕流</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mkv -an -vn -scodec copy sub.ass</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1102,172 +1188,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/17/%E6%9C%89%E5%90%91%E6%97%A0%E7%8E%AF%E5%9B%BE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="MH">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MH's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/17/%E6%9C%89%E5%90%91%E6%97%A0%E7%8E%AF%E5%9B%BE/" class="post-title-link" itemprop="url">有向无环图</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-03-17 12:05:38 / Modified: 20:28:54" itemprop="dateCreated datePublished" datetime="2021-03-17T12:05:38+08:00">2021-03-17</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="有向无环图"><a href="#有向无环图" class="headerlink" title="有向无环图"></a>有向无环图</h2><ul>
-<li>定义:一个有向图中不存在环(DAG)</li>
-<li>应用:<ol>
-<li>描述运算表达式</li>
-<li>拓扑排序(AOV)</li>
-<li>关键路径(AOE)</li>
-</ol>
-</li>
-</ul>
-<pre class="mermaid">graph TD;
-A(有向无环图)
-B(描述运算表达式)
-C(拓扑排序)
-D(关键路径)
-A==>B;A==>C;A==>D;
-C1(AOV网);C2(拓扑排序);C3(逆拓扑排序);C-->C1;C-->C2;C-->C3;
-D1(AOE);D2(求解);D3(特性);D-->D1;D-->D2;D-->D3;</pre>
-
-<h3 id="描述运算表达式"><a href="#描述运算表达式" class="headerlink" title="描述运算表达式"></a>描述运算表达式</h3><p>先上一道真题<br><img src="https://i.loli.net/2021/03/16/ATzbDeQf958mBjx.png" alt="真题"></p>
-<p>来一个复杂一点的例子看看<br>$((a+b）*(b*(c+d))+(c+d)<em>e)</em>((c+D)*e)$<br><img src="https://i.loli.net/2021/03/16/3Rcmrk4I5nGpTKo.png" alt="例子"><br>最后应该为<br><img src="https://i.loli.net/2021/03/16/MliWwZqHky5GKDE.png" alt="ans"></p>
-<p>那么对于真题$(x+y)((x+y)/y)$ 五个顶点</p>
-<pre class="mermaid">graph TD;
-A(*)-->C;
-A-->B;
-B(/)-->C;
-B-->y;
-C(+);
-C-->x;
-C-->y;</pre>
-
-<h3 id="拓扑排序"><a href="#拓扑排序" class="headerlink" title="拓扑排序"></a>拓扑排序</h3><p>定义:在图论中，由⼀个有向⽆环图 的顶点组成的序列，当且仅当满⾜下列条件时，称为该图的⼀个拓扑排序： ① 每个顶点出现且只出现⼀次。 ② 若顶点A在序列中排在顶点B的前⾯，则在图中不存在从顶点B到顶点A的路径。</p>
-<p>直接看AOV网</p>
-<h4 id="AOV网"><a href="#AOV网" class="headerlink" title="AOV网"></a>AOV网</h4><ul>
-<li>定义: 用DAG图表示一个工程。顶点表示活动，有向边$&lt;V_i,V_j&gt;$表示活动$V_i$必须先于活动$V_j$进行</li>
-</ul>
-<pre class="mermaid">graph TD;
-A(准备餐具);
-B(买菜);
-C(打鸡蛋);
-D(洗番茄);
-E(切番茄);
-F(炒菜);
-H(吃);
-A-->C-->F;
-B-->C;
-B-->D-->E-->F;
-F-->H;</pre>
-
-<p>对AOV网构造其顶点的拓扑有序序列：<br>准备餐具-&gt;打鸡蛋-&gt;买菜-&gt;洗番茄-&gt;切番茄-&gt;炒菜-&gt;吃<br>(一种拓扑排列)</p>
-<h4 id="AOV网拓扑排序"><a href="#AOV网拓扑排序" class="headerlink" title="AOV网拓扑排序"></a>AOV网拓扑排序</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ERROR 0;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> OK 1;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> Status int;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> vexnum;</span><br><span class="line">    AdjList vex;</span><br><span class="line">    <span class="comment">/* data */</span></span><br><span class="line">&#125; ALGraph;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">&#125; Stack;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">ArcNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> adjvex;</span><br><span class="line">    <span class="keyword">int</span> info;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ArcNode</span> *<span class="title">nextArc</span>;</span></span><br><span class="line">&#125; ArcNode;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">VNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ArcNode</span> *<span class="title">firstArc</span>;</span></span><br><span class="line">&#125; VNode, AdjList[<span class="number">10</span>];</span><br><span class="line"></span><br><span class="line"><span class="function">Status <span class="title">TopologicalSort</span><span class="params">(ALGraph G)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> indegree[];<span class="comment">//存储入度</span></span><br><span class="line">    Stack S;</span><br><span class="line">    <span class="keyword">int</span> counter = <span class="number">0</span>;<span class="comment">//计数 判断是否有回路的依据</span></span><br><span class="line">    FindInDegree(G, indegree);<span class="comment">// 获得入度</span></span><br><span class="line">    InitStack(S);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//寻找所有入度为0的顶点</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; G.vexnum; ++i)</span><br><span class="line">        <span class="keyword">if</span> (!indegree[i])</span><br><span class="line">            Push(S, i);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (!StackEmpty(S))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> k;</span><br><span class="line">        Pop(S, k);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\t&quot;</span>, k);<span class="comment">//输出拓扑排序</span></span><br><span class="line">        ++counter;</span><br><span class="line">        <span class="comment">//删去所有以k为起点的边</span></span><br><span class="line">        <span class="keyword">for</span> (ArcNode *p = G.vex[k].firstArc; p; p = p-&gt;nextArc)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> i = p-&gt;adjvex;<span class="comment">//i为边p的终点</span></span><br><span class="line">            <span class="keyword">if</span> (--indegree[i] == <span class="number">0</span>)<span class="comment">//删去一条边 入度为0时入栈</span></span><br><span class="line">                Push(S, i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//回路判定</span></span><br><span class="line">    <span class="keyword">if</span> (counter &lt; G.vexnum)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ERROR;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> OK;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="AOV网逆拓扑排序"><a href="#AOV网逆拓扑排序" class="headerlink" title="AOV网逆拓扑排序"></a>AOV网逆拓扑排序</h4><ol>
-<li>从AOV网中选择一个没有后继的顶点(入度为0)</li>
-<li>从网格中删除所有以它为终点的边</li>
-<li>重复，直到网空</li>
-</ol>
-<p>只用 DFS即可实现</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> visited[];</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DFSTraverse</span><span class="params">(ALGraph G)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; G.vexnum; ++i)</span><br><span class="line">        visited[i] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; G.vexnum; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!visited[i])</span><br><span class="line">        &#123;</span><br><span class="line">            DFS(G, i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DFS</span><span class="params">(ALGraph G, <span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    visited[i] = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> w = FirstNeighbor(G, i); w &gt;= <span class="number">0</span>; w = NextNeighbor(G, w))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!visited[w])</span><br><span class="line">        &#123;</span><br><span class="line">            DFS(G, w);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>无法判断回路的存在</p>
-<h3 id="关键路径"><a href="#关键路径" class="headerlink" title="关键路径"></a>关键路径</h3><h4 id="AOE网"><a href="#AOE网" class="headerlink" title="AOE网"></a>AOE网</h4><ul>
-<li>定义:带权有向图，以顶点为事件，以有向边表示活动，以边上的权值为完成该活动的开销</li>
-<li>只有在某顶点所代表的事件发生后，从该顶点出发的各有向边才能开始活动</li>
-<li>只有在进入某顶点的各有向边的活动都结束，该顶点所代表的事件才能发生</li>
-<li>有些活动是可以并行的</li>
-<li>AOE网中仅有一个入度为0的顶点，为开始顶点(源点)，也仅有一个出度为0的顶点(汇点)，为结束顶点</li>
-<li>从源点到汇点的路径有多条，具有最大路径长度的路径称为关键路径，关键路径也可能不止一条</li>
-<li>关键路径上的活动称为关键活动</li>
-<li><strong>整个工程的最短时间就是关键路径长度，若关键活动不能按时完成，整个工程的完成时间就会延长</strong></li>
-</ul>
-<p><img src="https://i.loli.net/2021/03/17/HmlTI1hPwG9vc4g.png" alt="有向带权图"></p>
-<h4 id="求解"><a href="#求解" class="headerlink" title="求解"></a>求解</h4><p>记</p>
-<ul>
-<li>$事件v_k的最早发生时间为ve(k):决定了从v_k为起点的活动能开始的最早时间$</li>
-<li>$活动a_i的最早发生时间为e(i)：决定了该边的起点的事件能发生的最早时间$</li>
-<li>$事件v_k的最晚发生时间为vl(k):是从v_k为起点的活动,在不推迟工程下能最迟的发生时间$</li>
-<li>$活动a_i的最晚发生时间为l(i):是该活动边对应的终点最晚发生时间减去该活动所需时间的值$</li>
-<li>$dut(&lt;i,k&gt;):边&lt;i,k&gt;的持续时间,即活动的持续时间$</li>
-</ul>
-<p>以上能看出:$ve(k)$和$e(i)$能被先确定，$vl(k)$和$l(i)$要先确定终点的$ve(k)$或$e(i)$</p>
-<p>$有 ve(0)=0;ve(k)=Max{ve(i)+dut(&lt;i,k&gt;)}$<br>$vl(n-1)=ve(n-1) (汇点的最早与最迟相同);vl(k) = Min{vl(i)-dut(&lt;k,i&gt;)} 等价于vl(i)-Max(dut(&lt;k,i&gt;)$</p>
-<p><strong>关键路径上的关键活动有:$e(i)=l(i)$</strong></p>
-<ul>
-<li>$e(i)=ve(i)$</li>
-<li>$l(i)=vl(k)-dut(&lt;i,k&gt;)$</li>
-</ul>
-<h5 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h5><ol>
-<li>拓扑排序求$ve(i)$</li>
-<li>逆拓扑排序求$vl(i)$</li>
-<li>求$e(i),l(i)$</li>
-</ol>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> ve[],vl[];</span><br><span class="line"></span><br><span class="line"><span class="function">Status <span class="title">TopologicalSort</span><span class="params">(ALGraph G, Stack &amp;T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ve[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">    Stack S;</span><br><span class="line">    <span class="keyword">int</span> counter = <span class="number">0</span>;</span><br><span class="line">    FindInDegree(G, indegree);</span><br><span class="line">    InitStack(S);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; G.vexnum; ++i)</span><br><span class="line">        <span class="keyword">if</span> (!indegree[i])</span><br><span class="line">            Push(S, i);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (!StackEmpty(S))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> k;</span><br><span class="line">        Pop(S, k);</span><br><span class="line">        Push(T, k);</span><br><span class="line">        ++counter;</span><br><span class="line">        <span class="keyword">for</span> (ArcNode *p = G.vex[k].firstArc; p; p = p-&gt;nextArc)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> i = p-&gt;adjvex;</span><br><span class="line">            <span class="keyword">if</span> (ve[i] &lt; ve[k] + p-&gt;info )</span><br><span class="line">                ve[i] = ve[k] + p-&gt;info;</span><br><span class="line">            <span class="keyword">if</span> (--indegree[k] == <span class="number">0</span>)</span><br><span class="line">                Push(S, k);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (counter &lt; G.vexnum)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ERROR;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> OK;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Status <span class="title">CriticalPath</span><span class="params">(ALGraph G)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    InitStack(T);<span class="comment">//T用于保存逆拓扑排序</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!TopologicalSort(G,T))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; G.vexnum; ++i)</span><br><span class="line">            vl[i] = ve[G.vexnum - <span class="number">1</span>];<span class="comment">//很重要</span></span><br><span class="line">        <span class="keyword">int</span> k;</span><br><span class="line">        <span class="keyword">while</span> (!StackEmpty(T))</span><br><span class="line">        &#123;</span><br><span class="line">            Pop(T, k);</span><br><span class="line">            <span class="keyword">for</span> (ArcNode *p = G.vex[k].firstArc; p; p = p-&gt;nextArc)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">int</span> i = p-&gt;adjvex;</span><br><span class="line">                <span class="keyword">if</span> ((vl[k] - p-&gt;info) &lt; vl[i])</span><br><span class="line">                    vl[i] = vl[k] - p-&gt;info;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; G.vexnum; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (ArcNode *p = G.vex[i].firstArc; p; p = p-&gt;nextArc)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">int</span> k = p-&gt;adjvex;</span><br><span class="line">                <span class="keyword">int</span> e = ve[i];</span><br><span class="line">                <span class="keyword">int</span> l = vl[k] - p-&gt;info;</span><br><span class="line">                <span class="keyword">if</span>(e == l) <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>,i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h4><ol>
-<li>关键活动的耗时增加，则整个工程延长</li>
-<li>缩短关键活动时间，可以缩短工期</li>
-<li>当缩短关键活动时间，可能使得其变为非关键活动</li>
-<li>可能有多个关键路径，此时缩短某个关键活动时间不能缩短工期，只有缩短并集才能缩短工期</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1337,16 +1257,16 @@ F-->H;</pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">categories</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
