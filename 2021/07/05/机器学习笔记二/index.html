@@ -20,22 +20,22 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="1.图的基础i.图的定义图是由顶点的有穷非空集合和顶点之间边的集合组成，表示为G（V,E），其中G表示一个图，V是图G中顶点的集合，E是图G中边的集合。其中G为有穷非空。图有分有向图和无向图。 若顶点vi到vj之间的边没有方向，则这条边为无向边，表示为（vi，vj）或（vj，vi）。反之为有向边（或弧），表示为＜vi，vj＞，其中vi称为弧尾，vj称为弧头。 若图中所有边都为无向边，则该图为无向图">
+  <meta name="description" content="记：$$\text{对输入层，层数为1}:\x^{k}i:\text{第k个数据的第i个输入},i\in[1,m]\\text{对隐藏层}:\l:\text{当前层数}\in[2,L-1],s_l:\text{当前层数的单元数}，w^{(l)}{ij}:\text{连接第l+1层的第i个输入和第l层的第j个输出的权重}\z^{(l+1)}{i}&#x3D;\sum^{s_l}{j&#x3D;1}{w^{(l)}{ij">
 <meta property="og:type" content="article">
-<meta property="og:title" content="初学图">
-<meta property="og:url" content="http://example.com/2020/11/24/%E5%88%9D%E5%AD%A6%E5%9B%BE/index.html">
+<meta property="og:title" content="机器学习笔记二：神经网络">
+<meta property="og:url" content="http://example.com/2021/07/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%BA%8C/index.html">
 <meta property="og:site_name" content="MH&#39;s Blog">
-<meta property="og:description" content="1.图的基础i.图的定义图是由顶点的有穷非空集合和顶点之间边的集合组成，表示为G（V,E），其中G表示一个图，V是图G中顶点的集合，E是图G中边的集合。其中G为有穷非空。图有分有向图和无向图。 若顶点vi到vj之间的边没有方向，则这条边为无向边，表示为（vi，vj）或（vj，vi）。反之为有向边（或弧），表示为＜vi，vj＞，其中vi称为弧尾，vj称为弧头。 若图中所有边都为无向边，则该图为无向图">
+<meta property="og:description" content="记：$$\text{对输入层，层数为1}:\x^{k}i:\text{第k个数据的第i个输入},i\in[1,m]\\text{对隐藏层}:\l:\text{当前层数}\in[2,L-1],s_l:\text{当前层数的单元数}，w^{(l)}{ij}:\text{连接第l+1层的第i个输入和第l层的第j个输出的权重}\z^{(l+1)}{i}&#x3D;\sum^{s_l}{j&#x3D;1}{w^{(l)}{ij">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://i.loli.net/2020/11/24/vghJzPoGNra8Epj.png">
-<meta property="article:published_time" content="2020-11-24T15:24:29.000Z">
-<meta property="article:modified_time" content="2020-11-25T09:07:17.700Z">
+<meta property="article:published_time" content="2021-07-05T05:41:00.000Z">
+<meta property="article:modified_time" content="2021-07-05T05:42:04.817Z">
 <meta property="article:author" content="MH">
-<meta property="article:tag" content="图">
+<meta property="article:tag" content="线性模型">
+<meta property="article:tag" content="吴恩达">
+<meta property="article:tag" content="机器学习西瓜书">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.loli.net/2020/11/24/vghJzPoGNra8Epj.png">
 
-<link rel="canonical" href="http://example.com/2020/11/24/%E5%88%9D%E5%AD%A6%E5%9B%BE/">
+<link rel="canonical" href="http://example.com/2021/07/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%BA%8C/">
 
 
 <script id="page-configurations">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>初学图 | MH's Blog</title>
+  <title>机器学习笔记二：神经网络 | MH's Blog</title>
   
 
 
@@ -153,7 +153,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/24/%E5%88%9D%E5%AD%A6%E5%9B%BE/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%BA%8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -166,7 +166,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          初学图
+          机器学习笔记二：神经网络
         </h1>
 
         <div class="post-meta">
@@ -175,23 +175,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-11-24 23:24:29" itemprop="dateCreated datePublished" datetime="2020-11-24T23:24:29+08:00">2020-11-24</time>
+              <time title="Created: 2021-07-05 13:41:00 / Modified: 13:42:04" itemprop="dateCreated datePublished" datetime="2021-07-05T13:41:00+08:00">2021-07-05</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-25 17:07:17" itemprop="dateModified" datetime="2020-11-25T17:07:17+08:00">2020-11-25</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                  <a href="/categories/MachineLearning/" itemprop="url" rel="index"><span itemprop="name">MachineLearning</span></a>
                 </span>
             </span>
 
@@ -206,37 +200,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1-图的基础"><a href="#1-图的基础" class="headerlink" title="1.图的基础"></a>1.图的基础</h2><h3 id="i-图的定义"><a href="#i-图的定义" class="headerlink" title="i.图的定义"></a>i.图的定义</h3><p>图是由顶点的有穷非空集合和顶点之间边的集合组成，表示为G（V,E），其中G表示一个图，V是图G中顶点的集合，E是图G中边的集合。其中<strong>G为有穷非空</strong>。<br>图有分有向图和无向图。</p>
-<p>若顶点vi到vj之间的边没有方向，则这条边为无向边，表示为（vi，vj）或（vj，vi）。<br>反之为有向边（或弧），表示为＜vi，vj＞，其中vi称为弧尾，vj称为弧头。</p>
-<p>若图中所有边都为无向边，则该图为无向图，反之若都为有向边，则为有向图。</p>
-<p>简单图：不存在顶点到其自身的边，且同一条边不重复出现。 王道书只讨论简单图。<br>简单无向图：<br>简单有向图：</p>
-<p>边的权：赋予每个边一个权值<br>带权网/图：每个边都带有权<br>带权路径长度：一条路径上所有边的权值之和</p>
-<h3 id="ii-顶点"><a href="#ii-顶点" class="headerlink" title="ii.顶点"></a>ii.顶点</h3><p>无向图：顶点v的度：依附于该顶点的边的条数，既为$TD(v)$<br>在具有n个顶点、e条边的无向图<br>$$\sum_{i=1}^nTD(v_i)=2e$$</p>
-<p>有向图：</p>
-<ul>
-<li>入度：是以顶点v为终点的有向边的数目，记为$ID(v)$；</li>
-<li>出度：是以顶点v为起点的有向边的数目，记为$OD(v)$；</li>
-<li>顶点v的度 $TD(v)=ID(v)+OD(v)$</li>
-</ul>
-<h4 id="iii-顶点-顶点关系"><a href="#iii-顶点-顶点关系" class="headerlink" title="iii.顶点-顶点关系"></a>iii.顶点-顶点关系</h4><ul>
-<li>路径： $v_p到v_q$之间的顶点序列(序列中不出现重复的顶点称为简单路径)</li>
-<li>回路:第一个顶点和最后一个顶点相同的路径(除了第一个顶点和最后一个顶点外，其余顶点不重复的路径称为简单回路)</li>
-</ul>
-<h4 id="iv-连通图"><a href="#iv-连通图" class="headerlink" title="iv.连通图"></a>iv.连通图</h4><p>无向图：如果两个顶点之间有路径，则称这两个顶点是连通的。如果图中任意两个顶点都是连通的，那么该图为连通图。<br>常见考点：<br>对于$n$个顶点的无向图，若为连通图，则最少有$n-1$条边，若为非连通图，最多有$C_{n-1}^2$条边</p>
-<p>有向图：如果对于任意两个顶点vi和vj，都存在vi到vj和vj到vi的路径，则称那图为强连通图。<br>常见考点：<br>对于$n$个顶点的有向图，若为强连通图，则最少有$n$条边</p>
-<h4 id="v-子图"><a href="#v-子图" class="headerlink" title="v.子图"></a>v.子图</h4><p>设有两个图$G=(V,E)、G’=(V,E’)$，若V’是V的子集，E’是E的子集，称G’为G的子图。<br><strong><em>若$V=V’$则G’为G的生成子图</em></strong></p>
-<p>连通分量：无向图中V尽可能大的<strong>连通子图</strong></p>
-<p>强连通分量：有向图中V尽可能大的<strong>强连通子图</strong></p>
-<p>连通图的生成树：包含全部全部顶点的一个极小连通子图（边尽量少）<br>若其顶点为$n$，则生成树有$n-1$条边</p>
-<p>非连通图的生成森林：非连通图中的连通分量的连通树构成。</p>
-<h4 id="vi-几种特殊的图"><a href="#vi-几种特殊的图" class="headerlink" title="vi.几种特殊的图"></a>vi.几种特殊的图</h4><ul>
-<li>无向完全图：任意两个顶点之间都存在边，即若$|V|=n$，则$|E|\in[0,C_n^2]$</li>
-<li>有向完全图：任意两个顶点之间都存在方向相反的两条弧，即若$|V|=n$，则$|E|\in[0,2C_n^2]$</li>
-<li>稀疏图：边数很少$\Leftrightarrow$稠密图：边数很多;分界线一般来说：$|E|&lt;|V|log|V|$</li>
-<li>树:不存在回路且连通的无向图（常见考点，若|E|&gt;1，则必有回路）</li>
-<li>有向树:一个顶点入度为0,其余为1的有向图</li>
-</ul>
-<h4 id="vii-总结"><a href="#vii-总结" class="headerlink" title="vii.总结"></a>vii.总结</h4><p><img src="https://i.loli.net/2020/11/24/vghJzPoGNra8Epj.png" alt="2020-11-24-232029_1504x823_scrot"></p>
+        <p>记：<br>$$<br>\text{对输入层，层数为1}:\<br>x^{k}<em>i:\text{第k个数据的第i个输入},i\in[1,m]\<br>\text{对隐藏层}:\<br>l:\text{当前层数}\in[2,L-1],s_l:\text{当前层数的单元数}，w^{(l)}</em>{ij}:\text{连接第l+1层的第i个输入和第l层的第j个输出的权重}\<br>z^{(l+1)}<em>{i}=\sum^{s_l}</em>{j=1}{w^{(l)}<em>{ij}a^{(l)}</em>{j}}+b^{(l)}<em>i:\text{第l+1层的第i输入},a^{(l)}</em>{i}=f(z^{(l)}_{i}):\text{第l层的第i个输出},b^{(l)}_i:\text{第l层到第l+l层的第i个单元的偏置，为常数}\<br>Z^{(l+1)}={W^{(l)}}\pmb{a^{l}}+\pmb{b^{l}}\<br>f(z)=\frac{1}{1+e^{-z}},f’(z)=(1-f(z))f(z)\<br>\text{对输出层，层数为L}:\<br>a^{(L)}_i:\text{第i个输入数据的输出},y_k:\text{第k个数据的实际值},i\in[1,m]<br>$$</p>
+<h2 id="前向传播"><a href="#前向传播" class="headerlink" title="前向传播"></a>前向传播</h2><p>$$<br>\pmb{X}=\pmb{a^{(1)}}\to\pmb{z^{(2)}}\to\pmb{a^{(2)}}\to\cdots\to\pmb{a^{(L)}}<br>$$</p>
+<h2 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h2><p>$$<br>J=\frac{1}{2m}\sum_{i=1}^m\left(a^{(L)}<em>i-y_i\right)^2\<br>\text{正则化}:J=\frac{1}{2m}\sum</em>{i=1}^m\left(a^{(L)}<em>i-y_i\right)^2+\frac{\lambda}{2m}\sum^{L-1}</em>{l=1}\pmb{w^{(l)}}^T\pmb{w^{(l)}}=\frac{1}{2m}\sum_{i=1}^m\left(a^{(L)}<em>i-y_i\right)^2+\frac{\lambda}{2m}\sum^{L-1}</em>{l=1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}(w^{(l)}_{ji})2<br>$$</p>
+<p>在逻辑分类中：<br>$$<br>J=-\frac{1}{m}\sum^m_{i=1}\left(y^{i}\log(a^{(L)}<em>i)+(1-y^{i})\log(1-a^{L}<em>i)\right)\<br>\text{正则化}:J=-\frac{1}{m}\sum^m</em>{i=1}\left(y^{i}\log(a^{(L)}<em>i)+(1-y^{i})\log(1-a^{L}<em>i)\right)+\frac{\lambda}{2m}\sum^{L-1}</em>{l=1}\sum</em>{i=1}^{s_l}\sum</em>{j=1}^{s_{l+1}}(w^{(l)}_{ji})2<br>$$</p>
+<h2 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h2><p>由代价函数更新权重以及偏置矩阵，按梯度下降法有：<br>$$<br>w^{(l)}<em>{ij}=w^{(l)}</em>{ij}-\alpha\frac{\partial J}{\partial w^{(l)}_{ij}}\<br>b^{(l)}_i=b^{(l)}_i-\alpha\frac{\partial J}{\partial b^{(l)}<em>i}<br>$$<br>这里先使用代价函数为：<br>$$<br>J=\frac{1}{2m}\sum</em>{i=1}^m\left(a^{(L)}_i-y_i\right)^2<br>$$</p>
+<h3 id="输出层"><a href="#输出层" class="headerlink" title="输出层"></a>输出层</h3><p>$$<br>\begin{align}<br>\frac{\partial J}{\partial w^{(L-1)}<em>{ij}}&amp;=\frac{1}{2m}\sum</em>{t=1}^m\left(\frac{\partial ((a^{(L)}_t-y_i)^2)}{\partial a^{(L)}<em>t}\frac{\partial a^{(L)}<em>t}{\partial w^{(L)}</em>{ij}}\right)\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}<em>t-y_t)\frac{\partial f(z^{(L)}<em>i)}{\partial w^{(L-1)}</em>{ij}}\right]\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}<em>t-y_t)\frac{\partial f(z^{(L)}<em>i)}{\partial z^{(L)}<em>i}\frac{\partial z^{(L)}<em>i}{\partial w^{(L-1)}</em>{ij}}\right]\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}<em>t-y_t)(1-f(z^{(L)}<em>i))f(z^{(L)}<em>i)\frac{\partial (\sum^{s</em>{L-1}}</em>{k=1}{w^{(L-1)}</em>{ik}a^{(L-1)}</em>{k}}+b^{(L-1)}<em>t)}{\partial w^{(L-1)}</em>{ij}}\right]\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}_t-y_t)(1-f(z^{(L)}_i))f(z^{(L)}_i)a^{(L-1)}<em>j\right]\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}_t-y_t)\frac{\partial f(z^{(L)})}{\partial z^{(L)}_i}a^{(L-1)}_j\right]<br>\end{align}<br>$$</p>
+<p>注意一下这里最后的代价函数是针对单个数据而言的，然后把他们汇总，再取平均，所以不是除以2m。</p>
+<p>这里的t下标代表第几个数据</p>
+<p>记：<br>$$<br>\delta^{(L)}_i=\frac{\partial J}{\partial z^{(L)}_i}=(a^{(L)}-y)\frac{\partial f(z^{(L)})}{\partial z^{(L)}_i}<br>$$</p>
+<h3 id="隐藏层"><a href="#隐藏层" class="headerlink" title="隐藏层"></a>隐藏层</h3><p>注意一下这里的代价函数是针对单个数据而言的，然后把他们汇总，再取平均，所以不是除以2m。<br>$$<br>\begin{align}<br>\frac{\partial J}{\partial w^{(l)}<em>{ij}}&amp;=\frac{1}{m}\sum</em>{t=1}^m\left(\frac{\partial J}{\partial z^{(l+1)}<em>i}\frac{\partial z^{(l+1)}<em>i}{\partial w^{(l)}</em>{ij}}\right)\<br>\delta^{(l+1)}<em>i&amp;=\frac{\partial J}{\partial z^{(l+1)}<em>i}\<br>&amp;=\sum^{s</em>{l+2}}</em>{k=1}\left(\frac{\partial J}{\partial z^{(l+2)}<em>k}\frac{\partial z^{(l+2)}<em>k}{\partial z^{(l+1)}<em>i}\right)\<br>&amp;=\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>k\frac{\partial (\sum^{s</em>{l+1}}</em>{j=1}{w^{(l+1)}</em>{kj}a^{(l+1)}<em>{j}}+b^{(l+1)}<em>k)}{\partial z^{(l+1)}<em>i}\right]\<br>&amp;=\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>k\frac{\partial (\sum^{s</em>{l+1}}</em>{j=1}{w^{(l+1)}<em>{kj}f(z^{(l+1)}</em>{j}})+b^{(l+1)}<em>k)}{\partial z^{(l+1)}<em>i}\right]\<br>&amp;=\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>kw^{l+1}</em>{ki}f’(z^{(l+1)}<em>i)\right]<br>\end{align}\<br>\Rightarrow\<br>\pmb{\delta^{(l+1)}}=\left[{W^{(l)}}^T\pmb{\delta^{(l+1)}}\right]f’(\pmb{z^{(l+1)}})\<br>\frac{\partial J}{\partial w^{(l)}</em>{ij}}=\frac{1}{m}\sum_{t=1}^m\left{a^{(l)}<em>jf’(z^{(l+1)}<em>i)\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>kw^{l+1}</em>{ki}\right]\right}\<br>\frac{\partial J}{\partial W^{(l)}}=\frac{1}{m}\sum_{t=1}^m\pmb{\delta^{(l+1)}}\pmb{a^{l}}^T<br>$$<br>又已知：<br>$$<br>\pmb{\delta^{(L)}},\pmb{w^{(L-1)}}<br>$$<br>可求解：<br>$$<br>\pmb{\delta^{(L-1)}},\pmb{w^{(L-2)}}<br>$$<br>递归求解，反复迭代</p>
+<h3 id="偏置单元"><a href="#偏置单元" class="headerlink" title="偏置单元"></a>偏置单元</h3><p>偏置单元也是如此<br>$$<br>\frac{\partial J}{\partial b^{(L-1)}<em>i}=\frac{1}{m}\sum</em>{t=1}^m\frac{\partial J}{\partial z^{(L)}<em>i}\<br>\frac{\partial J}{\partial \pmb{b^{(L-1)}}}=\pmb{\delta^{(L)}<em>i}\<br>\frac{\partial J}{\partial b^{(l)}<em>i}=\frac{1}{m}\sum</em>{t=1}^m\left{f’(z^{(l+1)}<em>i)\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>kw^{l+1}</em>{ki}\right]\right}\<br>\frac{\partial J}{\partial \pmb{b^{(L-1)}}}=\frac{1}{m}\sum</em>{t=1}^m\pmb{\delta^{(l+1)}}<br>$$</p>
+<h3 id="对逻辑分类"><a href="#对逻辑分类" class="headerlink" title="对逻辑分类"></a>对逻辑分类</h3><p>之前就已经说明过一样的，这里也同理有结论</p>
+<h3 id="对正则化"><a href="#对正则化" class="headerlink" title="对正则化"></a>对正则化</h3><p>$$<br>\frac{\partial J}{\partial W^{(l)}}=\frac{1}{m}\sum_{t=1}^m\pmb{\delta^{(l+1)}}\pmb{a^{l}}^T+\frac{\lambda}{m}W^{(l)}<br>$$</p>
+<hr>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lliuye/p/9183914.html">https://www.cnblogs.com/lliuye/p/9183914.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32865355/article/details/80260212">https://blog.csdn.net/qq_32865355/article/details/80260212</a></p>
 
     </div>
 
@@ -246,7 +226,9 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%9B%BE/" rel="tag"># 图</a>
+              <a href="/tags/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/" rel="tag"># 线性模型</a>
+              <a href="/tags/%E5%90%B4%E6%81%A9%E8%BE%BE/" rel="tag"># 吴恩达</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%A5%BF%E7%93%9C%E4%B9%A6/" rel="tag"># 机器学习西瓜书</a>
           </div>
 
         
@@ -255,13 +237,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/11/21/Masm/" rel="prev" title="Linux搭建汇编环境">
-      <i class="fa fa-chevron-left"></i> Linux搭建汇编环境
+    <a href="/2021/07/04/ffmpeg%E4%BD%BF%E7%94%A8/" rel="prev" title="ffmpeg使用">
+      <i class="fa fa-chevron-left"></i> ffmpeg使用
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/11/25/%E5%9B%BE%E7%9A%84%E5%AD%98%E5%82%A8/" rel="next" title="图的存储">
-      图的存储 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -320,7 +299,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%9B%BE%E7%9A%84%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">1.图的基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#i-%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">i.图的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ii-%E9%A1%B6%E7%82%B9"><span class="nav-number">1.2.</span> <span class="nav-text">ii.顶点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#iii-%E9%A1%B6%E7%82%B9-%E9%A1%B6%E7%82%B9%E5%85%B3%E7%B3%BB"><span class="nav-number">1.2.1.</span> <span class="nav-text">iii.顶点-顶点关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#iv-%E8%BF%9E%E9%80%9A%E5%9B%BE"><span class="nav-number">1.2.2.</span> <span class="nav-text">iv.连通图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#v-%E5%AD%90%E5%9B%BE"><span class="nav-number">1.2.3.</span> <span class="nav-text">v.子图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vi-%E5%87%A0%E7%A7%8D%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE"><span class="nav-number">1.2.4.</span> <span class="nav-text">vi.几种特殊的图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vii-%E6%80%BB%E7%BB%93"><span class="nav-number">1.2.5.</span> <span class="nav-text">vii.总结</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">1.</span> <span class="nav-text">前向传播</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E4%BB%B7%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">代价函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">3.</span> <span class="nav-text">反向传播</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E5%B1%82"><span class="nav-number">3.1.</span> <span class="nav-text">输出层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%90%E8%97%8F%E5%B1%82"><span class="nav-number">3.2.</span> <span class="nav-text">隐藏层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E7%BD%AE%E5%8D%95%E5%85%83"><span class="nav-number">3.3.</span> <span class="nav-text">偏置单元</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E9%80%BB%E8%BE%91%E5%88%86%E7%B1%BB"><span class="nav-number">3.4.</span> <span class="nav-text">对逻辑分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E6%AD%A3%E5%88%99%E5%8C%96"><span class="nav-number">3.5.</span> <span class="nav-text">对正则化</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
