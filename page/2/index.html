@@ -145,115 +145,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/07/%E6%8E%92%E5%BA%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="MH">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MH's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/07/%E6%8E%92%E5%BA%8F/" class="post-title-link" itemprop="url">排序</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-04-07 22:15:34" itemprop="dateCreated datePublished" datetime="2021-04-07T22:15:34+08:00">2021-04-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-23 09:51:06" itemprop="dateModified" datetime="2021-04-23T09:51:06+08:00">2021-04-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>将个元素按关键字的递增或递减排列</p>
-<h3 id="评价指标"><a href="#评价指标" class="headerlink" title="评价指标"></a>评价指标</h3><ol>
-<li>时间复杂度</li>
-<li>空间复杂度</li>
-<li>稳定性: 假设$K_i=K_j\quad (i \lt j)$排序完成后$K_i$的位子仍在$K_j$之前称该排序算法是稳定的，否则不稳定</li>
-</ol>
-<h3 id="排序两大类"><a href="#排序两大类" class="headerlink" title="排序两大类"></a>排序两大类</h3><ol>
-<li>内部排序：数据全在RAM里</li>
-<li>外部排序：数据太多不能一次性导入RAM，需要对外存进行访问</li>
-</ol>
-<h2 id="内部排序方法"><a href="#内部排序方法" class="headerlink" title="内部排序方法"></a>内部排序方法</h2><h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><h4 id="直接插入排序"><a href="#直接插入排序" class="headerlink" title="直接插入排序"></a>直接插入排序</h4><p>将一个key插入到已经排序好的有序表中 。<br>适用于顺序表，也适用于链表</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">InsertSort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//得到递增序列</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= len; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">array</span>[<span class="number">0</span>] = <span class="built_in">array</span>[i];</span><br><span class="line">        <span class="keyword">int</span> j = i <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">for</span>(; <span class="built_in">array</span>[<span class="number">0</span>] &lt; <span class="built_in">array</span>[j]; --j)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">array</span>[j+<span class="number">1</span>] = <span class="built_in">array</span>[j];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">array</span>[j+<span class="number">1</span>] = <span class="built_in">array</span>[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>时间复杂度分析:<br>最好：序列是有序且为递增序列，则第二层for循环一次都不执行，$O(n)=n$<br>最坏:序列是有序且为递减序列，$O(n)=n^2$<br>平均:因为序列的各种排列出现的概率相同,平均复杂度大约为最好和最坏之和除2,$O(n)=n^2$<br>空间复杂度：$O(1)$<br>稳定性分析：稳定的 。关键在于array[0] &lt; array[j]，这个小于而不是小于等于号，后面的不能插到前面来</p>
-<p>小优化：用折半查找应该插入的位置</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">InsertBinSort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//得到递增序列</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= len; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">array</span>[<span class="number">0</span>] = <span class="built_in">array</span>[i];</span><br><span class="line">        <span class="keyword">int</span> high = i - <span class="number">1</span>, low = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (low &lt;= high)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> mid = low + ((high - low) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">array</span>[mid] &gt; <span class="built_in">array</span>[<span class="number">0</span>])</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//high最后永远指向小于等于array[0]的最后一个元素</span></span><br><span class="line">                high = mid - <span class="number">1</span>; <span class="comment">//保证递增序列的稳定性，相等的元素后判断的要插入后半区</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                low = mid + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i - <span class="number">1</span>; j &gt; high; --j)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">array</span>[j + <span class="number">1</span>] = <span class="built_in">array</span>[j];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">array</span>[high + <span class="number">1</span>] = <span class="built_in">array</span>[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>只是优化了找位置，移动元素仍有$O(n^2)的量级$</p>
-<h4 id="希尔排序"><a href="#希尔排序" class="headerlink" title="希尔排序"></a>希尔排序</h4><p>是对直接插入排序的一种优化<br>主要思想是先先使得序列部分有序后慢慢直接有序<br>比如1537比5317用直接排序会快很多<br>设置一个增量d，将序列分割成一个个子表$[i，i+d，i+2d，\cdots,]$，对各各子表采用直接插入，逐步缩小d，直至d为1。<br>如42618735，先设置d为len/2=4，那么就有4个子表[4,8],[2,7],[6,3],[1,5],先把这几个子表分别进行直接插入[4,8],[2,7],[3,6],[1,5],序列变为42318765,减小d,d=d/2,等到2个子表，继续进行，继续减小d为1,最后一次直接插入。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShellSort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> len, <span class="keyword">int</span> dlta[], <span class="keyword">int</span> dLen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//dlta 0～dLen-1  array 1~len</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; dLen; ++k)</span><br><span class="line">    &#123;</span><br><span class="line">        ShellInsert(<span class="built_in">array</span>, len, dlta[k]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShellInsert</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> len, <span class="keyword">int</span> d)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//不对子表单独处理，而是一起处理</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = d + <span class="number">1</span>; i &lt;= len; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">array</span>[i] &lt; <span class="built_in">array</span>[i - d])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">array</span>[<span class="number">0</span>] = <span class="built_in">array</span>[i - d];</span><br><span class="line">            <span class="keyword">int</span> j = i - d;</span><br><span class="line">            <span class="keyword">for</span> (; j &gt; <span class="number">0</span> &amp;&amp; <span class="built_in">array</span>[j] &lt; <span class="built_in">array</span>[<span class="number">0</span>]; j -= d) <span class="comment">//这个大于0很重要，因为[0]已经不是哨兵了</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">array</span>[j + d] = <span class="built_in">array</span>[j];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">array</span>[j + d] = <span class="built_in">array</span>[<span class="number">0</span>];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>时间复杂度:无法用数学手段明确给出，与增量序列d的选取有关，d选取应该时增量序列的值中没有除了1之外的公因子，且最后一个增量必须等于1<br><img src="https://i.loli.net/2021/03/31/xNCvGj5FALahYJg.png" alt="图片 2021-03-31 21-40-26"></p>
-<h3 id="基于交换的排序"><a href="#基于交换的排序" class="headerlink" title="基于交换的排序"></a>基于交换的排序</h3><h4 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Swap</span><span class="params">(<span class="keyword">int</span> *a, <span class="keyword">int</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp = *a;</span><br><span class="line">    *a = *b;</span><br><span class="line">    *b = temp;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">BubbleSort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; len; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">1</span>; j &lt; len - i + <span class="number">1</span>; ++j)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">array</span>[j] &gt; <span class="built_in">array</span>[j + <span class="number">1</span>])</span><br><span class="line">            &#123;</span><br><span class="line">                Swap(&amp;<span class="built_in">array</span>[j], &amp;<span class="built_in">array</span>[j + <span class="number">1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>时间复杂度：$O(n)=n^2$<br>稳定性：稳定</p>
-<h4 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h4><p>分治思想</p>
-<p>对待排序序列，选出一个枢轴pivot，把所有比pivot小的元素放在它的左边，所有比他大的放在右边(等于的会被&lt;或&gt;自动归类的)。分出左右两个区间，在对左右区间作相同的操作，直至区间不可分。(递归实现)</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">QuickSort</span><span class="params">(<span class="keyword">int</span> *<span class="built_in">array</span>, <span class="keyword">int</span> low, <span class="keyword">int</span> high)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Partiton</span><span class="params">(<span class="keyword">int</span> *<span class="built_in">array</span>, <span class="keyword">int</span> low, <span class="keyword">int</span> high)</span></span>;</span><br><span class="line">    <span class="keyword">if</span> (low &lt; high)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> mid = Partiton(<span class="built_in">array</span>, low, high);</span><br><span class="line">        QuickSort(<span class="built_in">array</span>, low, mid - <span class="number">1</span>);</span><br><span class="line">        QuickSort(<span class="built_in">array</span>, mid + <span class="number">1</span>, high);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Partiton</span><span class="params">(<span class="keyword">int</span> *<span class="built_in">array</span>, <span class="keyword">int</span> low, <span class="keyword">int</span> high)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> privot = <span class="built_in">array</span>[low];</span><br><span class="line">    <span class="keyword">while</span> (low &lt; high)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span> (low &lt; high &amp;&amp; <span class="built_in">array</span>[high] &gt; privot)</span><br><span class="line">        &#123;</span><br><span class="line">            --high;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//Swap(&amp;array[high],&amp;array[low]);</span></span><br><span class="line">        <span class="built_in">array</span>[low] = <span class="built_in">array</span>[high]; <span class="comment">//不用交换是因为第一次交换时low就是privot的位置这个位子本来就能被代替，没代替一次就产生一个废位子</span></span><br><span class="line">        <span class="keyword">while</span> (low &lt; high &amp;&amp; <span class="built_in">array</span>[low] &lt; privot)</span><br><span class="line">        &#123;</span><br><span class="line">            ++low;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//Swap(&amp;array[high],&amp;array[low]);</span></span><br><span class="line">        <span class="built_in">array</span>[high] = <span class="built_in">array</span>[low];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">array</span>[low] = privot; <span class="comment">//没有使用交换记得最后把privot移回去</span></span><br><span class="line">    <span class="keyword">return</span> low;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>时间复杂度分析：<br>每一次处理Partiton最多要处理n次，那么就要分析递归次数就好了<br>O(n)=O(n*递归层数)<br>快速排列把一个序列分层2个区间，并依次划分出去，就像一颗二叉树，一个有n个结点的二叉数，树高$log_2(n+1)\le h\le n$<br>所以最快为$O(nlog_2n)$<br>最慢为$O(n^2    )$</p>
-<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><h4 id="简单选择排序"><a href="#简单选择排序" class="headerlink" title="简单选择排序"></a>简单选择排序</h4><p>每次选取最小的元素放到前面</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SelcetSort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; len; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> min = i;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt;= len; ++j)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">array</span>[min] &gt; <span class="built_in">array</span>[j])</span><br><span class="line">            &#123;</span><br><span class="line">                min = j;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (min != i)</span><br><span class="line">        &#123;</span><br><span class="line">            Swap(<span class="built_in">array</span> + i, <span class="built_in">array</span> + min);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h4><p>大根堆定义： $a_i \ge a_{2i}\quad and\quad a_i \ge a_{2i+1}$<br>小根堆</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">HeapSort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">HeadAdjust</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> len, <span class="keyword">int</span> k)</span></span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = len / <span class="number">2</span>; i &gt; <span class="number">0</span>; --i)</span><br><span class="line">    &#123;</span><br><span class="line">        HeadAdjust(<span class="built_in">array</span>, len, i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; len; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        Swap(<span class="built_in">array</span>, <span class="built_in">array</span> + len - i + <span class="number">1</span>);</span><br><span class="line">        HeadAdjust(<span class="built_in">array</span>, len - i, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">HeadAdjust</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> len, <span class="keyword">int</span> k)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> son = <span class="number">2</span> * k;</span><br><span class="line">    <span class="keyword">while</span> (son &lt;= len)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (son + <span class="number">1</span> &lt;= len &amp;&amp; <span class="built_in">array</span>[son] &lt; <span class="built_in">array</span>[son + <span class="number">1</span>])</span><br><span class="line">            ++son;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">array</span>[son] &lt; <span class="built_in">array</span>[k])</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        Swap(<span class="built_in">array</span> + son, <span class="built_in">array</span> + k);</span><br><span class="line">        k = son;</span><br><span class="line">        son = <span class="number">2</span> * k;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/29/%E6%9F%A5%E6%89%BE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1279,6 +1170,114 @@ C4-->D1;</pre>
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/21/Masm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/21/Masm/" class="post-title-link" itemprop="url">Linux搭建汇编环境</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-21 00:21:49" itemprop="dateCreated datePublished" datetime="2020-11-21T00:21:49+08:00">2020-11-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-30 20:45:40" itemprop="dateModified" datetime="2020-11-30T20:45:40+08:00">2020-11-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="环境的搭建"><a href="#环境的搭建" class="headerlink" title="环境的搭建"></a>环境的搭建</h2><h3 id="安装dosbox"><a href="#安装dosbox" class="headerlink" title="安装dosbox"></a>安装dosbox</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install dosbox</span><br></pre></td></tr></table></figure>
+
+<h4 id="下载汇编必须的程序"><a href="#下载汇编必须的程序" class="headerlink" title="下载汇编必须的程序"></a>下载汇编必须的程序</h4><ul>
+<li>masm.exe</li>
+<li>link.exe</li>
+<li>debug.exe</li>
+</ul>
+<p>以上的程序的下载<br><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1OpD1UX-nwGOK5rL7v_-z1Q">https://pan.baidu.com/s/1OpD1UX-nwGOK5rL7v_-z1Q</a> 提取码: dzwy</p>
+<p>下载后创建一个文件夹 命名Masm（自定义）将下载好的程序放入该文件夹中</p>
+<p>终端运行dosbox</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dosbox</span><br></pre></td></tr></table></figure>
+
+<p>进入dos环境，在dos环境中挂载c盘，并进入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mount c  /xx/Masm</span><br><span class="line">c:</span><br></pre></td></tr></table></figure>
+
+<h3 id="汇编程序的编写执行"><a href="#汇编程序的编写执行" class="headerlink" title="汇编程序的编写执行"></a>汇编程序的编写执行</h3><p>在Masm中打开文本编辑器, 输入以下代码，保存为hello.asm</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">DATA    SEGMENT</span><br><span class="line">     STRING  DB   &#39;Hello World!&#39;, &#39;$&#39;</span><br><span class="line"> DATA    ENDS</span><br><span class="line"></span><br><span class="line"> STACK1  SEGMENT PARA    STACK</span><br><span class="line">     DW  20H DUP  (0)</span><br><span class="line"> STACK1  ENDS</span><br><span class="line"> CODE   SEGMENT</span><br><span class="line"> ASSUME  CS:CODE, DS:DATA, SS:STACK1</span><br><span class="line"> BEGIN:  MOV     AX, DATA</span><br><span class="line">     MOV DS, AX</span><br><span class="line">     LEA     DX, STRING</span><br><span class="line">     MOV     AH, 9</span><br><span class="line">     INT     21H</span><br><span class="line">     MOV     AH, 4CH</span><br><span class="line">     INT 21H</span><br><span class="line"> CODE   ENDS</span><br><span class="line">     END BEGIN</span><br></pre></td></tr></table></figure>
+
+<p>运行dosbox<br><code>dosbox</code></p>
+<p>在dos环境中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MASM.EXE HELLO.ASM  <span class="comment">#不区分大小写</span></span><br><span class="line"><span class="comment">#按三次回车键</span></span><br><span class="line">LINK.EXE HEELO.OBJ</span><br><span class="line"><span class="comment">#三次回车</span></span><br><span class="line">HELLO.EXE</span><br><span class="line"><span class="comment">#输出Hello World！  </span></span><br><span class="line">EXIT <span class="comment">#退出dos</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Dosbox的配置"><a href="#Dosbox的配置" class="headerlink" title="Dosbox的配置"></a>Dosbox的配置</h3><p>Dosbox的配置文件位于当前用户目录下的.dosbox中</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim .dosbox/dosbox-0.74-2.conf</span></span><br><span class="line"><span class="meta">#</span><span class="bash">[autoexec]下添加,在运行dosbox时自动挂载</span></span><br><span class="line">mount c: /xx/Masm</span><br><span class="line">c:</span><br><span class="line"><span class="meta">#</span><span class="bash">或者在执行dosbox时</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> dosbox -c <span class="string">&quot;mount c: /xx/Masm&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="VSCODE编写Masm"><a href="#VSCODE编写Masm" class="headerlink" title="VSCODE编写Masm"></a>VSCODE编写Masm</h3><h4 id="安装插件"><a href="#安装插件" class="headerlink" title="安装插件"></a>安装插件</h4><p>其实没必要装什么插件，装一个语法高亮就好了<br>在市场上随便一搜Masm或者asm<br>我用的是</p>
+<blockquote>
+<p>ASM Code Lens<br>单纯觉得配色好</p>
+</blockquote>
+<h4 id="为dosbox配置task任务"><a href="#为dosbox配置task任务" class="headerlink" title="为dosbox配置task任务"></a>为dosbox配置task任务</h4><p>在 <code>当Masm/.vsocode</code> 下创建tasks.json<br>输入</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="attr">&quot;version&quot;</span>: <span class="string">&quot;2.0.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;tasks&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">&quot;label&quot;</span>: <span class="string">&quot;dosbox&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;shell&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;command&quot;</span>: <span class="string">&quot;dosbox&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;args&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;-c&quot;</span>,</span><br><span class="line">                <span class="string">&quot;mount c: $&#123;workspaceFolder&#125;&quot;</span>,</span><br><span class="line">                <span class="string">&quot;-c&quot;</span>,</span><br><span class="line">                <span class="string">&quot;c:&quot;</span>,</span><br><span class="line">                <span class="string">&quot;-c&quot;</span>,</span><br><span class="line">                <span class="string">&quot;MASM $&#123;fileBasenameNoExtension&#125;.asm&quot;</span>,</span><br><span class="line">                <span class="string">&quot;-c&quot;</span>,</span><br><span class="line">                <span class="string">&quot;LINK $&#123;fileBasenameNoExtension&#125;.obj&quot;</span>,</span><br><span class="line">                <span class="string">&quot;-c&quot;</span>,</span><br><span class="line">                <span class="string">&quot;DEBUG $&#123;fileBasenameNoExtension&#125;.exe&quot;</span>,</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;problemMatcher&quot;</span>: [],</span><br><span class="line">            <span class="attr">&quot;group&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;kind&quot;</span>: <span class="string">&quot;build&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;isDefault&quot;</span>: <span class="literal">true</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>保存，在写asm文件时保存后按　<strong>shift+ctrl+B</strong>　可自动进入调试(记得一路回车)</p>
+<h4 id="退出调试模式"><a href="#退出调试模式" class="headerlink" title="退出调试模式"></a>退出调试模式</h4><p>在dos下, <code>q</code> 回车</p>
+<p>Alt+Enter可以切换Dosbox全屏或窗口显示</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -1348,7 +1347,7 @@ C4-->D1;</pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">23</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
