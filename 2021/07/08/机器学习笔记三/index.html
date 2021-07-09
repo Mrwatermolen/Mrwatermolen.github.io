@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;77750026  铺垫线性可分：$$\text{点集}D_0,D_1,\text{对任意一点$x$有}:\\begin{aligned}&amp;\omega^Tx+b\lt0,\quad x\in D_0\&amp;\omega^Tx+b\gt0,\quad x\in D_1\\end{aligned}$$称两个集合线性可分 最大间隔">
+  <meta name="description" content="铺垫线性可分：$$\text{点集}D_0,D_1,\text{对任意一点$x$有}:\\begin{aligned}&amp;\omega^Tx+b\lt0,\quad x\in D_0\&amp;\omega^Tx+b\gt0,\quad x\in D_1\\end{aligned}$$称两个集合线性可分 最大间隔超平面： 能将两个线性可分的集合正确划分开的平面就是超平面：$\omega^Tx">
 <meta property="og:type" content="article">
 <meta property="og:title" content="机器学习笔记三：SVM支持向量机">
 <meta property="og:url" content="http://example.com/2021/07/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%89/index.html">
 <meta property="og:site_name" content="MH&#39;s Blog">
-<meta property="og:description" content="https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;77750026  铺垫线性可分：$$\text{点集}D_0,D_1,\text{对任意一点$x$有}:\\begin{aligned}&amp;\omega^Tx+b\lt0,\quad x\in D_0\&amp;\omega^Tx+b\gt0,\quad x\in D_1\\end{aligned}$$称两个集合线性可分 最大间隔">
+<meta property="og:description" content="铺垫线性可分：$$\text{点集}D_0,D_1,\text{对任意一点$x$有}:\\begin{aligned}&amp;\omega^Tx+b\lt0,\quad x\in D_0\&amp;\omega^Tx+b\gt0,\quad x\in D_1\\end{aligned}$$称两个集合线性可分 最大间隔超平面： 能将两个线性可分的集合正确划分开的平面就是超平面：$\omega^Tx">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-07-08T13:52:50.000Z">
-<meta property="article:modified_time" content="2021-07-08T13:55:47.945Z">
+<meta property="article:modified_time" content="2021-07-09T07:57:48.558Z">
 <meta property="article:author" content="MH">
 <meta property="article:tag" content="线性模型">
 <meta property="article:tag" content="吴恩达">
@@ -175,10 +175,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-07-08 21:52:50 / Modified: 21:55:47" itemprop="dateCreated datePublished" datetime="2021-07-08T21:52:50+08:00">2021-07-08</time>
+              <time title="Created: 2021-07-08 21:52:50" itemprop="dateCreated datePublished" datetime="2021-07-08T21:52:50+08:00">2021-07-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-09 15:57:48" itemprop="dateModified" datetime="2021-07-09T15:57:48+08:00">2021-07-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -200,10 +206,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <blockquote>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/77750026">https://zhuanlan.zhihu.com/p/77750026</a></p>
-</blockquote>
-<h2 id="铺垫"><a href="#铺垫" class="headerlink" title="铺垫"></a>铺垫</h2><p>线性可分：<br>$$<br>\text{点集}D_0,D_1,\text{对任意一点$x$有}:\<br>\begin{aligned}<br>&amp;\omega^Tx+b\lt0,\quad x\in D_0\<br>&amp;\omega^Tx+b\gt0,\quad x\in D_1\<br>\end{aligned}<br>$$<br>称两个集合线性可分</p>
+        <h2 id="铺垫"><a href="#铺垫" class="headerlink" title="铺垫"></a>铺垫</h2><p>线性可分：<br>$$<br>\text{点集}D_0,D_1,\text{对任意一点$x$有}:\<br>\begin{aligned}<br>&amp;\omega^Tx+b\lt0,\quad x\in D_0\<br>&amp;\omega^Tx+b\gt0,\quad x\in D_1\<br>\end{aligned}<br>$$<br>称两个集合线性可分</p>
 <p>最大间隔超平面：</p>
 <p>能将两个线性可分的集合正确划分开的平面就是超平面：$\omega^Tx+b=0$</p>
 <p>为了使这个超平面更具鲁棒性，我们会去找最佳超平面，以最大间隔把两类样本分开的超平面，也称之为最大间隔超平面。</p>
@@ -239,7 +242,35 @@
 </li>
 </ol>
 <p>最后可得：<br>$$<br>\omega=\sum^m_{k=1}\mu_ky_kx_k\<br>$$<br>对任意一个支持向量$x_s$，都满足：<br>$$<br>y_s(\omega^Tx_S+b)=1\<br>b=y_s-\omega^Tx_s<br>$$<br>当然，取均值最好。</p>
-<h2 id="软间隔"><a href="#软间隔" class="headerlink" title="软间隔"></a>软间隔</h2><h2 id="核函数"><a href="#核函数" class="headerlink" title="核函数"></a>核函数</h2>
+<h2 id="决策"><a href="#决策" class="headerlink" title="决策"></a>决策</h2><p>已经获得超平面，将其带入决策函数即可得样本的分类。</p>
+<h2 id="软间隔"><a href="#软间隔" class="headerlink" title="软间隔"></a>软间隔</h2><p>实际中，完全线性可分的样本是很少的。那么我们可以允许一些样本落在隔离带内，即允许有部分样本：<br>$$<br>1-y(\omega^Tx+b)&gt;0<br>$$<br>为了度量我们的松弛程度引入松弛变量<br>$$<br>\xi_i\ge0<br>$$<br>对每个样本：<br>$$<br>1-y_i(\omega^Tx_i+b)-\xi_i\le0<br>$$<br>由此，优化目标为：<br>$$<br>\begin{cases}<br>\min{\frac{1}{2}||\omega||^2}+C\sum^m_{i=1}\xi_i\<br>s.t.\quad 1-y_i(\omega^Tx_i+b)-\xi_i\le0\<br>\xi_i\ge0<br>\end{cases}<br>$$<br>C为惩罚因子，越大对离群的样本惩罚就更大，也就是越不关注异常样本。</p>
+<h3 id="构造拉格朗日函数"><a href="#构造拉格朗日函数" class="headerlink" title="构造拉格朗日函数"></a>构造拉格朗日函数</h3><p>由之前的强对偶化，可有：<br>$$<br>\begin{aligned}<br>\max_{\mu,\lambda}\left(\min_{\omega,b,\xi}\left{\frac{1}{2}||\omega||^2+C\sum^m_{i=1}\xi_i+\sum^m_{i=1}\mu_i\left[1-y_i(\omega^Tx_i+b)-\xi_i\right])-\sum^m_{i=1}\lambda_i\xi_i\right}\right)<br>\end{aligned}<br>$$</p>
+<h3 id="求导"><a href="#求导" class="headerlink" title="求导"></a>求导</h3><p>有：<br>$$<br>\omega=\sum^m_{k=1}\mu_ky_kx_k\<br>\sum^m_{k=1}\mu_ky_k=0\<br>C=\mu_i+\lambda_i<br>$$</p>
+<h3 id="带回原函数"><a href="#带回原函数" class="headerlink" title="带回原函数"></a>带回原函数</h3><p>有：<br>$$<br>\begin{aligned}<br>L&amp;=\sum^m_{i=1}\mu_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\mu_i\mu_jx_j^Tx_iy_iy_j+\sum^m_{i=1}(\mu_i+\lambda_i)\xi_i-\sum^m_{i=1}(\mu_i\xi_i+\lambda_i\xi_i)\<br>&amp;=\sum^m_{i=1}\mu_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\mu_i\mu_jx_j^Tx_iy_iy_j<br>\end{aligned}<br>$$<br>则无需最大化$\lambda$：<br>$$<br>\max_{\mu}\left(\sum^m_{i=1}\mu_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\mu_i\mu_jx_j^Tx_iy_iy_j\right)\<br>s.t.\quad\sum^m_{i=1}\mu_iy_i=0\<br>\mu_i\ge0\<br>C-\mu_i-\lambda_i=0\<br>$$<br>最后SMO优化即可</p>
+<p><strong>这边要注意一个问题，在间隔内的那部分样本点是不是支持向量？</strong></p>
+<p>我们可以由求参数$\omega=\sum^m_{i=1}\mu_iy_ix_i$ 的那个式子可看出，只要$\mu_i&gt;0$ 的点都能够影响我们的超平面，因此都是支持向量。（？？）</p>
+<h2 id="核函数"><a href="#核函数" class="headerlink" title="核函数"></a>核函数</h2><p>我们刚刚讨论的硬间隔和软间隔都是在说样本的完全线性可分或者大部分样本点的线性可分。但我们可能会碰到的一种情况是样本点不是线性可分的。</p>
+<p>把样本映射到高维空间去：<br>$$<br>x’=\phi(x),y’=y<br>$$</p>
+<h3 id="常见核函数"><a href="#常见核函数" class="headerlink" title="常见核函数"></a>常见核函数</h3><ol>
+<li><strong>线性核函数</strong></li>
+<li><strong>多项式核函数</strong></li>
+<li><strong>高斯核函数</strong></li>
+</ol>
+<h2 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h2><h3 id="6-1-优点"><a href="#6-1-优点" class="headerlink" title="6.1 优点"></a>6.1 优点</h3><ul>
+<li>有严格的数学理论支持，可解释性强，不依靠统计方法，从而简化了通常的分类和回归问题；</li>
+<li>能找出对任务至关重要的关键样本（即：支持向量）；</li>
+<li>采用核技巧之后，可以处理非线性分类/回归任务；</li>
+<li>最终决策函数只由少数的支持向量所确定，计算的复杂性取决于支持向量的数目，而不是样本空间的维数，这在某种意义上避免了“维数灾难”。</li>
+</ul>
+<h3 id="6-2-缺点"><a href="#6-2-缺点" class="headerlink" title="6.2 缺点"></a>6.2 缺点</h3><ul>
+<li>训练时间长。当采用 SMO 算法时，由于每次都需要挑选一对参数，因此时间复杂度为$O(N^2)$ ，其中 N 为训练样本的数量；</li>
+<li>当采用核技巧时，如果需要存储核矩阵，则空间复杂度为$O(N^2)$ ；</li>
+<li>模型预测时，预测时间与支持向量的个数成正比。当支持向量的数量较大时，预测计算复杂度较高。</li>
+</ul>
+<p>因此支持向量机目前只适合小批量样本的任务，无法适应百万甚至上亿样本的任务。</p>
+<hr>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/77750026">https://zhuanlan.zhihu.com/p/77750026</a></p>
+
     </div>
 
     
@@ -321,7 +352,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BA%E5%9E%AB"><span class="nav-number">1.</span> <span class="nav-text">铺垫</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVM%E6%9C%80%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">SVM最优化问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%95%B0%E4%B9%98%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">拉格朗日数乘法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KKT%E6%9D%A1%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">KKT条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E5%81%B6%E5%8C%96"><span class="nav-number">3.2.</span> <span class="nav-text">对偶化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E4%B8%80%E4%B8%AA%E5%B0%8F%E6%8F%92%E6%9B%B2%EF%BC%8C%E5%85%B6%E5%AE%9E%E5%BE%88%E9%87%8D%E8%A6%81%EF%BC%8C%E4%BD%86%E6%98%AF%E5%8F%AF%E8%83%BD%E4%BC%9A%E4%BA%A7%E7%94%9F%E5%9B%B0%E6%89%B0%EF%BC%8C%E5%85%88%E5%9C%A8%E8%BF%99%E6%89%93%E4%B8%AA%E6%A0%87%E8%AE%B0"><span class="nav-number">3.2.1.</span> <span class="nav-text">插入一个小插曲，其实很重要，但是可能会产生困扰，先在这打个标记</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#go-to"><span class="nav-number">3.2.2.</span> <span class="nav-text">go to</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SMO-Sequential-Minimal-Optimization-%E7%AE%97%E6%B3%95%E6%B1%82%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">SMO(Sequential Minimal Optimization) 算法求解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E9%97%B4%E9%9A%94"><span class="nav-number">5.</span> <span class="nav-text">软间隔</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%87%BD%E6%95%B0"><span class="nav-number">6.</span> <span class="nav-text">核函数</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BA%E5%9E%AB"><span class="nav-number">1.</span> <span class="nav-text">铺垫</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVM%E6%9C%80%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">SVM最优化问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%95%B0%E4%B9%98%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">拉格朗日数乘法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KKT%E6%9D%A1%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">KKT条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E5%81%B6%E5%8C%96"><span class="nav-number">3.2.</span> <span class="nav-text">对偶化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E4%B8%80%E4%B8%AA%E5%B0%8F%E6%8F%92%E6%9B%B2%EF%BC%8C%E5%85%B6%E5%AE%9E%E5%BE%88%E9%87%8D%E8%A6%81%EF%BC%8C%E4%BD%86%E6%98%AF%E5%8F%AF%E8%83%BD%E4%BC%9A%E4%BA%A7%E7%94%9F%E5%9B%B0%E6%89%B0%EF%BC%8C%E5%85%88%E5%9C%A8%E8%BF%99%E6%89%93%E4%B8%AA%E6%A0%87%E8%AE%B0"><span class="nav-number">3.2.1.</span> <span class="nav-text">插入一个小插曲，其实很重要，但是可能会产生困扰，先在这打个标记</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#go-to"><span class="nav-number">3.2.2.</span> <span class="nav-text">go to</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SMO-Sequential-Minimal-Optimization-%E7%AE%97%E6%B3%95%E6%B1%82%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">SMO(Sequential Minimal Optimization) 算法求解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B3%E7%AD%96"><span class="nav-number">5.</span> <span class="nav-text">决策</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E9%97%B4%E9%9A%94"><span class="nav-number">6.</span> <span class="nav-text">软间隔</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E5%87%BD%E6%95%B0"><span class="nav-number">6.1.</span> <span class="nav-text">构造拉格朗日函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B1%82%E5%AF%BC"><span class="nav-number">6.2.</span> <span class="nav-text">求导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%A6%E5%9B%9E%E5%8E%9F%E5%87%BD%E6%95%B0"><span class="nav-number">6.3.</span> <span class="nav-text">带回原函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%87%BD%E6%95%B0"><span class="nav-number">7.</span> <span class="nav-text">核函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%A0%B8%E5%87%BD%E6%95%B0"><span class="nav-number">7.1.</span> <span class="nav-text">常见核函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">8.</span> <span class="nav-text">优缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E4%BC%98%E7%82%B9"><span class="nav-number">8.1.</span> <span class="nav-text">6.1 优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E7%BC%BA%E7%82%B9"><span class="nav-number">8.2.</span> <span class="nav-text">6.2 缺点</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
