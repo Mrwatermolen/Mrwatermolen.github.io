@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="**KMP算法目的:**快速从主串中匹配出与模式串相同的子串 在梳理之前，先给几个约定吧。  语言：C++  字符串s，其子串的表示方法s[i]~[j]  默认已经了解KMP算法中的一些基本概念，如主串，模式串等。  证明并不严谨，只是呢，个人感觉如果知道了证明，就能够掌握住KMP算法的精髓  本文的举例子都挺辣眼睛的，就是方便理解，可不看，重要的是证明。   Brute-Force在说明KMP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KMP算法">
+<meta property="og:url" content="http://example.com/2021/07/21/KMP%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="**KMP算法目的:**快速从主串中匹配出与模式串相同的子串 在梳理之前，先给几个约定吧。  语言：C++  字符串s，其子串的表示方法s[i]~[j]  默认已经了解KMP算法中的一些基本概念，如主串，模式串等。  证明并不严谨，只是呢，个人感觉如果知道了证明，就能够掌握住KMP算法的精髓  本文的举例子都挺辣眼睛的，就是方便理解，可不看，重要的是证明。   Brute-Force在说明KMP">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-07-21T14:58:58.000Z">
+<meta property="article:modified_time" content="2021-09-09T12:04:16.188Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="字符串">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/07/21/KMP%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>KMP算法 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/21/KMP%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          KMP算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-21 22:58:58" itemprop="dateCreated datePublished" datetime="2021-07-21T22:58:58+08:00">2021-07-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-09 20:04:16" itemprop="dateModified" datetime="2021-09-09T20:04:16+08:00">2021-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p> **KMP算法目的:**快速从主串中匹配出与模式串相同的子串</p>
+<p>在梳理之前，先给几个约定吧。</p>
+<ul>
+<li><p>语言：C++</p>
+</li>
+<li><p>字符串s，其子串的表示方法s[i]~[j]</p>
+</li>
+<li><p>默认已经了解KMP算法中的一些基本概念，如主串，模式串等。</p>
+</li>
+<li><p>证明并不严谨，只是呢，个人感觉如果知道了证明，就能够掌握住KMP算法的精髓</p>
+</li>
+<li><p>本文的举例子都挺辣眼睛的，就是方便理解，可不看，重要的是证明。</p>
+</li>
+</ul>
+<h2 id="Brute-Force"><a href="#Brute-Force" class="headerlink" title="Brute-Force"></a>Brute-Force</h2><p>在说明KMP算法前，不得不先了解一下暴力算法</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Index</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;mainString, <span class="keyword">const</span> <span class="built_in">string</span> &amp;modeString)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (modeString == <span class="string">&quot;&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (mainString.length() &lt; modeString.length())</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>, k = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (i &lt; mainString.length() &amp;&amp; j &lt; modeString.length())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (mainString[i] == modeString[j])</span><br><span class="line">        &#123;</span><br><span class="line">            ++i;</span><br><span class="line">            ++j;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            ++k;</span><br><span class="line">            i = k;</span><br><span class="line">            j = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (j &gt;= modeString.length())</span><br><span class="line">        <span class="keyword">return</span> k;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每一次匹配不成功，我们都把主串游标和模式串游标移动回来。时间复杂度为$O(mn)$</p>
+<h2 id="KMP算法的理解"><a href="#KMP算法的理解" class="headerlink" title="KMP算法的理解"></a>KMP算法的理解</h2><p>首先明白暴力算法的过程与原理，先直接上KMP算法的代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Index</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;mainString, <span class="keyword">const</span> <span class="built_in">string</span> &amp;modeString)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (modeString == <span class="string">&quot;&quot;</span>)</span><br><span class="line">        	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    	<span class="keyword">if</span> (mainString.length() &lt; modeString.length())</span><br><span class="line">        	<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; next = GetNext(needle);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> modeStrLen = modeString.length(), mainStrLen = mainString.length(); <span class="comment">//由于length()返回的是一个无符号的整形数，因此切记，如果在表达式中混用了带符号数和无符号数将可能产生意想不到的结果。例如，假设n是一个具有负值的int，则表达式s.length() &lt; n的判断结果几乎肯定是true</span></span><br><span class="line">        <span class="keyword">int</span> modeIndex = <span class="number">0</span>, mainIndex = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    	<span class="comment">//KMP</span></span><br><span class="line">        <span class="keyword">while</span> (modeIndex &lt; modeStrLen &amp;&amp; mainIndex &lt; mainStrLen)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (modeIndex == <span class="number">-1</span> || mainString[mainIndex] == modeString[modeIndex])</span><br><span class="line">            &#123;</span><br><span class="line">                ++modeIndex, ++mainIndex;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                modeIndex = next[modeIndex];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (modeIndex == modeStrLen)</span><br><span class="line">            <span class="keyword">return</span> mainIndex - modeIndex;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">GetNext</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;modeString)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> mainIndex = <span class="number">0</span>, pairIndex = <span class="number">-1</span>, length = modeString.length();</span><br><span class="line">        <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">next</span><span class="params">(length)</span></span>;</span><br><span class="line">        next[<span class="number">0</span>] = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//next的求法其实也就是进行一次对自己的KMP</span></span><br><span class="line">        <span class="keyword">while</span> (mainIndex &lt; length - <span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (pairIndex == <span class="number">-1</span> || modeString[mainIndex] == modeString[pairIndex])</span><br><span class="line">            &#123;</span><br><span class="line">                ++mainIndex, ++pairIndex;</span><br><span class="line">                next[mainIndex] = pairIndex;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                pairIndex = next[pairIndex];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>KMP算法是一个很精妙的算法，其关键在于next数组，但next数组的获取又涉及KMP算法，因为next的获取其实也就是进行一次对modeString的KMP，所以如果先讲next数组，在讲KMP算法，可能效果不太好。我们先弄清楚KMP的运行逻辑与过程，然后再说明next数组的逻辑，再证明KMP算法的正确性。</p>
+<h3 id="KMP算法的运行逻辑与过程"><a href="#KMP算法的运行逻辑与过程" class="headerlink" title="KMP算法的运行逻辑与过程"></a>KMP算法的运行逻辑与过程</h3><p>其实如果你已经理解KMP算法的运行逻辑与过程，那就大可不必看这一部分内容，直接看提炼总结即可。因为下面的说明实在是太啰嗦了。</p>
+<h4 id="公共前后缀"><a href="#公共前后缀" class="headerlink" title="公共前后缀"></a>公共前后缀</h4><p>next数组是理解KMP的核心所在，但我们这里先不去理解next数组是怎么来的，也就是不要先去管<strong>GetNext函数</strong>， 我们只要先明白next数组的含义即可。</p>
+<p>在此之前先理解一个很简单的概念<strong>公共前后缀</strong>。</p>
+<p>先给出定义，定义可以看一下，看例子就能很好理解了。</p>
+<ul>
+<li>前缀：是指不包含最后一个字符的所有以第一个字符开头的连续子串</li>
+<li>后缀：是指不包含第一个字符的所有以最后一个字符结尾的连续子串</li>
+<li>公共前后缀：是指前缀==后缀</li>
+</ul>
+<p>例子一：s = “a”，s没有前缀，也没有后缀，公共前后缀也没有，可以理解为“”</p>
+<p>例子二：s = “ab”，s的前缀：”a”，s的后缀：”b”，没有公共前后缀</p>
+<p>例子三：s = “aaabaa”，s的前缀：”a”、”aa”、”aaa”、”aaab”、”aaaba”，s的后缀：”a”、”aa”、”baa”、”abaa”、”aabaa”，公共前后缀：”a”、”aa”。</p>
+<p><strong>next[j]的含义：modeString[0]~[j-1]的最长公共前后缀的长度</strong></p>
+<p><strong>当模式串modeString[j]与mainString[i]匹配失败时，模式串要检查modeString[next[j]]与mainString[i]是否匹配</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> ()</span><br><span class="line">      &#123;</span><br><span class="line">          <span class="keyword">if</span> (modeString[j] == mainString[i])</span><br><span class="line">          &#123;</span><br><span class="line">              ++i, ++j;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">else</span></span><br><span class="line">          &#123;</span><br><span class="line">              j = next[j];</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  </span><br></pre></td></tr></table></figure>
+
+<p>无论有何种疑惑，总之请先记牢上面两行加粗的字即可。</p>
+<h4 id="模拟推演KMP算法的运行"><a href="#模拟推演KMP算法的运行" class="headerlink" title="模拟推演KMP算法的运行"></a>模拟推演KMP算法的运行</h4><p>我们只关注<strong>Index</strong>函数即可。</p>
+<p>设</p>
+<p>主串为mainString = “FABDABABCAB”</p>
+<p>模式串为modeString = “ABCAB”</p>
+<table>
+<thead>
+<tr>
+<th>next数组</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>next[0]</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>next[1]</td>
+<td>0</td>
+</tr>
+<tr>
+<td>next[2]</td>
+<td>0</td>
+</tr>
+<tr>
+<td>next[3]</td>
+<td>0</td>
+</tr>
+<tr>
+<td>next[4]</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>按照定义都可以手算出next数组，不过一个特殊的点是对next[0]，显然不存在modeString[0]~[-1]，可能我们一开始会设置为0，但是设置为-1更好。next[0] = -1也是一个暂时要死记的点。</p>
+<p>主逻辑</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">      <span class="keyword">int</span> modeIndex = <span class="number">0</span>, mainIndex = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (modeIndex &lt; modeStrLen &amp;&amp; mainIndex &lt; mainStrLen)</span><br><span class="line">      &#123;</span><br><span class="line">          <span class="keyword">if</span> (modeIndex == <span class="number">-1</span> || mainString[mainIndex] == modeString[modeIndex])</span><br><span class="line">          &#123;</span><br><span class="line">              ++modeIndex, ++mainIndex;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">else</span></span><br><span class="line">          &#123;</span><br><span class="line">              modeIndex = next[modeIndex];</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">比较mainString[0] &#x3D;&#x3D; modeString[0]; &#39;F&#39; &#x3D;&#x3D; &#39;A&#39;;</span><br><span class="line"></span><br><span class="line">​	 modeIndex &#x3D; next[modeIndex]; modeIndex &#x3D; -1;</span><br><span class="line"></span><br><span class="line">modeIndex &#x3D;&#x3D; -1</span><br><span class="line"></span><br><span class="line">​	++modeIndex, ++mainIndex; modeIndex &#x3D; 0, mainIndex &#x3D; 1;</span><br><span class="line"></span><br><span class="line">比较mainString[1] &#x3D;&#x3D; modeString[0]; &#39;A&#39; &#x3D;&#x3D; &#39;A&#39;;</span><br><span class="line"></span><br><span class="line">​	++modeIndex, ++mainIndex; modeIndex &#x3D; 1, mainIndex &#x3D; 2;</span><br><span class="line"></span><br><span class="line">比较mainString[2] &#x3D;&#x3D; modeString[1]; &#39;B&#39; &#x3D;&#x3D; &#39;B&#39;;</span><br><span class="line"></span><br><span class="line">​	++modeIndex, ++mainIndex; modeIndex &#x3D; 2, mainIndex &#x3D; 3;</span><br><span class="line"></span><br><span class="line">比较mainString[3] &#x3D;&#x3D; modeString[2]; &#39;D&#39; &#x3D;&#x3D; &#39;C&#39;;</span><br><span class="line"></span><br><span class="line">​	modeIndex &#x3D; next[modeIndex]; modeIndex &#x3D; 0;</span><br><span class="line"></span><br><span class="line">比较mainString[3] &#x3D;&#x3D; modeString[0]; &#39;D&#39; &#x3D;&#x3D; &#39;A&#39;;</span><br><span class="line"></span><br><span class="line">​	modeIndex &#x3D; next[modeIndex]; modeIndex &#x3D; -1;</span><br><span class="line"></span><br><span class="line">省略</span><br><span class="line"></span><br><span class="line">比较mainString[6] &#x3D;&#x3D; modeString[2]; &#39;A&#39; &#x3D;&#x3D; &#39;C&#39;;</span><br><span class="line"></span><br><span class="line">​	modeIndex &#x3D; next[modeIndex]; modeIndex &#x3D; 0;</span><br><span class="line"></span><br><span class="line">比较mainString[6] &#x3D;&#x3D; modeString[0]; &#39;A&#39; &#x3D;&#x3D; &#39;A&#39;;</span><br><span class="line"></span><br><span class="line">之后一路比对成功</span><br><span class="line"></span><br><span class="line">跳出循环 mainIndex &#x3D; 11, modeIndex &#x3D; 5</span><br><span class="line"></span><br><span class="line">KMP是否在主串中找到模式串的逻辑是相同的都是判断是否遍历完毕了模式串。</span><br><span class="line"></span><br><span class="line">那么在6那儿相等</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="解释运行逻辑"><a href="#解释运行逻辑" class="headerlink" title="解释运行逻辑"></a>解释运行逻辑</h4><p>手动去模拟完毕后，我们能有很多发现。</p>
+<p>可以发现mainIndex只会增加，而不是像暴力算法那样会把mainIndex往回移动。</p>
+<p>modeIndex的往回移动是基于next数组的。</p>
+<p><strong>next[j]的含义：modeString[0]~[j-1]的最长公共前后缀的长度</strong></p>
+<p><strong>当模式串modeString[j]与mainString[i]匹配失败时，模式串要检查modeString[next[j]]与mainString[i]是否匹配</strong></p>
+<p>我们在看一个例子，再一次深刻了解next数组的作用</p>
+<p>主串：”AABAACAABAAD”</p>
+<p>模式串：”AABAAD”</p>
+<p>假设此时判断到”C”==”D”，匹配失败了。</p>
+<p>按照暴力算法，我们要重新匹配”ABAACAABAAD”与”AABAAD”，但我们有next数组，它告诉我们应该判断”C”==”B”，因为”AABAAC“与”AABAAD”中前面匹配成功的”AABAA”最长公共前后缀的长度为2，我们就把问题匹配”AABAAC“与”AABAAD”，变成了匹配”AAC“与”AAB”</p>
+<p><strong>也就是说我们可以把公共前缀和公共后缀对齐，继续往下比较，而不用往回移动mainIndex，如果没有公共前后缀，那么modeIndex=0或-1；也就说前面的都不匹配了，模式串要从头匹配，如果头也不匹配，那么我们就丢弃，那么主串的游标就要往后走。</strong></p>
+<p>0和-1也是一个很妙的处理，首先明确只有next[0]能得到-1。我们继续上面的”AAC“与”AAB”，’C’与’B’也不匹配，’C’与modeString[1]=’A’也不匹配，’C’与modeString[0]=’A’也不匹配，所以我们不能继续匹配’C’了必须将其跳过，所以跳过条件modeIndex == -1，刚刚好-1+1 = 0，则继续新的匹配。</p>
+<h4 id="提炼总结"><a href="#提炼总结" class="headerlink" title="提炼总结"></a>提炼总结</h4><p>其实最关键的就是next数组，也就是说，如果在某个位置匹配k失败的时候，我们可以知道[0]~[k-1]的字符串里的最长公共前后缀，我们就可以把模式串的最长公共前缀以及主串的最长公共后缀<strong>对齐</strong>起来，然后再匹配即可。</p>
+<p>容我再啰嗦一句，这个对齐操作。理解起来很简单，上个例子即可</p>
+<p>“ABCABDABCABF”</p>
+<p>“ABCABF”</p>
+<p>在判断’D’==’F’时失败了，重新对齐最长公共前后缀，next[5] = 2</p>
+<p>“ABCABDABCABF”</p>
+<p>​        “ABCABF”</p>
+<p>此时判断’D’==’F’</p>
+<p>关键的关键点就是next数组引导了对齐操作。</p>
+<p>好嘛，正好此时就能引出next数组了。</p>
+<h3 id="next数组"><a href="#next数组" class="headerlink" title="next数组"></a>next数组</h3><p>先上求next数组的代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">GetNext</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;modeString)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> mainIndex = <span class="number">0</span>, pairIndex = <span class="number">-1</span>, length = modeString.length();</span><br><span class="line">    <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">next</span><span class="params">(length)</span></span>;</span><br><span class="line">    next[<span class="number">0</span>] = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//next的求法其实也就是进行一次对自己的KMP</span></span><br><span class="line">    <span class="keyword">while</span> (mainIndex &lt; length - <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (pairIndex == <span class="number">-1</span> || modeString[mainIndex] == modeString[pairIndex])</span><br><span class="line">        &#123;</span><br><span class="line">            ++mainIndex, ++pairIndex;</span><br><span class="line">            next[mainIndex] = pairIndex;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            pairIndex = next[pairIndex];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码就是KMP算法的精髓之精髓所在了。为什么自身进行KMP能得到next数组呢？</p>
+<h3 id="next数组的证明"><a href="#next数组的证明" class="headerlink" title="next数组的证明"></a>next数组的证明</h3><p>首先无论如何，有两个固定的值。</p>
+<p>next[0] = -1, next[1] = 0;</p>
+<p>下面就上数学证明了。</p>
+<p>我们要证明：在运行完毕上述代码后，得到的next数组满足<strong>next[i]的定义：modeString[0]~[i-1]的最长公共前后缀的长度</strong></p>
+<p>证：</p>
+<p>我们记pairIndex是以自身为模式串的要与主串匹配的游标的位置,mainIndex是以自身为主串的要与模式串匹配游标的位置。（又开始啰嗦了。）</p>
+<p>且<br>$$<br>\text{i = 0,next[i] = -1}<br>$$</p>
+<p>$$<br>\text{i = 1,next[i] = 0}<br>$$</p>
+<p>此时next满足定义。</p>
+<p>当：<br>$$<br>\text{i&gt;=2}<br>$$<br>我们有已知<br>$$<br>\text{next[0]$\backsim$next[i-1]}<br>$$<br>都是满足next数组的定义的。</p>
+<p>那么已知next[i-1]意味着我们已经知道modeString[0]~[i-2]的最长公共前后缀的长度</p>
+<p>可设<br>$$<br>\text{next[i-1]=k}<br>$$<br>必然有：<br>$$<br>\text{modeString[i-1-k]$\backsim$[i-2] == modeString[0]$\backsim$[k-1]}<br>$$<br>那么为了求出next[i]，我们先对齐对齐模式串的前缀以及主串的后缀令<br>$$<br>\text{pairIndex=k,mainIndex=i-1}<br>$$<br>然后判断<br>$$<br>\text{? modeString[mainIndex] == modeString[pairIndex]}<br>$$</p>
+<p>如果不匹配：<br>$$<br>\text{modeString[mainIndex] != modeString[pairIndex]}<br>$$<br>重新对齐模式串的前缀以及主串的后缀，即令pairIndex = next[pairIndex]，直至匹配或者pairIndex = -1意味着没有公共前后缀。</p>
+<p>如果匹配：<br>$$<br>\text{modeString[mainIndex] == modeString[pairIndex]}<br>$$</p>
+<p>$$<br>\to\text{[0]$\backsim$[mainIndex]的最长公共前后缀的长度为pairIndex+1}<br>$$</p>
+<p>即<br>$$<br>\text{next[i]=最后更新的pairIndex加上1}<br>$$<br>此时next[i]满足定义。</p>
+<p>由数学归纳法，经上述步骤后所求的next一定满足定义</p>
+<p>把上面的数学推导转化成代码就是求出next数组的代码。</p>
+<p>得证。</p>
+<h3 id="KMP算法的证明"><a href="#KMP算法的证明" class="headerlink" title="KMP算法的证明"></a>KMP算法的证明</h3><p>把next数组的正确性证明完毕后，终于算是理解了KMP算法了，KMP算法的难以理解的地方就是在于next数组的求出与KMP算法的是互相交叉的，先讲KMP算法，就容易被next数组绕晕，先讲next数组，就容易一头雾水为什么要这样求。</p>
+<p>好嘛，我们已经得到了一个关于模式串的next数组。再一次搬出next数组的定义</p>
+<p>next数组满足<strong>next[i]的定义：modeString[0]~[i-1]的最长公共前后缀的长度</strong></p>
+<p>再附上KMP算法的主逻辑</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">int</span> modeIndex = <span class="number">0</span>, mainIndex = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line"><span class="comment">//KMP</span></span><br><span class="line">   <span class="keyword">while</span> (modeIndex &lt; modeStrLen &amp;&amp; mainIndex &lt; mainStrLen)</span><br><span class="line">   &#123;</span><br><span class="line">       <span class="keyword">if</span> (modeIndex == <span class="number">-1</span> || mainString[mainIndex] == modeString[modeIndex])</span><br><span class="line">       &#123;</span><br><span class="line">           ++modeIndex, ++mainIndex;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       &#123;</span><br><span class="line">           modeIndex = next[modeIndex];</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (modeIndex == modeStrLen)</span><br><span class="line">       <span class="keyword">return</span> mainIndex - modeIndex;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">return</span> <span class="number">-1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>证：</p>
+<p>（1）</p>
+<p>当：<br>$$<br>\text{modeIndex = -1}<br>$$<br>可得：<br>$$<br>\text{mainString[mainIndex] != modeString[0]}<br>$$<br>此时要判断<br>$$<br>\text{? mainString[mainIndex+1] == modeString[0]}<br>$$<br>（2）</p>
+<p>当：<br>$$<br>\text{modeIndex $\neq$ -1}<br>$$<br>如果匹配：<br>$$<br>\text{ mainString[mainIndex] == modeString[modeIndex]}<br>$$<br>则继续往下判断：<br>$$<br>\text{? mainString[mainIndex+1] == modeString[modeIndex+1]}<br>$$<br>如果不匹配：<br>$$<br>\text{ mainString[mainIndex] != modeString[modeIndex]}<br>$$<br>我们已知next[modeIndex]，即可设<br>$$<br>\text{next[modeIndex]=k$\neq$-1}<br>$$<br>我们必然有：<br>$$<br>\text{mainString[i-k]$\backsim$[i-1] == modeString[0]$\backsim$[k-1]}<br>$$<br>由此我们就不需要匹配0~k-1了，只需判断<br>$$<br>\text{? mainString[mainIndex] == modeString[k]}<br>$$<br>基于证明步骤的（1）、（2）</p>
+<p>对模式串，其长度为modeStrLen，与主串，其长度为mainStrLen</p>
+<p>如果主串上有子串与模式串匹配，那么我们就可以将模式串从头遍历完毕，即使modeIndex == modeStrLen</p>
+<p>如果主串上没有有子串与模式串匹配，那么我们就可以将主串串从头遍历完毕且我们没有遍历完毕模式串，即使modeIndex != modeStrLen</p>
+<p>将上述推导转换为代码即可</p>
+<p>得证！</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>以上是一些不严谨的证明，是否严谨不重要，重要的是在推理证明的过程中理解了KMP算法，思路最重要。就我个人而言，网上也有很多帖子给了我很多新的认知，但是看一次记住了，用一次就忘一次。无论是图例还是结合例子解释都让我感觉只是当时理解了KMP，但是其实并没有完全理解KMP为什么要这么做，这么做为什么可以保证算法的正确性。这一次花了一些时间，自己进行了一下推导证明突然就感觉通透了。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="tag"># 字符串</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%89/" rel="prev" title="机器学习笔记三：SVM支持向量机">
+      <i class="fa fa-chevron-left"></i> 机器学习笔记三：SVM支持向量机
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/08/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E5%9B%9B/" rel="next" title="机器学习笔记四：无监督学习">
+      机器学习笔记四：无监督学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Brute-Force"><span class="nav-number">1.</span> <span class="nav-text">Brute-Force</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KMP%E7%AE%97%E6%B3%95%E7%9A%84%E7%90%86%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">KMP算法的理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KMP%E7%AE%97%E6%B3%95%E7%9A%84%E8%BF%90%E8%A1%8C%E9%80%BB%E8%BE%91%E4%B8%8E%E8%BF%87%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">KMP算法的运行逻辑与过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%AC%E5%85%B1%E5%89%8D%E5%90%8E%E7%BC%80"><span class="nav-number">2.1.1.</span> <span class="nav-text">公共前后缀</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F%E6%8E%A8%E6%BC%94KMP%E7%AE%97%E6%B3%95%E7%9A%84%E8%BF%90%E8%A1%8C"><span class="nav-number">2.1.2.</span> <span class="nav-text">模拟推演KMP算法的运行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E9%87%8A%E8%BF%90%E8%A1%8C%E9%80%BB%E8%BE%91"><span class="nav-number">2.1.3.</span> <span class="nav-text">解释运行逻辑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8F%90%E7%82%BC%E6%80%BB%E7%BB%93"><span class="nav-number">2.1.4.</span> <span class="nav-text">提炼总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#next%E6%95%B0%E7%BB%84"><span class="nav-number">2.2.</span> <span class="nav-text">next数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#next%E6%95%B0%E7%BB%84%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">2.3.</span> <span class="nav-text">next数组的证明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KMP%E7%AE%97%E6%B3%95%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">2.4.</span> <span class="nav-text">KMP算法的证明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">3.</span> <span class="nav-text">结语</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

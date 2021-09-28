@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="使用FFmpeg合并MP4视频使用FFmpeg拼接速度慢，文件大 将 mp4 先转码为 mpeg文件，mpeg是支持简单拼接的，然后再转回 mp4。 1234ffmpeg -i 1.mp4 -qscale 4 1.mpgffmpeg -i 2.mp4 -qscale 4 2.mpgcat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -qscale 6 -vcodec mpe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ffmpeg使用">
+<meta property="og:url" content="http://example.com/2021/07/04/ffmpeg%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="使用FFmpeg合并MP4视频使用FFmpeg拼接速度慢，文件大 将 mp4 先转码为 mpeg文件，mpeg是支持简单拼接的，然后再转回 mp4。 1234ffmpeg -i 1.mp4 -qscale 4 1.mpgffmpeg -i 2.mp4 -qscale 4 2.mpgcat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -qscale 6 -vcodec mpe">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-07-04T04:42:00.000Z">
+<meta property="article:modified_time" content="2021-09-09T12:04:16.164Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="cmd">
+<meta property="article:tag" content="bat">
+<meta property="article:tag" content="win">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/07/04/ffmpeg%E4%BD%BF%E7%94%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>ffmpeg使用 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/04/ffmpeg%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ffmpeg使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-04 12:42:00" itemprop="dateCreated datePublished" datetime="2021-07-04T12:42:00+08:00">2021-07-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-09 20:04:16" itemprop="dateModified" datetime="2021-09-09T20:04:16+08:00">2021-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ffmpeg/" itemprop="url" rel="index"><span itemprop="name">ffmpeg</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="使用FFmpeg合并MP4视频"><a href="#使用FFmpeg合并MP4视频" class="headerlink" title="使用FFmpeg合并MP4视频"></a>使用FFmpeg合并MP4视频</h2><h3 id="使用FFmpeg拼接"><a href="#使用FFmpeg拼接" class="headerlink" title="使用FFmpeg拼接"></a>使用FFmpeg拼接</h3><p>速度慢，文件大</p>
+<p>将 mp4 先转码为 mpeg文件，mpeg是支持简单拼接的，然后再转回 mp4。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i 1.mp4 -qscale 4 1.mpg</span><br><span class="line">ffmpeg -i 2.mp4 -qscale 4 2.mpg</span><br><span class="line">cat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -qscale 6 -vcodec mpeg4 output.mp4</span><br><span class="line"><span class="comment">#-qscale &lt;数值&gt; 以&lt;数值&gt;质量为基础的VBR，取值0.01-255，约小质量越好</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用ts拼接"><a href="#使用ts拼接" class="headerlink" title="使用ts拼接"></a>使用ts拼接</h3><p>速度快，文件小</p>
+<p>先将 mp4 转化为同样编码形式的 ts 流，因为 ts流是可以 concate 的，先把 mp4 封装成 ts ，然后 concate ts 流， 最后再把 ts 流转化为 mp4。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i 1.mp4 -vcodec copy -acodec copy -vbsf h264_mp4toannexb 1.ts</span><br><span class="line">ffmpeg -i 2.mp4 -vcodec copy -acodec copy -vbsf h264_mp4toannexb 2.ts</span><br><span class="line">ffmpeg -i <span class="string">&quot;concat:1.ts|2.ts&quot;</span> -acodec copy -vcodec copy -absf aac_adtstoasc output.mp4</span><br></pre></td></tr></table></figure>
+
+<p>————————————————<br>版权声明：本文为CSDN博主「熊观鱼」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。<br>原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/east196/article/details/79821361">https://blog.csdn.net/east196/article/details/79821361</a></p>
+<h3 id="使用mpeg拼接（另一种方法）"><a href="#使用mpeg拼接（另一种方法）" class="headerlink" title="使用mpeg拼接（另一种方法）"></a>使用mpeg拼接（另一种方法）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i 1.mp4 –f mpeg 1.mpg</span><br><span class="line">ffmpeg -i 2.mp4 –f mpeg 2.mpg</span><br></pre></td></tr></table></figure>
+
+<p>win10，打开cmd（copy命令在powershell和gitbash里都不好使）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">copy &#x2F;b 1.mpg + 2.mpg 3.mpg</span><br><span class="line">ffmpeg -i 3.mpg -f mp4 3.mp4</span><br></pre></td></tr></table></figure>
+
+<h3 id="FFmpeg合并MP4视频总结"><a href="#FFmpeg合并MP4视频总结" class="headerlink" title="FFmpeg合并MP4视频总结"></a>FFmpeg合并MP4视频总结</h3><p>ts是真的又快又好</p>
+<h2 id="FFmpeg批量处理mp4-win"><a href="#FFmpeg批量处理mp4-win" class="headerlink" title="FFmpeg批量处理mp4 win"></a>FFmpeg批量处理mp4 win</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">setlocal enabledelayedexpansion</span><br><span class="line"><span class="built_in">set</span> n=0</span><br><span class="line"><span class="keyword">for</span> %%i <span class="keyword">in</span> (*.mp4) <span class="keyword">do</span> (</span><br><span class="line">    <span class="built_in">set</span> /a n+=1</span><br><span class="line">    <span class="built_in">echo</span> %%i</span><br><span class="line">    <span class="built_in">echo</span> !n!</span><br><span class="line">    ffmpeg -i <span class="string">&quot;%%i&quot;</span> -c copy <span class="string">&quot;%%~ni.ts&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">if</span> !n! geq 10 (</span><br><span class="line">    <span class="built_in">set</span> /a n=0</span><br><span class="line">    <span class="keyword">for</span> %%i <span class="keyword">in</span> (*.ts) <span class="keyword">do</span> (</span><br><span class="line">        <span class="built_in">echo</span> %%i</span><br><span class="line">        <span class="built_in">set</span> /a n+=1</span><br><span class="line">        <span class="keyword">if</span> !n! geq 10 (</span><br><span class="line">            rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;file !n!.ts&quot;</span></span><br><span class="line">        ) <span class="keyword">else</span> (</span><br><span class="line">        	rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;file 0!n!.ts&quot;</span></span><br><span class="line">        )</span><br><span class="line">    )</span><br><span class="line">) <span class="keyword">else</span> (</span><br><span class="line">    <span class="built_in">set</span> /a n=0</span><br><span class="line">    <span class="keyword">for</span> %%i <span class="keyword">in</span> (*.ts) <span class="keyword">do</span> (</span><br><span class="line">        <span class="built_in">set</span> /a n+=1</span><br><span class="line">        rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;file !n!.ts&quot;</span></span><br><span class="line">    )</span><br><span class="line">)</span><br><span class="line">dir *.ts /B &gt;filelist.txt</span><br><span class="line"><span class="keyword">if</span> !n! geq 10 (</span><br><span class="line">    <span class="built_in">set</span> /a n=0</span><br><span class="line">    <span class="keyword">for</span> %%i <span class="keyword">in</span> (*.ts) <span class="keyword">do</span> (</span><br><span class="line">        <span class="built_in">echo</span> %%i</span><br><span class="line">        <span class="built_in">set</span> /a n+=1</span><br><span class="line">        <span class="keyword">if</span> !n! geq 10 (</span><br><span class="line">            rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;!n!.ts&quot;</span></span><br><span class="line">        ) <span class="keyword">else</span> (</span><br><span class="line">        	rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;0!n!.ts&quot;</span></span><br><span class="line">        )</span><br><span class="line">    )</span><br><span class="line">) <span class="keyword">else</span> (</span><br><span class="line">    <span class="built_in">set</span> /a n=0</span><br><span class="line">    <span class="keyword">for</span> %%i <span class="keyword">in</span> (*.ts) <span class="keyword">do</span> (</span><br><span class="line">        <span class="built_in">set</span> /a n+=1</span><br><span class="line">        rename  <span class="string">&quot;%%i&quot;</span>  <span class="string">&quot;!n!.ts&quot;</span></span><br><span class="line">    )</span><br><span class="line">)</span><br><span class="line">ffmpeg -f concat -i filelist.txt -acodec copy -vcodec copy -absf aac_adtstoasc output.mp4</span><br><span class="line">del *.ts</span><br></pre></td></tr></table></figure>
+
+<h2 id="FFmpeg提取字幕流"><a href="#FFmpeg提取字幕流" class="headerlink" title="FFmpeg提取字幕流"></a>FFmpeg提取字幕流</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mkv -an -vn -scodec copy sub.ass</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/cmd/" rel="tag"># cmd</a>
+              <a href="/tags/bat/" rel="tag"># bat</a>
+              <a href="/tags/win/" rel="tag"># win</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80/" rel="prev" title="机器学习笔记一">
+      <i class="fa fa-chevron-left"></i> 机器学习笔记一
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%BA%8C/" rel="next" title="机器学习笔记二：神经网络">
+      机器学习笔记二：神经网络 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8FFmpeg%E5%90%88%E5%B9%B6MP4%E8%A7%86%E9%A2%91"><span class="nav-number">1.</span> <span class="nav-text">使用FFmpeg合并MP4视频</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8FFmpeg%E6%8B%BC%E6%8E%A5"><span class="nav-number">1.1.</span> <span class="nav-text">使用FFmpeg拼接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8ts%E6%8B%BC%E6%8E%A5"><span class="nav-number">1.2.</span> <span class="nav-text">使用ts拼接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8mpeg%E6%8B%BC%E6%8E%A5%EF%BC%88%E5%8F%A6%E4%B8%80%E7%A7%8D%E6%96%B9%E6%B3%95%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">使用mpeg拼接（另一种方法）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FFmpeg%E5%90%88%E5%B9%B6MP4%E8%A7%86%E9%A2%91%E6%80%BB%E7%BB%93"><span class="nav-number">1.4.</span> <span class="nav-text">FFmpeg合并MP4视频总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FFmpeg%E6%89%B9%E9%87%8F%E5%A4%84%E7%90%86mp4-win"><span class="nav-number">2.</span> <span class="nav-text">FFmpeg批量处理mp4 win</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FFmpeg%E6%8F%90%E5%8F%96%E5%AD%97%E5%B9%95%E6%B5%81"><span class="nav-number">3.</span> <span class="nav-text">FFmpeg提取字幕流</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

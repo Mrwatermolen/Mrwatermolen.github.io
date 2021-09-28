@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="记：$$\text{对输入层，层数为1}:\x^{k}_i:\text{第k个数据的第i个输入},i\in[1,m]$$ $$\text{对隐藏层}:\l:\text{当前层数}\in[2,L-1],s_l:\text{当前层数的单元数}，\w^{(l)}_{ij}:\text{连接第l+1层的第i个输入和第l层的第j个输出的权重}$$ $$z^{(l+1)}{i}&#x3D;\sum^{s_l}{j&#x3D;1}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习笔记二：神经网络">
+<meta property="og:url" content="http://example.com/2021/07/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%BA%8C/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="记：$$\text{对输入层，层数为1}:\x^{k}_i:\text{第k个数据的第i个输入},i\in[1,m]$$ $$\text{对隐藏层}:\l:\text{当前层数}\in[2,L-1],s_l:\text{当前层数的单元数}，\w^{(l)}_{ij}:\text{连接第l+1层的第i个输入和第l层的第j个输出的权重}$$ $$z^{(l+1)}{i}&#x3D;\sum^{s_l}{j&#x3D;1}">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-07-05T05:41:00.000Z">
+<meta property="article:modified_time" content="2021-09-09T12:04:16.148Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="线性模型">
+<meta property="article:tag" content="吴恩达">
+<meta property="article:tag" content="机器学习西瓜书">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/07/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%BA%8C/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>机器学习笔记二：神经网络 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%BA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器学习笔记二：神经网络
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-05 13:41:00" itemprop="dateCreated datePublished" datetime="2021-07-05T13:41:00+08:00">2021-07-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-09 20:04:16" itemprop="dateModified" datetime="2021-09-09T20:04:16+08:00">2021-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MachineLearning/" itemprop="url" rel="index"><span itemprop="name">MachineLearning</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>记：<br>$$<br>\text{对输入层，层数为1}:\<br>x^{k}_i:\text{第k个数据的第i个输入},i\in[1,m]<br>$$</p>
+<p>$$<br>\text{对隐藏层}:\<br>l:\text{当前层数}\in[2,L-1],s_l:\text{当前层数的单元数}，\w^{(l)}_{ij}:\text{连接第l+1层的第i个输入和第l层的第j个输出的权重}<br>$$</p>
+<p>$$<br>z^{(l+1)}<em>{i}=\sum^{s_l}</em>{j=1}{w^{(l)}<em>{ij}a^{(l)}</em>{j}}+b^{(l)}<em>i:\text{第l+1层的第i输入},\a^{(l)}</em>{i}=f(z^{(l)}_{i}):\text{第l层的第i个输出},b^{(l)}_i:\text{第l层到第l+l层的第i个单元的偏置，为常数}<br>$$</p>
+<p>$$<br>Z^{(l+1)}={W^{(l)}}\pmb{a^{l}}+\pmb{b^{l}}<br>$$</p>
+<p>$$<br>f(z)=\frac{1}{1+e^{-z}},f’(z)=(1-f(z))f(z)<br>$$</p>
+<p>$$<br>\text{对输出层，层数为L}:<br>a^{(L)}_i:\text{第i个输入数据的输出},y_k:\text{第k个数据的实际值},i\in[1,m]<br>$$</p>
+<h2 id="前向传播"><a href="#前向传播" class="headerlink" title="前向传播"></a>前向传播</h2><p>$$<br>\pmb{X}=\pmb{a^{(1)}}\to\pmb{z^{(2)}}\to\pmb{a^{(2)}}\to\cdots\to\pmb{a^{(L)}}<br>$$</p>
+<h2 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h2><p>$$<br>J=\frac{1}{2m}\sum_{i=1}^m\left(a^{(L)}<em>i-y_i\right)^2\<br>\text{正则化}:J=\frac{1}{2m}\sum</em>{i=1}^m\left(a^{(L)}<em>i-y_i\right)^2+\frac{\lambda}{2m}\sum^{L-1}</em>{l=1}\pmb{w^{(l)}}^T\pmb{w^{(l)}}=\frac{1}{2m}\sum_{i=1}^m\left(a^{(L)}<em>i-y_i\right)^2+\frac{\lambda}{2m}\sum^{L-1}</em>{l=1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}(w^{(l)}_{ji})2<br>$$</p>
+<p>在逻辑分类中：<br>$$<br>J=-\frac{1}{m}\sum^m_{i=1}\left(y^{i}\log(a^{(L)}<em>i)+(1-y^{i})\log(1-a^{L}<em>i)\right)\<br>\text{正则化}:J=-\frac{1}{m}\sum^m</em>{i=1}\left(y^{i}\log(a^{(L)}<em>i)+(1-y^{i})\log(1-a^{L}<em>i)\right)+\frac{\lambda}{2m}\sum^{L-1}</em>{l=1}\sum</em>{i=1}^{s_l}\sum</em>{j=1}^{s_{l+1}}(w^{(l)}_{ji})2<br>$$</p>
+<h2 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h2><p>由代价函数更新权重以及偏置矩阵，按梯度下降法有：<br>$$<br>w^{(l)}<em>{ij}=w^{(l)}</em>{ij}-\alpha\frac{\partial J}{\partial w^{(l)}_{ij}}\<br>b^{(l)}_i=b^{(l)}_i-\alpha\frac{\partial J}{\partial b^{(l)}<em>i}<br>$$<br>这里先使用代价函数为：<br>$$<br>J=\frac{1}{2m}\sum</em>{i=1}^m\left(a^{(L)}_i-y_i\right)^2<br>$$</p>
+<h3 id="输出层"><a href="#输出层" class="headerlink" title="输出层"></a>输出层</h3><p>$$<br>\begin{aligned}<br>\frac{\partial J}{\partial w^{(L-1)}<em>{ij}}&amp;=\frac{1}{2m}\sum</em>{t=1}^m\left(\frac{\partial ((a^{(L)}_t-y_i)^2)}{\partial a^{(L)}<em>t}\frac{\partial a^{(L)}<em>t}{\partial w^{(L)}</em>{ij}}\right)\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}<em>t-y_t)\frac{\partial f(z^{(L)}<em>i)}{\partial w^{(L-1)}</em>{ij}}\right]\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}<em>t-y_t)\frac{\partial f(z^{(L)}<em>i)}{\partial z^{(L)}<em>i}\frac{\partial z^{(L)}<em>i}{\partial w^{(L-1)}</em>{ij}}\right]\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}<em>t-y_t)(1-f(z^{(L)}<em>i))f(z^{(L)}<em>i)\frac{\partial (\sum^{s</em>{L-1}}</em>{k=1}{w^{(L-1)}</em>{ik}a^{(L-1)}</em>{k}}+b^{(L-1)}<em>t)}{\partial w^{(L-1)}</em>{ij}}\right]\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}_t-y_t)(1-f(z^{(L)}_i))f(z^{(L)}_i)a^{(L-1)}<em>j\right]\<br>&amp;=\frac{1}{m}\sum</em>{t=1}^m\left[(a^{(L)}_t-y_t)\frac{\partial f(z^{(L)})}{\partial z^{(L)}_i}a^{(L-1)}_j\right]<br>\end{aligned}<br>$$</p>
+<p>注意一下这里最后的代价函数是针对单个数据而言的，然后把他们汇总，再取平均，所以不是除以2m。</p>
+<p>这里的t下标代表第几个数据</p>
+<p>记：<br>$$<br>\delta^{(L)}_i=\frac{\partial J}{\partial z^{(L)}_i}=(a^{(L)}-y)\frac{\partial f(z^{(L)})}{\partial z^{(L)}_i}<br>$$</p>
+<h3 id="隐藏层"><a href="#隐藏层" class="headerlink" title="隐藏层"></a>隐藏层</h3><p>注意一下这里的代价函数是针对单个数据而言的，然后把他们汇总，再取平均，所以不是除以2m。<br>$$<br>\begin{aligned}<br>\frac{\partial J}{\partial w^{(l)}<em>{ij}}&amp;=\frac{1}{m}\sum</em>{t=1}^m\left(\frac{\partial J}{\partial z^{(l+1)}<em>i}\frac{\partial z^{(l+1)}<em>i}{\partial w^{(l)}</em>{ij}}\right)\<br>\delta^{(l+1)}<em>i&amp;=\frac{\partial J}{\partial z^{(l+1)}<em>i}\<br>&amp;=\sum^{s</em>{l+2}}</em>{k=1}\left(\frac{\partial J}{\partial z^{(l+2)}<em>k}\frac{\partial z^{(l+2)}<em>k}{\partial z^{(l+1)}<em>i}\right)\<br>&amp;=\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>k\frac{\partial (\sum^{s</em>{l+1}}</em>{j=1}{w^{(l+1)}</em>{kj}a^{(l+1)}<em>{j}}+b^{(l+1)}<em>k)}{\partial z^{(l+1)}<em>i}\right]\<br>&amp;=\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>k\frac{\partial (\sum^{s</em>{l+1}}</em>{j=1}{w^{(l+1)}<em>{kj}f(z^{(l+1)}</em>{j}})+b^{(l+1)}<em>k)}{\partial z^{(l+1)}<em>i}\right]\<br>&amp;=\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>kw^{l+1}</em>{ki}f’(z^{(l+1)}<em>i)\right]<br>\end{aligned}\<br>\Rightarrow\<br>\pmb{\delta^{(l+1)}}=\left[{W^{(l)}}^T\pmb{\delta^{(l+1)}}\right]f’(\pmb{z^{(l+1)}})\<br>\frac{\partial J}{\partial w^{(l)}</em>{ij}}=\frac{1}{m}\sum_{t=1}^m\left{a^{(l)}<em>jf’(z^{(l+1)}<em>i)\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>kw^{l+1}</em>{ki}\right]\right}\<br>\frac{\partial J}{\partial W^{(l)}}=\frac{1}{m}\sum_{t=1}^m\pmb{\delta^{(l+1)}}\pmb{a^{l}}^T<br>$$<br>又已知：<br>$$<br>\pmb{\delta^{(L)}},\pmb{w^{(L-1)}}<br>$$<br>可求解：<br>$$<br>\pmb{\delta^{(L-1)}},\pmb{w^{(L-2)}}<br>$$<br>递归求解，反复迭代</p>
+<h3 id="偏置单元"><a href="#偏置单元" class="headerlink" title="偏置单元"></a>偏置单元</h3><p>偏置单元也是如此<br>$$<br>\frac{\partial J}{\partial b^{(L-1)}<em>i}=\frac{1}{m}\sum</em>{t=1}^m\frac{\partial J}{\partial z^{(L)}<em>i}\<br>\frac{\partial J}{\partial \pmb{b^{(L-1)}}}=\pmb{\delta^{(L)}<em>i}\<br>\frac{\partial J}{\partial b^{(l)}<em>i}=\frac{1}{m}\sum</em>{t=1}^m\left{f’(z^{(l+1)}<em>i)\sum^{s</em>{l+2}}</em>{k=1}\left[\delta^{(l+2)}<em>kw^{l+1}</em>{ki}\right]\right}\<br>\frac{\partial J}{\partial \pmb{b^{(L-1)}}}=\frac{1}{m}\sum</em>{t=1}^m\pmb{\delta^{(l+1)}}<br>$$</p>
+<h3 id="对逻辑分类"><a href="#对逻辑分类" class="headerlink" title="对逻辑分类"></a>对逻辑分类</h3><p>之前就已经说明过一样的，这里也同理有结论</p>
+<h3 id="对正则化"><a href="#对正则化" class="headerlink" title="对正则化"></a>对正则化</h3><p>$$<br>\frac{\partial J}{\partial W^{(l)}}=\frac{1}{m}\sum_{t=1}^m\pmb{\delta^{(l+1)}}\pmb{a^{l}}^T+\frac{\lambda}{m}W^{(l)}<br>$$</p>
+<hr>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lliuye/p/9183914.html">https://www.cnblogs.com/lliuye/p/9183914.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32865355/article/details/80260212">https://blog.csdn.net/qq_32865355/article/details/80260212</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/" rel="tag"># 线性模型</a>
+              <a href="/tags/%E5%90%B4%E6%81%A9%E8%BE%BE/" rel="tag"># 吴恩达</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%A5%BF%E7%93%9C%E4%B9%A6/" rel="tag"># 机器学习西瓜书</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/04/ffmpeg%E4%BD%BF%E7%94%A8/" rel="prev" title="ffmpeg使用">
+      <i class="fa fa-chevron-left"></i> ffmpeg使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%89/" rel="next" title="机器学习笔记三：SVM支持向量机">
+      机器学习笔记三：SVM支持向量机 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">1.</span> <span class="nav-text">前向传播</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E4%BB%B7%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">代价函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">3.</span> <span class="nav-text">反向传播</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E5%B1%82"><span class="nav-number">3.1.</span> <span class="nav-text">输出层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%90%E8%97%8F%E5%B1%82"><span class="nav-number">3.2.</span> <span class="nav-text">隐藏层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E7%BD%AE%E5%8D%95%E5%85%83"><span class="nav-number">3.3.</span> <span class="nav-text">偏置单元</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E9%80%BB%E8%BE%91%E5%88%86%E7%B1%BB"><span class="nav-number">3.4.</span> <span class="nav-text">对逻辑分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E6%AD%A3%E5%88%99%E5%8C%96"><span class="nav-number">3.5.</span> <span class="nav-text">对正则化</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

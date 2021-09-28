@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="问题描述矩阵链乘法：给定一个n个矩阵的序列(矩阵链)，：$A_1A_2\dots A_n \Leftrightarrow \lang A_1,A_2,\dots A_n\rang$ ,这里我们不讨论如何求解计算结果，默认采用$\Theta(n^3)$ 的计算方法。我们可以使用括号去表达计算次序，然后利用标准的矩阵相乘去运算。可以发现不同的加括号方式得到的结果是一样的，但复杂程度却是不一样的。 如$">
+<meta property="og:type" content="article">
+<meta property="og:title" content="矩阵链乘">
+<meta property="og:url" content="http://example.com/2021/04/18/MatrixChainOrder/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="问题描述矩阵链乘法：给定一个n个矩阵的序列(矩阵链)，：$A_1A_2\dots A_n \Leftrightarrow \lang A_1,A_2,\dots A_n\rang$ ,这里我们不讨论如何求解计算结果，默认采用$\Theta(n^3)$ 的计算方法。我们可以使用括号去表达计算次序，然后利用标准的矩阵相乘去运算。可以发现不同的加括号方式得到的结果是一样的，但复杂程度却是不一样的。 如$">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-18T05:39:45.000Z">
+<meta property="article:modified_time" content="2021-09-09T12:04:16.120Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="dynamicProgramming">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/04/18/MatrixChainOrder/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>矩阵链乘 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/18/MatrixChainOrder/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          矩阵链乘
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-04-18 13:39:45" itemprop="dateCreated datePublished" datetime="2021-04-18T13:39:45+08:00">2021-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-09 20:04:16" itemprop="dateModified" datetime="2021-09-09T20:04:16+08:00">2021-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index"><span itemprop="name">Algorithm</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>矩阵链乘法：给定一个n个矩阵的序列(矩阵链)，：$A_1A_2\dots A_n \Leftrightarrow \lang A_1,A_2,\dots A_n\rang$ ,这里我们不讨论如何求解计算结果，默认采用$\Theta(n^3)$ 的计算方法。我们可以使用括号去表达计算次序，然后利用标准的矩阵相乘去运算。可以发现不同的加括号方式得到的结果是一样的，但复杂程度却是不一样的。</p>
+<p>如$A_1A_2A_3$ 为例子：</p>
+<p>$$A_1:a<em>b \quad A_2:b</em>c \quad A_3:c*d \ (A_1A_2)A_3:abc+acd=ac(b+d) \<br>A_1(A_2A_3):bcd+abd=bd(a+c)$$</p>
+<p>那么我们引出定义<strong>满足以下性质的矩阵乘积链称为fully parenthesized(完全括号化的)：单一矩阵，或者是两个完全括号化的矩阵乘积链的积，且已经外加括号。</strong></p>
+<p>如$\lang A_1,A_2,A_3,A_4\rang$有5种完全括号化的矩阵乘积链：1234,1(23)4,12(34),(12)34,(12)(34) 那有没有递推公式???</p>
+<p>引出矩阵链乘法问题：给定一个n个矩阵的序列(矩阵链)，矩阵规模$A_i:p_{i-1}*p_i$(满足行是上一个矩阵的列数)求完全括号化方案，使得乘积次数最少。</p>
+<p>首先考虑穷举法，设P(n)为n个矩阵的链的完全括号化方案的个数，考虑我们一定会在某个k矩阵上吧矩阵链分割，于是我们有递推公式：</p>
+<p>$$P(n)=<br>\begin{cases}<br>1,\quad n=1 \ \sum_{k=1}^{n-1}P(k)P(n-k),\quad n\geq 2<br>\end{cases}$$</p>
+<p>结果为$\Omega(2^n)$，要求用代入法证明，一会证，有点麻烦。</p>
+<h2 id="动态规划求解"><a href="#动态规划求解" class="headerlink" title="动态规划求解"></a>动态规划求解</h2><p>一个指数型的结果是不能让人接受的，考虑动态规划</p>
+<h3 id="最优解的结构特征"><a href="#最优解的结构特征" class="headerlink" title="最优解的结构特征"></a>最优解的结构特征</h3><p>考虑在第k个矩阵分解，得到$A_i\dots A_k \quad A_{k+1}\dots A_j$,为方便讨论简记为$A_{i\dots k},A_{k+1\dots j}$,容易想到如果我们先计算$A_{i\dots k},A_{k+1\dots j}$的最优解，再加上$A_{i\dots k},A_{k+1\dots j}$相乘所需要的次数，就应该是$A_{i\dots j}$一个最优解。这样的解一定是最优解吗？一定是的。看不懂书上的说明，有时间再啃。</p>
+<h3 id="一个递归的求解方案"><a href="#一个递归的求解方案" class="headerlink" title="一个递归的求解方案"></a>一个递归的求解方案</h3><p>记$A_{i\dots j}$的最优解的所要求的乘积次数为$m[i,j]$,于是乎有</p>
+<p>$$m[i,j]=<br>\begin{cases}<br>0,\quad i=j \ min_{i\leq k \lt j}\lbrace m[i,k]+m[k+1,j]+p_{i-1}p_kp_j \rbrace, \quad i \lt j<br>\end{cases}$$</p>
+<p>为第四步构造最优解，我们还要使用s[i,j]保存分割位置k</p>
+<h3 id="计算最优解的值"><a href="#计算最优解的值" class="headerlink" title="计算最优解的值"></a>计算最优解的值</h3><p>如果单纯采用m[i,j]的递推公式来进行递归，那也是指数级别的复杂度。我们可以考虑递归时记住已经计算过的结果，为带备忘的自顶向下的方法。</p>
+<p>采用带备忘的自顶向下的方法</p>
+<p>采用自底向上的方法,首先分析一下：最小问题应该是m[i,i]，而m[i,i]=0，下一个子问题应该是长度为2的m[i,j]，即$j-i=2$，依此类推，一直求到长度为n。于是应该有三个变化的量l、i、k，j可由i，l确定。不考虑i=j。</p>
+<p>$$l:leght:2 \rightarrow n \quad i:1\rightarrow n-l+1\quad j = i+l-1 \quad k:i \rightarrow j-1$$</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">BottomUpMCO</span><span class="params">(<span class="keyword">int</span> *p, <span class="keyword">int</span> **m, <span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        m[i][i] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> l = <span class="number">2</span>; l &lt;= n; ++l)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n - l + <span class="number">1</span>; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> j = l + i - <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">int</span> q = INT32_MAX;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> k = i; k &lt; j; ++k)</span><br><span class="line">                q = min(q, m[i][k] + m[k + <span class="number">1</span>][i] + p[i - <span class="number">1</span>] * p[k] * p[j]);</span><br><span class="line">            m[i][j] = q;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="构造最优解"><a href="#构造最优解" class="headerlink" title="构造最优解"></a>构造最优解</h3><p>s[i,j]保存分割位置k</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExtendedBottomUpMCO</span><span class="params">(<span class="keyword">int</span> *p, <span class="keyword">int</span> **m, <span class="keyword">int</span> **s, <span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//p.leght=n+1 </span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        m[i][i] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> l = <span class="number">2</span>; l &lt;= n; ++l)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n - l + <span class="number">1</span>; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> j = l + i - <span class="number">1</span>;</span><br><span class="line">            m[i][j] = INT32_MAX;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> k = i; k &lt; j; ++k)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">int</span> q = m[i][k] + m[k + <span class="number">1</span>][i] + p[i - <span class="number">1</span>] * p[k] * p[j];</span><br><span class="line">                <span class="keyword">if</span> (q &lt; m[i][j])</span><br><span class="line">                &#123;</span><br><span class="line">                    m[i][j] = q;</span><br><span class="line">                    s[i][j] = k;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PrintOptimalParens</span><span class="params">(<span class="keyword">int</span> **s, <span class="keyword">int</span> i, <span class="keyword">int</span> j)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (i == j)</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; i;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">&quot;(&quot;</span>;</span><br><span class="line">        PrintOptionParens(s,i,s[i][j]);</span><br><span class="line">        PrintOptionParens(s,s[i][j]+<span class="number">1</span>,j);</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">&quot;)&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> p[<span class="number">7</span>]=&#123;<span class="number">30</span>,<span class="number">35</span>,<span class="number">15</span>,<span class="number">5</span>,<span class="number">10</span>,<span class="number">20</span>,<span class="number">25</span>&#125;, n = <span class="number">6</span>;</span><br><span class="line">    <span class="keyword">int</span> **s = <span class="keyword">new</span> <span class="keyword">int</span>*[n+<span class="number">1</span>], **m = <span class="keyword">new</span> <span class="keyword">int</span>*[n+<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= n; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        s[i] = <span class="keyword">new</span> <span class="keyword">int</span>[n+<span class="number">1</span>];</span><br><span class="line">        m[i] = <span class="keyword">new</span> <span class="keyword">int</span>[n+<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    ExtendedBottomUpMCO(p,m,s,n);</span><br><span class="line">    PrintOptimalParens(s,<span class="number">1</span>,n);</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">&#x27;\n&#x27;</span>&lt;&lt;m[<span class="number">1</span>][n];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>解释一下PrintOptimalParens，$s[i][j]$意义：矩阵链$A_{i\dots j}$最优括号分割点应该在第$s[i][j]$个矩阵，矩阵链就被分成了两个部分，只有当i=j时，输出矩阵，其他时候，矩阵链还能被分割，就继续递归分割。括号的输出：当矩阵链$A_{i\dots j}$还能再分割时，说明其前面必然有一个$”(“$，递归完成后也要把$”)”$补上。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/dynamicProgramming/" rel="tag"># dynamicProgramming</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/18/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="prev" title="动态规划">
+      <i class="fa fa-chevron-left"></i> 动态规划
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/18/CutRod/" rel="next" title="钢条切割">
+      钢条切割 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E6%B1%82%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">动态规划求解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E4%BC%98%E8%A7%A3%E7%9A%84%E7%BB%93%E6%9E%84%E7%89%B9%E5%BE%81"><span class="nav-number">2.1.</span> <span class="nav-text">最优解的结构特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E9%80%92%E5%BD%92%E7%9A%84%E6%B1%82%E8%A7%A3%E6%96%B9%E6%A1%88"><span class="nav-number">2.2.</span> <span class="nav-text">一个递归的求解方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E6%9C%80%E4%BC%98%E8%A7%A3%E7%9A%84%E5%80%BC"><span class="nav-number">2.3.</span> <span class="nav-text">计算最优解的值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%9C%80%E4%BC%98%E8%A7%A3"><span class="nav-number">2.4.</span> <span class="nav-text">构造最优解</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
