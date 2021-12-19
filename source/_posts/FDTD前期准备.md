@@ -305,3 +305,7 @@ $$
 \alpha(a) y(a) + \beta(a) y(a) = \gamma(a) ,\quad \alpha(b) y(b) + \beta(b) y(b) = \gamma(b) \quad a \lt b \tag {3-15}
 $$
 同理一样可得一nxn的三对角矩阵
+
+## 数学物理方程
+
+刘路易斯方程

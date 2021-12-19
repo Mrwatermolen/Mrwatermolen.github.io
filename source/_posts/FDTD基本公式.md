@@ -119,7 +119,7 @@ $$
 最后可得：
 $$
 \begin{align}
-	H^{n+1/2}(l) & = CP(l) H^{n-1/2}(l) \\
+	H_x^{n+1/2}(l) & = CP(l) H^{n-1/2}(l) \\
 	& - CQ(l) \left[ \frac{E^n_z(i,j+1,k) - E^n_z(i,j,k)}{\Delta y} - \frac{E^n_y(i,j,k+1) - E^n_y(i,j,k)}{\Delta z} \right] \\
 \end{align}
 \tag {1-8}
@@ -135,8 +135,8 @@ $$
 同理我们取第n+1/2时刻的电场作为观察节点，也有：
 $$
 \begin{align}
-	E^{n+1}(l) & = CA(l) E^{n}(l) \\
-	& + CB(m) \left[ \frac{H^n_z(i+1/2,j+1/2,k) - H^n_z(i+1/2,j-1/2,k)}{\Delta y} - \frac{H^n_z(i+1/2,j,k+1/2) - H^n_y(i+1/2,j,k-1/2)}{\Delta z} \right] \\
+	E_x^{n+1}(l) & = CA(l) E^{n}(l) \\
+	& + CB(m) \left[ \frac{H^n_z(i+1/2,j+1/2,k) - H^n_z(i+1/2,j-1/2,k)}{\Delta y} - \frac{H^n_y(i+1/2,j,k+1/2) - H^n_y(i+1/2,j,k-1/2)}{\Delta z} \right] \\
 \end{align}
 \tag {1-11}
 $$
