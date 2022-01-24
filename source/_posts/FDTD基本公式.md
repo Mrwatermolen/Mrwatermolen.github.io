@@ -1,6 +1,6 @@
 ---
 title: FDTD基本公式
-date: 2021-12-01 21:01:32
+date: 2021-12-16 21:01:32
 tags:
   - FDTD
   - 计算物理
@@ -83,6 +83,8 @@ $$
     \end{array} % 第一行表格组结束
 \end{array} % 总表格结束
 $$
+这里提一个，初看可能不会注意的点：举例来说，$E^n_x(i+1/2,j,k)$和$H^{n+1/2}_x(i,j+1/2,k+1/2)$是同级的
+
 对有限差分，空间与时间都取一阶近似：
 $$
 \begin{align}
@@ -95,7 +97,15 @@ $$
 
 ## 直角坐标系下三维空间的FDTD公式
 
-取$H_x(i,j+1/2,k+1/2, n\Delta t)$为观察点，
+这里我先选择求解磁场分量，以x轴分量为例。先求解磁场分量，可能会产生一个不好的概念，先看下去。
+
+要求解$H^{n+1/2}_x(i,j+1/2,k+1/2)$，即n时刻的(i,j,k)元胞，注意这里我提及的为n时刻而非n+1/2时刻，这只是为了以后编程方便（n，n+1/2是同级的）。
+
+取$H_x(i,j+1/2,k+1/2, n\Delta t)$为观察点**（这个选点很妙！）**
+
+对直角坐标系下的`Maxwell`方程组：$\frac{\partial E_z}{\partial y} - \frac{\partial E_y}{\partial z} = -\mu \frac{\partial H_x}{\partial t} - \sigma_m H_x$
+
+以观察点为中心点，进行差分。
 $$
 \begin{align}
 	& \frac{E^n_z(i,j+1,k) - E^n_z(i,j,k)}{\Delta y} - \frac{E^n_y(i,j,k+1) - E^n_y(i,j,k)}{\Delta z} \\
@@ -103,7 +113,7 @@ $$
 \end{align}
 \tag {1-5}
 $$
-对观察点取两点平均近似：（简单解释一下为什么取时间插值，而不取空间。取因为n时刻内，H的空间值都是未知的。大概也不是）
+对观察点取两点平均近似：
 $$
 H^{n}_x(i,j+1/2,k+1/2) = \frac{H^{n+1/2}_x(i,j+1/2,k+1/2) + H^{n-1/2}_x(i,j+1/2,k+1/2)}{2} \tag {1-6}
 $$
@@ -129,15 +139,23 @@ $$
 $$
 CP(l) = \frac{\frac{\mu(l)}{\Delta t} - \frac{\sigma_m(l)}{2}}{\frac{\mu(l)}{\Delta t} + \frac{\sigma_m(l)}{2}} \quad CQ(l) = \frac{1}{\frac{\mu(l)}{\Delta t} + \frac{\sigma_m(l)}{2}} \tag {1-9}
 $$
-如此取第n时刻的其他位置的磁场分量作为观察节点，即可得从时间上n+1/2时刻的，空间上Yee元胞的磁场分布：
+如此取其他位置的磁场分量作为观察节点，空间上Yee元胞的磁场分布：
 $$
 \vec{H}_x^{n+1/2}(i,j+1/2,k+1/2) ,\quad \vec{H}_z^{n+1/2}(i+1/2,j,k+1/2) ,\quad \vec{H}_x^{n+1/2}(i+1/2,j+1/2,k) ,\quad \tag {1-10}
 $$
-同理我们取第n+1/2时刻的电场作为观察节点，也有：
+这里注意，要求出$H^{n+1/2}$，需要的值为：上一个时刻的磁场分量，以及同时刻的电场分量。（这里可能会产生一个不好的概念）
+
+如何去理解呢？
+
+从编程的角度来说，在时间循环语句中，假设此时正在计算n时刻的YEE元胞，此时要计算出的正是`E[n] H[n+1/2]`但是对于计算机来说，数组的标号都是n，即计算`E[n] H[n]`。我写这么啰嗦就是因为之前编程计算时犯错了，以为`H[n+1/2]`对应的下标为`[n+1]`。这就是为什么我说n，n+1/2是同级的。
+
+同理我们取第n+1/2时刻的电场作为观察节点，也可解得电场分布。
+
+如取$E^{n+1/2}_x(i+1/2,j,k)$
 $$
 \begin{align}
 	E_x^{n+1}(l) & = CA(l) E^{n}(l) \\
-	& + CB(m) \left[ \frac{H^n_z(i+1/2,j+1/2,k) - H^n_z(i+1/2,j-1/2,k)}{\Delta y} - \frac{H^n_y(i+1/2,j,k+1/2) - H^n_y(i+1/2,j,k-1/2)}{\Delta z} \right] \\
+	& + CB(l) \left[ \frac{H^{n+1/2}_z(i+1/2,j+1/2,k) - H^{n+1/2}_z(i+1/2,j-1/2,k)}{\Delta y} - \frac{H^{n+1/2}_y(i+1/2,j,k+1/2) - H^{n+1/2}_y(i+1/2,j,k-1/2)}{\Delta z} \right] \\
 \end{align}
 \tag {1-11}
 $$
@@ -146,15 +164,32 @@ $$
 l = (i+1/2,j,k) ,\quad CA(l) = \frac{\frac{\epsilon(l)}{\Delta t} - \frac{\sigma(l)}{2}}{\frac{\epsilon(l)}{\Delta t} + \frac{\sigma(l)}{2}} \quad CB(l) = \frac{1}{\frac{\epsilon(l)}{\Delta t} + \frac{\sigma(l)}{2}} \tag {1-12}
 $$
 
+这里给出汇总：
+$$
+\begin{cases}
+	\vec{E}^{n+1} = CA \cdot \vec{E}^{n}  + CB \left[ \nabla \times \vec{H} \right]^{n+1/2} \\
+	\vec{H}^{n+1/2} = CP \cdot \vec{H}^{n-1/2}  - CQ \left[ \nabla \times \vec{E} \right]^{n} \\
+\end{cases}
+$$
+这里可以看出在编程计算中，我们应该先求解全空间的`E[n]`后再求解`H[n]`
+
 ### 二维问题
 
 物理量与z坐标无关，即$\frac{\partial}{\partial z} =  0$
 
 就分为TE波与TM波
 
+1. TE波
+
+   TE波的特点为：$H_z \neq 0 \quad E_z = 0$
+
+2. TM波
+
+   TM波的特点为：$E_z \neq 0 \quad H_z = 0$
+
 ### 一维问题
 
-看作沿着z轴传播的TEM波
+看作沿着z轴传播的TEM波，即：$\frac{\partial}{\partial x} = 0 \quad \frac{\partial}{\partial y} = 0 \quad E_z = 0 \quad H_z = 0$
 
 ## 时间离散程度和空间离散程度对稳定性影响的讨论
 
