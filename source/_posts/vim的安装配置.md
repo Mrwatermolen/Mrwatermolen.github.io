@@ -31,6 +31,8 @@ cd vim
 sudo make install
 ```
 
+<!-- more -->
+
 ### 特殊需求
 
 但如果有特殊要求的，在 `cd vim` 后还需要手动配置一些参数

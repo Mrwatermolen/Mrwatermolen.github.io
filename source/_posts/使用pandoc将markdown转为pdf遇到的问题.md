@@ -23,6 +23,8 @@ date: 2020-11-19 00:00:00
 > Type  H for immediate help.
 > Try running pandoc with --pdf-engine=xelatex.
 
+<!-- more -->
+
 ## 解决方法
 
 pdflatex，是不支持中文的，因此需要手动设置编译时所用的引擎为xelatex

@@ -28,6 +28,8 @@ sudo apt-get install dosbox
 
 下载后创建一个文件夹 命名Masm（自定义）将下载好的程序放入该文件夹中
 
+<!-- more -->
+
 终端运行dosbox
 
 ``` bash

@@ -9,8 +9,9 @@ categories:
 date: 2022-01-25 08:58:29
 ---
 
-
 `Let‘s Encrypt`可以免费申请到能得到浏览器认证的TLS证书，当然申请的证书只有90天有效期，不过可以免费续期。这里采用官方推荐使用`certbot` 脚本申请证书。由于家用宽带禁封了80端口，会导致在域名认证这一步上`Let‘s Encrypt`无法判断你对域名拥有管理权，导致申请失败。所以在申请时，要么找一台80端口没被封的服务器，或者使用手工添加配置 DNS 记录。不过手动去DNS解析服务商配置 DNS 记录通过验证，`certbot` 也提供了自动脚本，详情见[User Guide — Certbot 1.22.0 documentation (eff-certbot.readthedocs.io)](https://eff-certbot.readthedocs.io/en/stable/using.html#manual)，我使用的是Cloudflare。
+
+<!-- more -->
 
 ## 安装
 

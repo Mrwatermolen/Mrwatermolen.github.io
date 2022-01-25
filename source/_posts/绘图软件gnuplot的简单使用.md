@@ -14,6 +14,8 @@ date: 2020-11-18 00:00:00
 
 由于实验数据绘图的需要，本来在树莓派上装了octave好像是缺了什么依赖跑不起来，最后换了gnuplot
 
+<!-- more -->
+
 ## 1. 安装
 
  `sudo apt install gnuplot`

@@ -24,6 +24,8 @@ cat 1.mpg 2.mpg | ffmpeg -f mpeg -i - -qscale 6 -vcodec mpeg4 output.mp4
 #-qscale <数值> 以<数值>质量为基础的VBR，取值0.01-255，约小质量越好
 ```
 
+<!-- more -->
+
 ### 使用ts拼接
 
 速度快，文件小
