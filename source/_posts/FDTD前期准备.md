@@ -6,7 +6,7 @@ tags:
   - Fourier变换
   - 计算物理
 categories:
-  - 电磁波
+  - 电磁场
 mathjax: true
 ---
 
@@ -62,7 +62,7 @@ $$
 
 采用复数表示法。
 $$
-\vec{E} = \Re\left[ E_0 \exp(\jmath \omega t + \phi) \right] \tag {1-5}
+\vec{E} = \Re\left[ E_0 \exp(\jmath \omega t + \phi) \right] \cdot \hat{r} \tag {1-5}
 $$
 时谐因子为$\exp(\jmath \omega t )$，此时有时间导数算子与频域算子的对应关系：
 $$
@@ -85,6 +85,14 @@ $$
 	\nabla^2 \vec{E} - \frac{1}{\epsilon \mu} \frac{\partial^2 \vec{E}}{\partial t^2} & = \frac{\nabla \rho}{\epsilon} + \mu \frac{\partial \vec{J}}{\partial t} \\
 	\nabla^2 \vec{H} - \frac{1}{\epsilon \mu} \frac{\partial^2 \vec{H}}{\partial t^2} & = -\nabla \times \vec{J} \\
 \end{cases} \tag {1-8}
+$$
+
+考虑时谐电磁场中应用式（1-6）转为频域：
+$$
+\begin{cases}
+	\nabla^2 \vec{E} + k^2 \vec{E} & = \frac{\nabla \rho}{\epsilon} + \mu \frac{\partial \vec{J}}{\partial t} \\
+	\nabla^2 \vec{H} + k^2 \vec{H} & = -\nabla \times \vec{J} & k = \frac{\omega}{v} \\
+\end{cases} \tag {1-9}
 $$
 
 

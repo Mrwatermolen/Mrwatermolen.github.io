@@ -5,7 +5,7 @@ tags:
   - FDTD
   - 计算物理
 categories:
-  - 电磁波
+  - 电磁场
 mathjax: true
 ---
 
