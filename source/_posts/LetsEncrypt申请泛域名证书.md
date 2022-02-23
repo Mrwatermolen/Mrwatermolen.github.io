@@ -45,6 +45,6 @@ sudo certbot certonly --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare
 ## 续期
 
 ```
-cerbot renew
+certbot renew
 ```
 
