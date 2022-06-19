@@ -236,12 +236,9 @@ $$
 $$
 若离散间隔过大，不满足（1-19），则$q_{num}$为纯虚数，其模值：
 $$
-\begin{aligned}
-	|q_{num}| & = \sqrt{\left[ \frac{\omega \Delta t }{2} \pm \sqrt{(\frac{\omega \Delta t}{2})^2 - 1} \right]^2} \\
-	& = \sqrt{ \frac{(\omega \Delta t)^2}{2} - 1 \pm \omega \Delta t \sqrt{(\frac{\omega \Delta t}{2})^2 - 1} } \\
-	& = \sqrt{ \sqrt{(\frac{\omega \Delta t}{2})^2 - 1} \left[ \sqrt{(\frac{\omega \Delta t}{2})^2 - 1} \pm \omega \Delta t \right] } \\
-\end{aligned} \tag {1-20}
+	|q_{num}| = \sqrt{\left[ \frac{\omega \Delta t }{2} \pm \sqrt{(\frac{\omega \Delta t}{2})^2 - 1} \right]^2} \tag {1-20}
 $$
+要其模值为1，解之得$\frac{\omega \Delta t }{2} = 1$或$\frac{\omega \Delta t }{2} = 0$，这在$q_{num}$为纯虚数的条件下，这些解都不成立。
 模值不为1，则进行差分获得的数值解就会趋于发散或衰减
 
 #### 相位条件
@@ -260,7 +257,6 @@ $$
 $$
 \psi_{num} \approx \arctan{ \frac{\omega \Delta t}{2} \left[ 1 + \frac{1}{2} (\frac{\omega \Delta t}{2})^2 \right] } \tag {1-23}
 $$
-
 
 如果把$\frac{\omega \Delta t}{2}$看作无穷小，则$(\frac{\omega \Delta t}{2})^2$就是更高阶的无穷小。则有近似：
 $$
