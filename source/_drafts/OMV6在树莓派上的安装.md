@@ -3,8 +3,6 @@ title: OMV6在树莓派上的安装
 tags:
 ---
 
-# OMV6在树莓派上的安装
-
 > OMV全称是openmediavault，是一个基于debian开源的nas管理系统,干净好用
 >
 > 设备：PI 4 8GB
@@ -15,7 +13,7 @@ tags:
 
 ## 安装OMV6
 
-参考官网https://forum.openmediavault.org/index.php?thread/39490-install-omv6-on-debian-11-bullseye/
+参考官网<https://forum.openmediavault.org/index.php?thread/39490-install-omv6-on-debian-11-bullseye/>
 
 先添加源
 
@@ -71,7 +69,7 @@ sudo ./install-omv.sh
 
 安装结束
 
-```
+```text
 To manage the system visit the openmediavault web control panel:
 
 eth0: 192.168.1.6
@@ -89,7 +87,7 @@ web site: https://www.openmediavault.org
 
 注意：由于omv会接管大量debian底层的设置，比如smb直接被接管了，ssh也禁止出来root用户以外的用登陆
 
-直接访问http://192.168.1.6/，注意：omv和nginx在没有做特处理前是冲突的
+直接访问`192.168.1.6`，注意：omv和nginx在没有做特处理前是冲突的
 
 默认用户：admin 默认密码：openmediavault
 
@@ -107,8 +105,6 @@ OpenMediaVault 修改了 SSH 的权限机制，只有在SSH 用户组中的用�
 
 用户管理->用户->用户组，勾上ssh
 
-
-
 ## OMV设置smb共享
 
 先把transmission停了。
@@ -121,13 +117,11 @@ OpenMediaVault 修改了 SSH 的权限机制，只有在SSH 用户组中的用�
 
 服务->SMB->设置，勾选启动
 
-
-
 ## OMV设置transmission
 
 悲剧的事情来了，我原来tr挂的文件夹时/home/pi/DiskShare，现在OMV接管后磁盘都挂载在/srv/目录下了。命名格式：文件系统的默认挂载点名称被统一设置成了 `dev-disk-by-uuid-XXXX` 这种格式.
 
-解决链接：https://it.ismy.fun/2021/04/02/omv-5-change-default-mountpoint-name/
+解决链接：<https://it.ismy.fun/2021/04/02/omv-5-change-default-mountpoint-name/>
 
 修改挂载点名称可以编辑 `/etc/openmediavault/config.xml` 配置文件，找到里面的 `<fstab></fstab>`这对标签中的文件挂载点信息`<mntent></mntent>`：
 
@@ -152,7 +146,7 @@ OpenMediaVault 修改了 SSH 的权限机制，只有在SSH 用户组中的用�
 修改完成以后，执行命令：
 
 ```shell
-$ sudo omv-salt deploy run fstab
+sudo omv-salt deploy run fstab
 ```
 
 这个命令会根据修改后的配置文件，生成新的 `/etc/fstab` 配置信息。
@@ -166,4 +160,3 @@ $ sudo omv-salt deploy run fstab
 注意此时transmission没有权限去访问数据，要把transmission也添加到pi组里面即可：
 
 用户管理->用户组->编辑->成员：勾选debian-transmission即可（也不一定）
-
