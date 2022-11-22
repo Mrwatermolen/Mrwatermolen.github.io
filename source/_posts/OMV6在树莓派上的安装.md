@@ -1,6 +1,6 @@
 ---
 title: OMV6在树莓派上的安装
-date: 2022-10-18 10:37:24
+date: 2021-12-06 10:37:24
 tags:
 categories:
   - Linux
