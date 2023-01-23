@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="是之前都是对自由空间中的进行分析，在实际中由于计算量以及内存的问题。必须设置边界。这很好想清楚的（虽然想了很久）。 我们推导得到了不考虑边界的三维的FDTD的基本公式，可以很容易看出我们想得到某点的某时刻的值，可以通过前一个时刻周围点的值去推出该点该时刻的值。所以如果我们有初始时刻的场的分布，那就可以一直推下去。如果是自由空间，那我们就要存储无限个Yee元胞，这怎么可能我们不可能有无限的内存以及计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Engquist-Majda吸收边界">
+<meta property="og:url" content="http://example.com/2022/01/10/%E8%BF%91%E4%BC%BC%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="是之前都是对自由空间中的进行分析，在实际中由于计算量以及内存的问题。必须设置边界。这很好想清楚的（虽然想了很久）。 我们推导得到了不考虑边界的三维的FDTD的基本公式，可以很容易看出我们想得到某点的某时刻的值，可以通过前一个时刻周围点的值去推出该点该时刻的值。所以如果我们有初始时刻的场的分布，那就可以一直推下去。如果是自由空间，那我们就要存储无限个Yee元胞，这怎么可能我们不可能有无限的内存以及计">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-10T08:26:46.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.027Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="FDTD">
+<meta property="article:tag" content="计算物理">
+<meta property="article:tag" content="吸收边界">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/01/10/%E8%BF%91%E4%BC%BC%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Engquist-Majda吸收边界 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/10/%E8%BF%91%E4%BC%BC%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Engquist-Majda吸收边界
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-10 16:26:46" itemprop="dateCreated datePublished" datetime="2022-01-10T16:26:46+08:00">2022-01-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%B5%E7%A3%81%E5%9C%BA/" itemprop="url" rel="index"><span itemprop="name">电磁场</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>是之前都是对自由空间中的进行分析，在实际中由于计算量以及内存的问题。必须设置边界。这很好想清楚的（虽然想了很久）。</p>
+<p>我们推导得到了不考虑边界的三维的FDTD的基本公式，可以很容易看出我们想得到某点的某时刻的值，可以通过前一个时刻周围点的值去推出该点该时刻的值。所以如果我们有初始时刻的场的分布，那就可以一直推下去。如果是自由空间，那我们就要存储无限个Yee元胞，这怎么可能我们不可能有无限的内存以及计算资源。比如：要计算a点，就要知道a的左右两点的前一个时刻的值，同理嘛，2-&gt;4-&gt;8-&gt;16-&gt;32….. 所以想模拟全空间的传播（亦或者说是全空间我们想要弄清楚的空间的传播）就要设置边界，形成一个有限空间，所有YEE元胞的值都能通过这个有限空间的值递推，不需要借助该空间以外的值。这个边界，一定要首先满足的是不会有反射波的产生，不然就会破坏空间里电磁波原本 的传播了。所以它就叫吸收边界。</p>
+<span id="more"></span>
+<h2 id="Engquist-Majda吸收边界的解析形式（Mur吸收边界）"><a href="#Engquist-Majda吸收边界的解析形式（Mur吸收边界）" class="headerlink" title="Engquist-Majda吸收边界的解析形式（Mur吸收边界）"></a>Engquist-Majda吸收边界的解析形式（Mur吸收边界）</h2><p>这个边界有点像是截断边界，边界以外的区域的场值为0，即该边界将波全吸收了。（可能</p>
+<p>考虑二维问题，对无源区域，电磁场满足亥姆霍兹方程（Helmholtz equation）。</p>
+<script type="math/tex; mode=display">
+\frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2} - \frac{1}{v^2} \frac{\partial^2 f}{\partial t^2} = 0 \tag {1-1}</script><p>由分离变量法可解得，其解系</p>
+<script type="math/tex; mode=display">
+\left\{ A_n \exp{[ \jmath (\omega t - k^n_x x - k^n_y y) ]} \right\} \tag {1-2}</script><p>我们选择一个正方形区域：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    0 \le x \le x_0 \\
+    0 \le y \le y_0 \\
+\end{align}</script><p>取左边界$x = 0$可以得知，应存在入射波和反射波，则在区域内解应为入射波和反射波的合成。</p>
+<p>取左边界部分观察：</p>
+<script type="math/tex; mode=display">
+f(x) = A_- \exp{[ \jmath (\omega t + k_x x + k_y y) ]} + A_+ \exp{[ \jmath (\omega t - k_x x + k_y y) ]} ; \quad k^2 = k_x^2 + k_y^2 \; k = \omega / v \tag {1-3}</script><p>其中入射波为：</p>
+<script type="math/tex; mode=display">
+f_- (x) = A_- \exp{[ \jmath (\omega t + k_x x + k_y y) ]} \tag {1-4}</script><p>反射波为：</p>
+<script type="math/tex; mode=display">
+f_+ (x) =  A_+ \exp{[ \jmath (\omega t - k_x x + k_y y) ]} \tag {1-5}</script><p>把式（1-3）代入（1-1）保留对x的导数得：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    \frac{\partial^2 f}{\partial x^2} - k_y^2 f + k^2 f & = 0 \\
+    \left[ \frac{\partial^2 }{\partial x^2} + (k^2 - k_y^2) \right] f & = 0 \\
+    (\frac{\partial }{\partial x} - \jmath \sqrt{ k^2 - k_y^2 }) (\frac{\partial }{\partial x} + \jmath \sqrt{ k^2 - k_y^2 }) f & = 0 \tag {1-6} \\
+\end{align}</script><p>定义算子$L$：</p>
+<script type="math/tex; mode=display">
+L = (\frac{\partial }{\partial x} - \jmath \sqrt{ k^2 - k_y^2 }) (\frac{\partial }{\partial x} + \jmath \sqrt{ k^2 - k_y^2 }) = L_- L_+ \tag {1-7}</script><p>可有：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    Lf = 0 \\
+    L_- L_+ (f_- + f_+) = 0 \\
+    L_- L_+ f_- + L_- L_+ f_+ = 0 \tag {1-8} \\
+\end{align}</script><p>显然带入计算可得：</p>
+<script type="math/tex; mode=display">
+L_+ f_+ = 0 , \quad L_- f_- = 0</script><p>考虑模拟全空间（自由空间），边界处不应该有反射波。对式（1-8）做如下处理：</p>
+<script type="math/tex; mode=display">
+L_+ (L_- f_-) + L_+ (L_- f_+) = L_+ (L_- f_+) = 0 \tag {1-9}</script><p>如要不存在反射波，则有$f_+ = 0$。对式（1-9）有：</p>
+<script type="math/tex; mode=display">
+L_- f_+ = 0 \Rightarrow \left. \frac{\partial f}{\partial x} - \jmath \sqrt{ k^2 - k_y^2 } f \right |_{x = 0}  = 0 \tag {1-10}</script><p>对于时谐场有算子替换：</p>
+<script type="math/tex; mode=display">
+\frac{1}{v} \frac{\partial }{\partial t} \leftrightarrow \jmath k \tag {1-11}</script><p>对左边界部分的反射波有算子替换：</p>
+<script type="math/tex; mode=display">
+\frac{\partial }{\partial y} \leftrightarrow j k_y \tag {1-12}</script><p>对式（1-9）有：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    \left. \frac{\partial f}{\partial x} - \sqrt{ \jmath^2 k^2 - \jmath^2 k_y^2 } f \right |_{x = 0} = 0 \\
+    \left. \frac{\partial f}{\partial x} - \sqrt{ \frac{1}{v^2} \frac{\partial^2 }{\partial t^2} - \frac{\partial^2 }{\partial y^2} } f \right |_{x = 0} = 0 \\
+\end{align} \tag {1-13}</script><p>同理对右边界$x = x_0$有：</p>
+<script type="math/tex; mode=display">
+\left. \frac{\partial f}{\partial x} + \sqrt{ \frac{1}{v^2} \frac{\partial^2 }{\partial t^2} - \frac{\partial^2 }{\partial y^2} } f \right |_{x = x_0} = 0 \tag {1-14}</script><p>同理可得上下边界</p>
+<h3 id="一阶近似"><a href="#一阶近似" class="headerlink" title="一阶近似"></a>一阶近似</h3><p>边界的解析式中含有根号内的求导运算，不会近似。恰好，学过Taylor展开近似。</p>
+<p>由Taylor展开：</p>
+<script type="math/tex; mode=display">
+\sqrt{ \jmath^2 k^2 - \jmath^2 k_y^2 } = \jmath k \sqrt{ 1 - \frac{k_y^2}{k^2} } \approx \jmath k  - \jmath \frac{1}{2} \frac{k_y^2}{k} + \cdots \tag {1-15}</script><p>对于一阶近似，我们只取$\jmath k$，则式（1-13）有：</p>
+<script type="math/tex; mode=display">
+\left. \frac{\partial f}{\partial x} - \jmath k f \right |_{x = 0} = \left. \left( \frac{\partial f}{\partial x} - \frac{1}{v} \frac{\partial f}{\partial t} \right) \right |_{x = 0} =  0 \tag {1-16}</script><h3 id="二阶近似"><a href="#二阶近似" class="headerlink" title="二阶近似"></a>二阶近似</h3><p>对于二阶近似，我们只取$\jmath k  - \jmath \frac{1}{2} \frac{k_y^2}{k}$，则式（1-13）有：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    \left. \frac{\partial f}{\partial x} - \jmath k f + \frac{\jmath }{2} \frac{k_y^2}{k} f \right |_{x = 0} & = 0 \\
+    \left. \left( k \frac{\partial f}{\partial x} - \frac{k}{v} \frac{\partial f}{\partial t} - \frac{\jmath}{2} \frac{\partial^2 f}{\partial y^2} \right) \right |_{x = 0} & = 0 \\
+    \left. \left( \frac{1}{v} \frac{\partial^2 f}{\partial t \partial x} - \frac{1}{v^2} \frac{\partial^2 f}{\partial t^2} + \frac{1}{2} \frac{\partial^2 f}{\partial y^2} \right) \right |_{x = 0} & = 0 \\
+\end{align} \tag {1-17}</script><h3 id="汇总"><a href="#汇总" class="headerlink" title="汇总"></a>汇总</h3><p>我们可以类似二维推算出一维、三维。</p>
+<h4 id="一维Mur吸收边界的解析式"><a href="#一维Mur吸收边界的解析式" class="headerlink" title="一维Mur吸收边界的解析式"></a>一维Mur吸收边界的解析式</h4><p>很容易得出，一维无需近似，其解析式为：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \left. \left( \frac{\partial f}{\partial z} - \frac{1}{v} \frac{\partial f}{\partial t} \right) \right |_{z = 0} =  0 \\
+    \left. \left( \frac{\partial f}{\partial z} + \frac{1}{v} \frac{\partial f}{\partial t} \right) \right |_{z = z_0} =  0 \\
+\end{cases} \tag {1-18}</script><h4 id="二维Mur吸收边界的解析式"><a href="#二维Mur吸收边界的解析式" class="headerlink" title="二维Mur吸收边界的解析式"></a>二维Mur吸收边界的解析式</h4><p>有：</p>
+<script type="math/tex; mode=display">
+\begin{array}{c} % 总表格
+    \begin{array}{cc} % 第一行内分成两列
+        \begin{array}{|c|c} % 第一列"最小值"数组
+             & 一阶近似 & 二阶近似 \\
+            \hline
+            x = 0 & \frac{\partial f}{\partial x} - \frac{1}{v} \frac{\partial f}{\partial t} & \frac{1}{v} \frac{\partial^2 f}{\partial t \partial x} - \frac{1}{v^2} \frac{\partial^2 f}{\partial t^2} + \frac{1}{2} \frac{\partial^2 f}{\partial y^2} = 0 & \\
+            \hline
+            x = x_0 & \frac{\partial f}{\partial x} + \frac{1}{v} \frac{\partial f}{\partial t} & \frac{1}{v} \frac{\partial^2 f}{\partial t \partial x} + \frac{1}{v^2} \frac{\partial^2 f}{\partial t^2} - \frac{1}{2} \frac{\partial^2 f}{\partial y^2} = 0 & \\
+            \hline
+            y = 0 & \frac{\partial f}{\partial y} - \frac{1}{v} \frac{\partial f}{\partial t} & x替换为y即可 \\
+            \hline
+            y = y_0 & \frac{\partial f}{\partial y} + \frac{1}{v} \frac{\partial f}{\partial t} & x替换为y即可 \\
+        \end{array}
+    \end{array} % 第一行表格组结束
+\end{array} % 总表格结束</script><h4 id="三维Mur吸收边界的解析式"><a href="#三维Mur吸收边界的解析式" class="headerlink" title="三维Mur吸收边界的解析式"></a>三维Mur吸收边界的解析式</h4><p>不难得出，三维Mur吸收边界的解析式的一阶近似式等同于二维的形式，对于其二阶近似式，仅给出截断面为<code>yoz</code>时的形式，其他同理即可：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \frac{1}{v} \frac{\partial^2 f}{\partial t \partial x} - \frac{1}{v^2} \frac{\partial^2 f}{\partial t^2} + \frac{1}{2} \left( \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2} \right)f = 0 \quad ,x = 0 \\
+    \frac{1}{v} \frac{\partial^2 f}{\partial t \partial x} + \frac{1}{v^2} \frac{\partial^2 f}{\partial t^2} - \frac{1}{2} \left( \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2} \right)f = 0 \quad ,x = x_0 \\
+\end{cases} \tag {1-19}</script><h2 id="Mur吸收边界的FDTD形式"><a href="#Mur吸收边界的FDTD形式" class="headerlink" title="Mur吸收边界的FDTD形式"></a>Mur吸收边界的FDTD形式</h2><p>这里我只推二维，因为三维运算量太大了，暂时不动笔。而一维其实就是二维的一阶近似罢了。</p>
+<p>考虑TM波，$x = 0$</p>
+<p>TM波的$H_x$和$H_y$分量，其左边界量为$(i, j + 1/2)$和$(i+1/2, j )$，由上一节<strong>FDTD基本公式</strong>可知：</p>
+<script type="math/tex; mode=display">
+H^{n+1/2}_x(i,j+1/2) = CP(i,j+1/2) H^{n-1/2}_x(i,j+1/2) - CQ(i,j+1/2) \frac{E^n_z(i+1,j) - E^n_z(i,j)}{\Delta y} \tag {1-20}</script><p>所要求的值不涉及截断边界以外的值，所以无需使用吸收边界，同理$H_y$。这里想一下如果左边界$E_x(i,j)$仍使用<strong>FDTD基本公式</strong>求解，可以发现其要求使用到截断边界以外的值，所以对$E_z$要设置截断边界。</p>
+<h3 id="一阶近似式"><a href="#一阶近似式" class="headerlink" title="一阶近似式"></a>一阶近似式</h3><p>对$E_z$，取$E^{n+1/2}(i+1/2, j)$为观察点。有：</p>
+<script type="math/tex; mode=display">
+\frac{ E_z^{n+1/2}(i+1,j) - E_z^{n+1/2}(i,j) }{\Delta x} = \frac{E_z^{n+1}(i+1/2,j) - E_z^n(i+1/2,j)}{v \Delta t} \tag {1-22}</script><p>这里由于与$j$无关我们简化一下：$E_z(i+1,j) \leftarrow f(i+1)$</p>
+<p>采用线性插值</p>
+<script type="math/tex; mode=display">
+v \Delta t \left[ f^{n+1}(i+1) + f^{n}(i+1) - f^{n+1}(i) - f^{n}(i) \right] = \Delta x \left[ f^{n+1}(i+1) + f^{n+1}(i) - f^n(i+1) -f^n(i) \right] \tag {1-22}</script><p>可得：</p>
+<script type="math/tex; mode=display">
+E_z^{n+1}(i, j) = E_z^{n}(i+1, j) + \frac{v \Delta t - \Delta x}{v \Delta t + \Delta x}\left[ E_z^{n+1}(i+1,j) - E_z^{n}(i,j) \right] \tag {1-23}</script><h3 id="二阶近似式"><a href="#二阶近似式" class="headerlink" title="二阶近似式"></a>二阶近似式</h3><p>这里我们如果直接进行差分，运算有点大，三维情况下对二阶近似式就是直接差分，同时求出的结果也很直观的反映的是那些位置对边界产生了影响，二维也是如此，二维是6个点对其产生了影响，如果画出图，就很容易知道，为什么对于角顶点还要单独讨论。</p>
+<p>这里我们不进行直接差分，对二阶近似式中的第三项。这里我们讨论对于无耗介质$\sigma_m = 0$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    & \frac{\partial^2 E_z}{\partial y^2} \\
+    = & \frac{\partial }{\partial y} \left( -\mu \frac{\partial H_x}{\partial t} -\sigma_m H_x \right) \\
+    = & - \mu \frac{\partial^2 H_x}{\partial t \partial y} \\
+\end{aligned}
+\tag {1-24}</script><p>将式（1-24）带回$\frac{1}{v} \frac{\partial^2 f}{\partial t \partial x} - \frac{1}{v^2} \frac{\partial^2 f}{\partial t^2} + \frac{1}{2} \frac{\partial^2 f}{\partial y^2} = 0$有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    & \frac{1}{v} \frac{\partial^2 f}{\partial t \partial x} - \frac{1}{v^2} \frac{\partial^2 f}{\partial t^2} + \frac{1}{2} \frac{\partial^2 f}{\partial y^2} = 0 \\
+    & \frac{1}{v} \frac{\partial^2 f}{\partial t \partial x} - \frac{1}{v^2} \frac{\partial^2 f}{\partial t^2} - \mu \frac{\partial^2 H_x}{\partial t \partial y} = 0 \\
+    & \frac{\partial f}{\partial x} - \frac{1}{v} \frac{\partial f}{\partial t} - v\mu \frac{\partial H_x}{\partial y} = 0 \\
+\end{aligned}
+\tag {1-25}</script><p>头两项依旧是一阶近似式</p>
+<script type="math/tex; mode=display">
+E_z^{n+1}(i, j) = E_z^{n}(i+1, j) + \frac{v \Delta t - \Delta x}{v \Delta t + \Delta x}\left[ E_z^{n+1}(i+1,j) - E_z^{n}(i,j) \right] + \frac{v^2 \mu \Delta t \Delta x}{v \Delta t + \Delta x} \frac{\partial H_x}{\partial y} \tag {1-26}</script><p>插一句，同理右边界：</p>
+<script type="math/tex; mode=display">
+E_z^{n+1}(i, j) = E_z^{n}(i-1, j) + \frac{v \Delta t - \Delta x}{v \Delta t + \Delta x}\left[ E_z^{n+1}(i-1,j) - E_z^{n}(i,j) \right] - \frac{2 v^2 \mu \Delta t \Delta x}{v \Delta t - \Delta x} \frac{\partial H_x}{\partial y} \tag {1-27}</script><p>对式（1-25）右边第三项进行差分，取$H^{n+1/2}(i+1/2, j+1/2)$为观察点，再进行线性插值：</p>
+<script type="math/tex; mode=display">
+\frac{2 v^2 \mu \Delta t \Delta x}{v \Delta t - \Delta x} \frac{\partial H_x}{\partial y} = \frac{v^2 \mu \Delta t \Delta x}{\Delta y (v \Delta t - \Delta x)} \left[H_x^{n+1/2}(i+1,j+1/2) + H_x^{n+1/2}(i,j+1/2) -H_x^{n+1/2}(i+1,j-1/2) - H_x^{n+1/2}(i,j-1/2) \right] \tag {1-28}</script><p>可得二阶近似：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    & E_z^{n+1}(i, j) \\
+    = & E_z^{n}(i+1, j) + \frac{v \Delta t - \Delta x}{v \Delta t + \Delta x}\left[ E_z^{n+1}(i+1,j) - E_z^{n}(i,j) \right] \\
+    & +  \frac{v^2 \mu \Delta t \Delta x}{\Delta y (v \Delta t + \Delta x)} \\
+    & * \left[H_x^{n+1/2}(i+1,j+1/2) + H_x^{n+1/2}(i,j+1/2) - H_x^{n+1/2}(i+1,j-1/2) - H_x^{n+1/2}(i,j-1/2) \right]
+\end{aligned}
+\tag {1-29}</script>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FDTD/" rel="tag"># FDTD</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E7%89%A9%E7%90%86/" rel="tag"># 计算物理</a>
+              <a href="/tags/%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C/" rel="tag"># 吸收边界</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/04/NAS%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/" rel="prev" title="NAS折腾记录">
+      <i class="fa fa-chevron-left"></i> NAS折腾记录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/25/LetsEncrypt%E7%94%B3%E8%AF%B7%E6%B3%9B%E5%9F%9F%E5%90%8D%E8%AF%81%E4%B9%A6/" rel="next" title="Let's Encrypt申请泛域名证书">
+      Let's Encrypt申请泛域名证书 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Engquist-Majda%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C%E7%9A%84%E8%A7%A3%E6%9E%90%E5%BD%A2%E5%BC%8F%EF%BC%88Mur%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C%EF%BC%89"><span class="nav-text">Engquist-Majda吸收边界的解析形式（Mur吸收边界）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E9%98%B6%E8%BF%91%E4%BC%BC"><span class="nav-text">一阶近似</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E9%98%B6%E8%BF%91%E4%BC%BC"><span class="nav-text">二阶近似</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B1%87%E6%80%BB"><span class="nav-text">汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E7%BB%B4Mur%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C%E7%9A%84%E8%A7%A3%E6%9E%90%E5%BC%8F"><span class="nav-text">一维Mur吸收边界的解析式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8C%E7%BB%B4Mur%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C%E7%9A%84%E8%A7%A3%E6%9E%90%E5%BC%8F"><span class="nav-text">二维Mur吸收边界的解析式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%89%E7%BB%B4Mur%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C%E7%9A%84%E8%A7%A3%E6%9E%90%E5%BC%8F"><span class="nav-text">三维Mur吸收边界的解析式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mur%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C%E7%9A%84FDTD%E5%BD%A2%E5%BC%8F"><span class="nav-text">Mur吸收边界的FDTD形式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E9%98%B6%E8%BF%91%E4%BC%BC%E5%BC%8F"><span class="nav-text">一阶近似式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E9%98%B6%E8%BF%91%E4%BC%BC%E5%BC%8F"><span class="nav-text">二阶近似式</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

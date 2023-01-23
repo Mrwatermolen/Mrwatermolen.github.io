@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="OMV全称是openmediavault，是一个基于debian开源的nas管理系统,干净好用 设备：PI 4 8GB 系统：Debian 11 bullseye  安装前一定要谨慎，判断是否有这个需求，而且OMV会接管大量底层，不要拿主力机去试验。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OMV6在树莓派上的安装">
+<meta property="og:url" content="http://example.com/2021/12/06/OMV6%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E7%9A%84%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="OMV全称是openmediavault，是一个基于debian开源的nas管理系统,干净好用 设备：PI 4 8GB 系统：Debian 11 bullseye  安装前一定要谨慎，判断是否有这个需求，而且OMV会接管大量底层，不要拿主力机去试验。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-06T02:37:24.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.023Z">
+<meta property="article:author" content="MH">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/12/06/OMV6%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E7%9A%84%E5%AE%89%E8%A3%85/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>OMV6在树莓派上的安装 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/06/OMV6%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E7%9A%84%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OMV6在树莓派上的安装
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-06 10:37:24" itemprop="dateCreated datePublished" datetime="2021-12-06T10:37:24+08:00">2021-12-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>OMV全称是openmediavault，是一个基于debian开源的nas管理系统,干净好用</p>
+<p>设备：PI 4 8GB</p>
+<p>系统：Debian 11 bullseye</p>
+</blockquote>
+<p>安装前一定要谨慎，判断是否有这个需求，而且OMV会接管大量底层，不要拿主力机去试验。</p>
+<span id="more"></span>
+<h2 id="安装OMV6"><a href="#安装OMV6" class="headerlink" title="安装OMV6"></a>安装OMV6</h2><p>参考官网<a target="_blank" rel="noopener" href="https://forum.openmediavault.org/index.php?thread/39490-install-omv6-on-debian-11-bullseye/">https://forum.openmediavault.org/index.php?thread/39490-install-omv6-on-debian-11-bullseye/</a></p>
+<p>先添加源</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">nano add.sh #创建脚本</span><br><span class="line"><span class="meta">#</span><span class="bash"> 写入这些</span></span><br><span class="line">cat &lt;&lt;EOF &gt;&gt; /etc/apt/sources.list.d/openmediavault.list</span><br><span class="line">deb http://packages.openmediavault.org/public shaitan main</span><br><span class="line"><span class="meta">#</span><span class="bash"> deb http://downloads.sourceforge.net/project/openmediavault/packages shaitan main</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># Uncomment the following line to add software from the proposed repository.</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> deb http://packages.openmediavault.org/public shaitan-proposed main</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> deb http://downloads.sourceforge.net/project/openmediavault/packages shaitan-proposed main</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># This software is not part of OpenMediaVault, but is offered by third-party</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># developers as a service to OpenMediaVault users.</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> deb http://packages.openmediavault.org/public shaitan partner</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> deb http://downloads.sourceforge.net/project/openmediavault/packages shaitan partner</span></span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 添加开始</span></span><br><span class="line">chmod +x add.sh </span><br><span class="line">sudo ./add.sh</span><br></pre></td></tr></table></figure>
+<p>再执行安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">nano install-omv.sh #创建脚本</span><br><span class="line"><span class="meta">#</span><span class="bash"> 写入这些</span></span><br><span class="line">export LANG=C.UTF-8</span><br><span class="line">export DEBIAN_FRONTEND=noninteractive</span><br><span class="line">export APT_LISTCHANGES_FRONTEND=none</span><br><span class="line">apt-get install --yes gnupg</span><br><span class="line">wget -O &quot;/etc/apt/trusted.gpg.d/openmediavault-archive-keyring.asc&quot; https://packages.openmediavault.org/public/archive.key</span><br><span class="line">apt-key add &quot;/etc/apt/trusted.gpg.d/openmediavault-archive-keyring.asc&quot;</span><br><span class="line">apt-get update</span><br><span class="line">apt-get --yes --auto-remove --show-upgraded \</span><br><span class="line">    --allow-downgrades --allow-change-held-packages \</span><br><span class="line">    --no-install-recommends \</span><br><span class="line">    --option DPkg::Options::=&quot;--force-confdef&quot; \</span><br><span class="line">    --option DPkg::Options::=&quot;--force-confold&quot; \</span><br><span class="line">    install openmediavault-keyring openmediavault</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Populate the database.</span></span><br><span class="line">omv-confdbadm populate</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Display the login information.</span></span><br><span class="line">cat /etc/issue</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装开始</span></span><br><span class="line">chmod +x install-omv.sh</span><br><span class="line">sudo ./install-omv.sh</span><br></pre></td></tr></table></figure>
+<p>安装结束</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">To manage the system visit the openmediavault web control panel:</span><br><span class="line"></span><br><span class="line">eth0: 192.168.1.6</span><br><span class="line">eth0: fe80::9d86:6e7:5e02:45b9</span><br><span class="line"></span><br><span class="line">By default the web control panel administrator account has the</span><br><span class="line">username &#x27;admin&#x27; and password &#x27;openmediavault&#x27;.</span><br><span class="line">It is recommended that you change the password for this account</span><br><span class="line">within the web control panel or using the &#x27;omv-firstaid&#x27; CLI</span><br><span class="line">command.</span><br><span class="line"></span><br><span class="line">For more information regarding this appliance, please visit the</span><br><span class="line">web site: https://www.openmediavault.org</span><br></pre></td></tr></table></figure>
+<p>注意：由于omv会接管大量debian底层的设置，比如smb直接被接管了，ssh也禁止出来root用户以外的用登陆</p>
+<p>直接访问<code>192.168.1.6</code>，注意：omv和nginx在没有做特处理前是冲突的</p>
+<p>默认用户：admin 默认密码：openmediavault</p>
+<p>安装OMV-Extra：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo wget -O - https://github.com/OpenMediaVault-Plugin-Developers/installScript/raw/master/install | sudo bash</span><br></pre></td></tr></table></figure>
+<p>新版本的OMV-Extra，装了点击进入时，会出现<strong>显示软件错误点鼠标左键</strong>的错误，先切换成英文界面进入，再换回中文界面即可。</p>
+<h2 id="OMV设置ssh登录"><a href="#OMV设置ssh登录" class="headerlink" title="OMV设置ssh登录"></a>OMV设置ssh登录</h2><p>OpenMediaVault 修改了 SSH 的权限机制，只有在SSH 用户组中的用户才允许通过 ssh 登陆服务器。</p>
+<p>用户管理-&gt;用户-&gt;用户组，勾上ssh</p>
+<h2 id="OMV设置smb共享"><a href="#OMV设置smb共享" class="headerlink" title="OMV设置smb共享"></a>OMV设置smb共享</h2><p>先把transmission停了。</p>
+<p>存储器-&gt;文件系统-&gt;挂载，挂载磁盘</p>
+<p>存储器-&gt;文件系统-&gt;共享文件夹-&gt;创建，注意相对路径那如果你是想访问根目录，就填入./</p>
+<p>服务-&gt;SMB-&gt;共享-&gt;创建，在选择分享文件夹拿选择你刚刚创建的共享文件夹</p>
+<p>服务-&gt;SMB-&gt;设置，勾选启动</p>
+<h2 id="OMV设置transmission"><a href="#OMV设置transmission" class="headerlink" title="OMV设置transmission"></a>OMV设置transmission</h2><p>悲剧的事情来了，我原来tr挂的文件夹时/home/pi/DiskShare，现在OMV接管后磁盘都挂载在/srv/目录下了。命名格式：文件系统的默认挂载点名称被统一设置成了 <code>dev-disk-by-uuid-XXXX</code> 这种格式.</p>
+<p>解决链接：<a target="_blank" rel="noopener" href="https://it.ismy.fun/2021/04/02/omv-5-change-default-mountpoint-name/">https://it.ismy.fun/2021/04/02/omv-5-change-default-mountpoint-name/</a></p>
+<p>修改挂载点名称可以编辑 <code>/etc/openmediavault/config.xml</code> 配置文件，找到里面的 <code>&lt;fstab&gt;&lt;/fstab&gt;</code>这对标签中的文件挂载点信息<code>&lt;mntent&gt;&lt;/mntent&gt;</code>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">fstab</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">mntent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">uuid</span>&gt;</span>ed23096c-3982-4a61-8b3e-28517653adb0<span class="tag">&lt;/<span class="name">uuid</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">fsname</span>&gt;</span>/dev/disk/by-uuid/95a27f78-b514-4aec-abf2-77e75be86e0e<span class="tag">&lt;/<span class="name">fsname</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dir</span>&gt;</span>/srv/dev-disk-by-uuid-4dc04a66-7390-4587-811f-d561bbe74990<span class="tag">&lt;/<span class="name">dir</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">type</span>&gt;</span>ext4<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">opts</span>&gt;</span>defaults,nofail,user_xattr,usrjquota=aquota.user,grpjquota=aquota.group,jqfmt=vfsv0,acl<span class="tag">&lt;/<span class="name">opts</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">freq</span>&gt;</span>0<span class="tag">&lt;/<span class="name">freq</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">passno</span>&gt;</span>2<span class="tag">&lt;/<span class="name">passno</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">hidden</span>&gt;</span>0<span class="tag">&lt;/<span class="name">hidden</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">mntent</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">mntent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">fstab</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>把其中的 <code>&lt;dir&gt;/srv/dev-disk-by-uuid-4dc04a66-7390-4587-811f-d561bbe74990&lt;/dir&gt;</code> 改成希望使用的挂载点名称，比如 <code>&lt;dir&gt;/srv/disk1&lt;/dir&gt;</code></p>
+<p>修改完成以后，执行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo omv-salt deploy run fstab</span><br></pre></td></tr></table></figure>
+<p>这个命令会根据修改后的配置文件，生成新的 <code>/etc/fstab</code> 配置信息。</p>
+<p>重启系统，检查是否修改成功。</p>
+<p>先备份一份</p>
+<p>一般会成功的</p>
+<p>注意此时transmission没有权限去访问数据，要把transmission也添加到pi组里面即可：</p>
+<p>用户管理-&gt;用户组-&gt;编辑-&gt;成员：勾选debian-transmission即可（也不一定）</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/02/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E8%BF%98%E5%8E%9F/" rel="prev" title="树莓派的备份与还原">
+      <i class="fa fa-chevron-left"></i> 树莓派的备份与还原
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/16/FDTD%E5%9F%BA%E6%9C%AC%E5%85%AC%E5%BC%8F/" rel="next" title="FDTD基本公式">
+      FDTD基本公式 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85OMV6"><span class="nav-text">安装OMV6</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OMV%E8%AE%BE%E7%BD%AEssh%E7%99%BB%E5%BD%95"><span class="nav-text">OMV设置ssh登录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OMV%E8%AE%BE%E7%BD%AEsmb%E5%85%B1%E4%BA%AB"><span class="nav-text">OMV设置smb共享</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OMV%E8%AE%BE%E7%BD%AEtransmission"><span class="nav-text">OMV设置transmission</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

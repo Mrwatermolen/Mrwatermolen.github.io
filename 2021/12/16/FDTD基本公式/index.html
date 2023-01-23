@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Maxwell方程和Yee元胞选择Maxwell的旋度方程：  \left\{      \begin{array}{a}         \nabla \times \vec{E} + \frac{\partial \vec{B}}{\partial t} &#x3D; -\vec{J_m} \\          \nabla \times \vec{H} - \frac{\partial \vec{D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FDTD基本公式">
+<meta property="og:url" content="http://example.com/2021/12/16/FDTD%E5%9F%BA%E6%9C%AC%E5%85%AC%E5%BC%8F/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="Maxwell方程和Yee元胞选择Maxwell的旋度方程：  \left\{      \begin{array}{a}         \nabla \times \vec{E} + \frac{\partial \vec{B}}{\partial t} &#x3D; -\vec{J_m} \\          \nabla \times \vec{H} - \frac{\partial \vec{D">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/11/06/ZWQLBafuvGX3HwE.png">
+<meta property="article:published_time" content="2021-12-16T13:01:32.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.023Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="FDTD">
+<meta property="article:tag" content="计算物理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/11/06/ZWQLBafuvGX3HwE.png">
+
+<link rel="canonical" href="http://example.com/2021/12/16/FDTD%E5%9F%BA%E6%9C%AC%E5%85%AC%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>FDTD基本公式 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/16/FDTD%E5%9F%BA%E6%9C%AC%E5%85%AC%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          FDTD基本公式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-16 21:01:32" itemprop="dateCreated datePublished" datetime="2021-12-16T21:01:32+08:00">2021-12-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%B5%E7%A3%81%E5%9C%BA/" itemprop="url" rel="index"><span itemprop="name">电磁场</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Maxwell方程和Yee元胞"><a href="#Maxwell方程和Yee元胞" class="headerlink" title="Maxwell方程和Yee元胞"></a>Maxwell方程和Yee元胞</h2><p>选择Maxwell的旋度方程：</p>
+<script type="math/tex; mode=display">
+\left\{ 
+    \begin{array}{a}
+        \nabla \times \vec{E} + \frac{\partial \vec{B}}{\partial t} = -\vec{J_m} \\ 
+        \nabla \times \vec{H} - \frac{\partial \vec{D}}{\partial t} = \vec{J} \\
+    \end{array}
+\right.
+\tag {1-1}</script><p>注意到这里带上了$\vec{J_m}$，这是考虑到在磁介质中，有磁电流的存在。</p>
+<p>线性各项同性介质中，本构关系为：</p>
+<script type="math/tex; mode=display">
+\left\{ 
+    \begin{array}{}
+        \vec{D} = \epsilon \vec{E} \\ 
+        \vec{H} = \mu \vec{B} \\ 
+        \vec{J} = \sigma \vec{E} \\
+        \vec{J_m} = \sigma_m \vec{H}
+    \end{array}
+\right.
+\tag {1-2}</script><p>选取直角坐标系：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \frac{\partial E_z}{\partial y} - \frac{\partial E_y}{\partial z} & = -\mu \frac{\partial H_x}{\partial t} - \sigma_m H_x \\
+    & \vdots \\
+    \frac{\partial H_z}{\partial y} - \frac{\partial H_y}{\partial z} & = \epsilon \frac{\partial E_x}{\partial t} + \sigma E_x \\
+    & \vdots \\
+\end{cases}
+\tag {1-3}</script><p>有微分形式了就可以试试有限差分了。</p>
+<span id="more"></span>
+<h3 id="YEE元胞离散"><a href="#YEE元胞离散" class="headerlink" title="YEE元胞离散"></a>YEE元胞离散</h3><p>是一个边长为$\Delta$的正方形，将空间使用Yee元胞充填。</p>
+<p><img src="https://i.loli.net/2021/11/06/ZWQLBafuvGX3HwE.png" alt="YEE元胞的空间分布"></p>
+<p>待补充描述</p>
+<p>记：</p>
+<script type="math/tex; mode=display">
+f^n(i,j,k) = f(i\Delta x, j\Delta y, k\Delta z, n\Delta t)</script><p>在空间和时间取样上，电场磁场的分布如下表：</p>
+<script type="math/tex; mode=display">
+\begin{array}{c} % 总表格
+    \begin{array}{cc} % 第一行内分成两列
+        \begin{array}{|c|c|c|c} % 第一列"最小值"数组
+             & x & y & z & t\\
+            \hline
+            E_x & i + 1/2 & j & k & n &  \\
+            \hline
+            E_y & i & j + 1/2 & k & n &  \\
+            \hline
+            E_z & i & j & k + 1/2 & n &  \\
+            \hline
+            H_x & i & j + 1/2 & k + 1/2 & n + 1/2 &  \\
+            \hline
+            H_y & i + 1/2 & j & k + 1/2 & n + 1/2 &  \\
+            \hline
+            H_z & i + 1/2 & j + 1/2 & k & n + 1/2 &  \\
+        \end{array}
+    \end{array} % 第一行表格组结束
+\end{array} % 总表格结束</script><p>这里提一个，初看可能不会注意的点：举例来说，$E^n_x(i+1/2,j,k)$和$H^{n+1/2}_x(i,j+1/2,k+1/2)$是同级的</p>
+<p>对有限差分，空间与时间都取一阶近似：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    & \left. \frac{\partial f^n(i,j,k)}{\partial x} \right| _{x = i\Delta x} \approx \frac{f^n(i + 1/2,j,k) - f^n(i - 1/2,j,k)}{\Delta x} \\
+    & \vdots \\
+    & \left. \frac{\partial f^n(i,j,k)}{\partial t} \right| _{t = n\Delta x} \approx \frac{f^{n + 1/2}(i,j,k) - f^{n - 1/2}(i,j,k)}{\Delta t} \\
+\end{align}
+\tag {1-4}</script><h2 id="直角坐标系下三维空间的FDTD公式"><a href="#直角坐标系下三维空间的FDTD公式" class="headerlink" title="直角坐标系下三维空间的FDTD公式"></a>直角坐标系下三维空间的FDTD公式</h2><p>这里我先选择求解磁场分量，以x轴分量为例。先求解磁场分量，可能会产生一个不好的概念，先看下去。</p>
+<p>要求解$H^{n+1/2}_x(i,j+1/2,k+1/2)$，即n时刻的(i,j,k)元胞，注意这里我提及的为n时刻而非n+1/2时刻，这只是为了以后编程方便（n，n+1/2是同级的）。</p>
+<p>取$H_x(i,j+1/2,k+1/2, n\Delta t)$为观察点<strong>（这个选点很妙！）</strong></p>
+<p>对直角坐标系下的<code>Maxwell</code>方程组：$\frac{\partial E_z}{\partial y} - \frac{\partial E_y}{\partial z} = -\mu \frac{\partial H_x}{\partial t} - \sigma_m H_x$</p>
+<p>以观察点为中心点，进行差分。</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    & \frac{E^n_z(i,j+1,k) - E^n_z(i,j,k)}{\Delta y} - \frac{E^n_y(i,j,k+1) - E^n_y(i,j,k)}{\Delta z} \\
+    = & -\mu(i,j+1/2,k+1/2) \frac{H^{n+1/2}_x(i,j+1/2,k+1/2) - H^{n-1/2}_x(i,j+1/2,k+1/2)}{\Delta t} - \sigma_m(i,j+1/2,k+1/2) H^{n}_x(i,j+1/2,k+1/2) \\
+\end{align}
+\tag {1-5}</script><p>对观察点取两点平均近似：</p>
+<script type="math/tex; mode=display">
+H^{n}_x(i,j+1/2,k+1/2) = \frac{H^{n+1/2}_x(i,j+1/2,k+1/2) + H^{n-1/2}_x(i,j+1/2,k+1/2)}{2} \tag {1-6}</script><p>记标号：$l = (i,j+1/2,k+1/2)$</p>
+<p>则式（1-5）右端：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    & -\mu(l) \frac{H^{n+1/2}_x(l) - H^{n-1/2}_x(l)}{\Delta t} - \sigma_m(l) H^{n}_x(l) \\
+    = & -\left[ \frac{\mu(l)}{\Delta t} + \frac{\sigma_m(l)}{2} \right] H^{n+1/2}(l) - \left[\frac{\sigma_m(l)}{2}  - \frac{\mu(l)}{\Delta t} \right] H^{n-1/2}(l) \\
+\end{align}
+\tag {1-7}</script><p>最后可得：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    H_x^{n+1/2}(l) & = CP(l) H^{n-1/2}(l) \\
+    & - CQ(l) \left[ \frac{E^n_z(i,j+1,k) - E^n_z(i,j,k)}{\Delta y} - \frac{E^n_y(i,j,k+1) - E^n_y(i,j,k)}{\Delta z} \right] \\
+\end{align}
+\tag {1-8}</script><p>其中：</p>
+<script type="math/tex; mode=display">
+CP(l) = \frac{\frac{\mu(l)}{\Delta t} - \frac{\sigma_m(l)}{2}}{\frac{\mu(l)}{\Delta t} + \frac{\sigma_m(l)}{2}} \quad CQ(l) = \frac{1}{\frac{\mu(l)}{\Delta t} + \frac{\sigma_m(l)}{2}} \tag {1-9}</script><p>如此取其他位置的磁场分量作为观察节点，空间上Yee元胞的磁场分布：</p>
+<script type="math/tex; mode=display">
+\vec{H}_x^{n+1/2}(i,j+1/2,k+1/2) ,\quad \vec{H}_z^{n+1/2}(i+1/2,j,k+1/2) ,\quad \vec{H}_x^{n+1/2}(i+1/2,j+1/2,k) ,\quad \tag {1-10}</script><p>这里注意，要求出$H^{n+1/2}$，需要的值为：上一个时刻的磁场分量，以及同时刻的电场分量。（这里可能会产生一个不好的概念）</p>
+<p>如何去理解呢？</p>
+<p>从编程的角度来说，在时间循环语句中，假设此时正在计算n时刻的YEE元胞，此时要计算出的正是<code>E[n] H[n+1/2]</code>但是对于计算机来说，数组的标号都是n，即计算<code>E[n] H[n]</code>。我写这么啰嗦就是因为之前编程计算时犯错了，以为<code>H[n+1/2]</code>对应的下标为<code>[n+1]</code>。这就是为什么我说n，n+1/2是同级的。</p>
+<p>同理我们取第n+1/2时刻的电场作为观察节点，也可解得电场分布。</p>
+<p>如取$E^{n+1/2}_x(i+1/2,j,k)$</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    E_x^{n+1}(l) & = CA(l) E^{n}(l) \\
+    & + CB(l) \left[ \frac{H^{n+1/2}_z(i+1/2,j+1/2,k) - H^{n+1/2}_z(i+1/2,j-1/2,k)}{\Delta y} - \frac{H^{n+1/2}_y(i+1/2,j,k+1/2) - H^{n+1/2}_y(i+1/2,j,k-1/2)}{\Delta z} \right] \\
+\end{align}
+\tag {1-11}</script><p>其中：</p>
+<script type="math/tex; mode=display">
+l = (i+1/2,j,k) ,\quad CA(l) = \frac{\frac{\epsilon(l)}{\Delta t} - \frac{\sigma(l)}{2}}{\frac{\epsilon(l)}{\Delta t} + \frac{\sigma(l)}{2}} \quad CB(l) = \frac{1}{\frac{\epsilon(l)}{\Delta t} + \frac{\sigma(l)}{2}} \tag {1-12}</script><p>这里给出汇总：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \vec{E}^{n+1} = CA \cdot \vec{E}^{n}  + CB \left[ \nabla \times \vec{H} \right]^{n+1/2} \\
+    \vec{H}^{n+1/2} = CP \cdot \vec{H}^{n-1/2}  - CQ \left[ \nabla \times \vec{E} \right]^{n} \\
+\end{cases}</script><p>这里可以看出在编程计算中，我们应该先求解全空间的<code>E[n]</code>后再求解<code>H[n]</code></p>
+<h3 id="二维问题"><a href="#二维问题" class="headerlink" title="二维问题"></a>二维问题</h3><p>物理量与z坐标无关，即$\frac{\partial}{\partial z} =  0$</p>
+<p>就分为TE波与TM波</p>
+<ol>
+<li><p>TE波</p>
+<p>TE波的特点为：$H_z \neq 0 \quad E_z = 0$</p>
+</li>
+<li><p>TM波</p>
+<p>TM波的特点为：$E_z \neq 0 \quad H_z = 0$</p>
+</li>
+</ol>
+<h3 id="一维问题"><a href="#一维问题" class="headerlink" title="一维问题"></a>一维问题</h3><p>看作沿着z轴传播的TEM波，即：$\frac{\partial}{\partial x} = 0 \quad \frac{\partial}{\partial y} = 0 \quad E_z = 0 \quad H_z = 0$</p>
+<h2 id="时间离散程度和空间离散程度对稳定性影响的讨论"><a href="#时间离散程度和空间离散程度对稳定性影响的讨论" class="headerlink" title="时间离散程度和空间离散程度对稳定性影响的讨论"></a>时间离散程度和空间离散程度对稳定性影响的讨论</h2><h3 id="时间上（亦或是数值稳定条件）"><a href="#时间上（亦或是数值稳定条件）" class="headerlink" title="时间上（亦或是数值稳定条件）"></a>时间上（亦或是数值稳定条件）</h3><p>对时谐场$f(x,y,z,t) = A(x,y,z) \exp{(\jmath \omega t)}$。考虑一定点$f = f_0 \exp{(\jmath \omega t)}$，进行时间离散，一阶中心差分。</p>
+<script type="math/tex; mode=display">
+\jmath \omega f^n = \frac{\partial f}{\partial t} = \frac{f^{n+1/2} - f^{n-1/2}}{\Delta t} \tag {1-13}</script><h4 id="增长因子"><a href="#增长因子" class="headerlink" title="增长因子"></a>增长因子</h4><p>定义增长因子$q<em>{numerical}$，简称$q</em>{num}$</p>
+<script type="math/tex; mode=display">
+q_{num} = \frac{f^{n+1/2}}{f^n} = \frac{f^n}{f^{n-1/2}} \tag {1-14}</script><p>带回（1-13）：</p>
+<script type="math/tex; mode=display">
+q^2_{num} - \jmath \omega \Delta t q_{num} - 1 = 0
+\tag {1-15}</script><p>由其解为：</p>
+<script type="math/tex; mode=display">
+q_{num} = \frac{\jmath \omega \Delta t }{2} \pm \sqrt{1 - (\frac{\omega \Delta t}{2})^2} = |{q_{num}}| \exp{(\jmath \psi_{num})} \tag {1-16}</script><p>而由其定义可得：</p>
+<script type="math/tex; mode=display">
+q_{num} = \frac{f^{n+1/2}}{f^n} = \frac{f_0 \exp{(\jmath \omega (n+1/2)\Delta t)}}{f_0 \exp{(\jmath \omega n\Delta t)}} = exp{(\frac{\jmath \omega}{2} \Delta t)} \tag {1-17}</script><p>所以式（1-16）一定要满足式（1-17）。即模值为1，相移为$\frac{\omega \Delta t}{2}$。</p>
+<h4 id="模值条件"><a href="#模值条件" class="headerlink" title="模值条件"></a>模值条件</h4><p>首先满足模值为1。$|q_{num}| = 1$</p>
+<p>由式（1-16）：</p>
+<script type="math/tex; mode=display">
+|q_{num}| = \sqrt{1 - (\frac{\omega \Delta t}{2})^2 + (\frac{\omega \Delta t}{2})^2} = 1 \tag {1-18}</script><p>但为了满足（1-18），必须要：</p>
+<script type="math/tex; mode=display">
+1 - (\frac{\omega \Delta t}{2})^2 \ge 0 \Rightarrow \Delta t \le \frac{2}{\omega} = \frac{T}{\pi} \tag {1-19}</script><p>若离散间隔过大，不满足（1-19），则$q_{num}$为纯虚数，其模值：</p>
+<script type="math/tex; mode=display">
+    |q_{num}| = \sqrt{\left[ \frac{\omega \Delta t }{2} \pm \sqrt{(\frac{\omega \Delta t}{2})^2 - 1} \right]^2} \tag {1-20}</script><p>要其模值为1，解之得$\frac{\omega \Delta t }{2} = 1$或$\frac{\omega \Delta t }{2} = 0$，这在$q_{num}$为纯虚数的条件下，这些解都不成立。<br>模值不为1，则进行差分获得的数值解就会趋于发散或衰减</p>
+<h4 id="相位条件"><a href="#相位条件" class="headerlink" title="相位条件"></a>相位条件</h4><p>满足相移$\frac{\omega \Delta t}{2}$</p>
+<p>由式（1-16）：</p>
+<script type="math/tex; mode=display">
+\psi_{num} = \arctan{ \frac{ \pm \frac{\omega \Delta t}{2} }{ \sqrt{1 - (\frac{\omega \Delta t}{2})^2} } } \tag {1-21}</script><p>在$\frac{\omega \Delta t}{2}$取值足够小时，有近似：</p>
+<script type="math/tex; mode=display">
+\frac{ 1 }{ \sqrt{1 - (\frac{\omega \Delta t}{2})^2} } \approx 1 + \frac{1}{2} (\frac{\omega \Delta t}{2})^2 \quad ((1+bx)^a \backsim 1 + bax) \tag {1-22}</script><p>由此有：</p>
+<script type="math/tex; mode=display">
+\psi_{num} \approx \arctan{ \frac{\omega \Delta t}{2} \left[ 1 + \frac{1}{2} (\frac{\omega \Delta t}{2})^2 \right] } \tag {1-23}</script><p>如果把$\frac{\omega \Delta t}{2}$看作无穷小，则$(\frac{\omega \Delta t}{2})^2$就是更高阶的无穷小。则有近似：</p>
+<script type="math/tex; mode=display">
+\psi_{num} \approx \arctan{ \frac{\omega \Delta t}{2} } \tag {1-24}</script><p>对无穷小近似有：</p>
+<script type="math/tex; mode=display">
+\arctan{\Delta x} \approx \Delta x \tag {1-25}</script><p>在三角函数中（我感觉是实际运用中），在$\Delta x \le \frac{\pi}{10}$时，即18度时，有（1-25）的近似，那么我们就可得相位条件：</p>
+<script type="math/tex; mode=display">
+\frac{\omega \Delta t}{2} \le \frac{\pi}{10} \Rightarrow \Delta t \le \frac{T}{10} \tag {1-26}</script><h4 id="时间离散要求"><a href="#时间离散要求" class="headerlink" title="时间离散要求"></a>时间离散要求</h4><p>（1-26）比（1-19）要更为严格，我们采用（1-26）</p>
+<h3 id="空间上（亦或是色散稳定条件）"><a href="#空间上（亦或是色散稳定条件）" class="headerlink" title="空间上（亦或是色散稳定条件）"></a>空间上（亦或是色散稳定条件）</h3><p>先考虑一维情形</p>
+<blockquote>
+<p>书上说：从Maxwell方程可导出电磁场任意直角分量均满足齐次波动方程。</p>
+<script type="math/tex; mode=display">
+\frac{\partial^2 f}{\partial x^2} + \frac{\omega^2}{c^2}f = 0</script><p>我觉得，首先这是限定在无源空间下，等式右边才会为0。在时谐电磁场下，才会有等式左边的形式。</p>
+</blockquote>
+<p>直接来</p>
+<script type="math/tex; mode=display">
+\frac{\partial^2 f}{\partial x^2} + \frac{\omega^2}{v^2} f = 0 \tag {1-27}</script><p>仅考虑向x正方向，解得：</p>
+<script type="math/tex; mode=display">
+f(x,t) = f_0 \exp{ [ \jmath (\omega t - kx) ] } \quad , k =  \frac{\omega}{v} \tag {1-28}</script><p>相速度：</p>
+<script type="math/tex; mode=display">
+v_p = \frac{\omega}{k} \tag {1-29}</script><p>理论上相速度应与频率无关。那么对差分计算得出的结果也应满足这个结论。由（1-27）带入中心差分公式：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+    \frac{ f(x + \Delta x, t) - 2f(x,t) + f(x - \Delta x, t) }{(\Delta x)^2} + \frac{\omega^2}{v^2} f(x,t) & = 0 \\
+    \frac{ f(x,t) \cdot [\exp{ (\jmath k \Delta x) } + \exp{ (-\jmath k \Delta x) } - 2] }{(\Delta x)^2} + \frac{\omega^2}{v^2} f(x,t) & = 0 \\
+    \frac{ 2\cos{ (k \Delta x) } - 2 }{(\Delta x)^2} + \frac{\omega^2}{v^2} & = 0 \\
+\end{align*} \tag {1-30}</script><p>若$k\Delta x)$足够小，有Taylor近似，我们仍然有（1-29），如果过大，那么相速度就和频率有关了，就会造成色散。（还是那个）$k\Delta x \le \frac{\pi}{10}$时：</p>
+<script type="math/tex; mode=display">
+\cos{ (k \Delta x) } - 1 \approx -\frac{1}{2} (k\Delta x)^2 \tag {1-31}</script><p>即得到：</p>
+<script type="math/tex; mode=display">
+k\Delta x \le \frac{\pi}{10} \Rightarrow \Delta x \le \frac{\lambda}{20} \tag {1-32}</script><p>其实可以更小：（我给的近似关系应该错了，用二倍角公式把cos转成sin那个近似关系才能用）真实应该是：</p>
+<script type="math/tex; mode=display">
+\Delta x \le \frac{\lambda}{10} \tag {1-33}</script><p>更高维同理。</p>
+<p>如果我们对时谐电磁场采用时域上的齐次波动形式：</p>
+<script type="math/tex; mode=display">
+\frac{\partial^2 f}{\partial x^2} - \frac{1}{v} \frac{\partial^2 f}{\partial t^2} = 0 \tag {1-34}</script><p>可推出色散稳定条件对时间离散的要求：</p>
+<p>一维空间上</p>
+<script type="math/tex; mode=display">
+(\frac{\omega \Delta t}{2})^2 \le 1 \Rightarrow \Delta t \le \frac{2}{\omega} = \frac{T}{\pi} \tag {1-35}</script><p>就如同（1-19）。</p>
+<h3 id="Courant稳定性条件"><a href="#Courant稳定性条件" class="headerlink" title="Courant稳定性条件"></a>Courant稳定性条件</h3><p>给出时间间隔和空间间隔的互相制约关系。</p>
+<p>无界域中无源的时谐电磁场满足齐次波动方程：</p>
+<script type="math/tex; mode=display">
+\nabla^2 f + \frac{\omega^2}{v^2} f =  0 \tag {1-36}</script><p>代入中心差分公式，和上面的空间要求的推导差不多：</p>
+<script type="math/tex; mode=display">
+\frac{ \sin^2{ (\frac{k_x \Delta x}{2}) } }{ (\frac{\Delta x}{2})^2 } + \frac{ \sin^2{ (\frac{k_y \Delta y}{2}) } }{ (\frac{\Delta y}{2})^2 } + \frac{ \sin^2{ (\frac{k_z \Delta z}{2}) } }{ (\frac{\Delta z}{2})^2 } - \frac{\omega^2}{v^2} = 0 \tag {1-37}</script><p>防止色散的出现，时间离散和空间离散在上一节已经讨论过，但他们的相对关系其实就是一维空间上色散稳定条件对时间离散的要求的拓展。</p>
+<p>有：</p>
+<script type="math/tex; mode=display">
+(\frac{v \Delta t}{2})^2 \left[ \frac{ \sin^2{ (\frac{k_x \Delta x}{2}) } }{ (\frac{\Delta x}{2})^2 } + \frac{ \sin^2{ (\frac{k_y \Delta y}{2}) } }{ (\frac{\Delta y}{2})^2 } + \frac{ \sin^2{ (\frac{k_z \Delta z}{2}) } }{ (\frac{\Delta z}{2})^2 } \right] = (\frac{\omega \Delta t}{2})^2 \tag {1-38}</script><p>时间间隔必定要满足（1-35）。有不等式：</p>
+<script type="math/tex; mode=display">
+(\frac{v \Delta t}{2})^2 \left[ \frac{ \sin^2{ (\frac{k_x \Delta x}{2}) } }{ (\frac{\Delta x}{2})^2 } + \frac{ \sin^2{ (\frac{k_y \Delta y}{2}) } }{ (\frac{\Delta y}{2})^2 } + \frac{ \sin^2{ (\frac{k_z \Delta z}{2}) } }{ (\frac{\Delta z}{2})^2 } \right] \le 1 \tag {1-39}</script><p>放缩一下：</p>
+<script type="math/tex; mode=display">
+(\frac{v \Delta t}{2})^2 \left[ \frac{ \sin^2{ (\frac{k_x \Delta x}{2}) } }{ (\frac{\Delta x}{2})^2 } + \frac{ \sin^2{ (\frac{k_y \Delta y}{2}) } }{ (\frac{\Delta y}{2})^2 } + \frac{ \sin^2{ (\frac{k_z \Delta z}{2}) } }{ (\frac{\Delta z}{2})^2 } \right] \le (\frac{v \Delta t}{2})^2 \left[ \frac{ 1 }{ (\frac{\Delta x}{2})^2 } + \frac{ 1 }{ (\frac{\Delta y}{2})^2 } + \frac{ 1 }{ (\frac{\Delta z}{2})^2 } \right]  \le 1 \tag {1-40}</script><p>得：</p>
+<script type="math/tex; mode=display">
+v \Delta t \le \frac{1}{ \sqrt{ (\frac{1}{\Delta x})^2 (\frac{1}{\Delta y})^2 (\frac{1}{\Delta z})^2 } } \tag {1-41}</script><p>对Yee元胞：</p>
+<script type="math/tex; mode=display">
+v \Delta t \le \delta \tag {1-42}</script><p>即时间间隔必须小于或等于波通过一维Yee元胞所用的时间。</p>
+<h3 id="各向异性"><a href="#各向异性" class="headerlink" title="各向异性"></a>各向异性</h3><p>不推了。。。。减小各向异性，对空间离散度的要求：</p>
+<script type="math/tex; mode=display">
+\delta \lt \frac{\lambda}{8} \tag {1-43}</script>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FDTD/" rel="tag"># FDTD</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E7%89%A9%E7%90%86/" rel="tag"># 计算物理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/06/OMV6%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E7%9A%84%E5%AE%89%E8%A3%85/" rel="prev" title="OMV6在树莓派上的安装">
+      <i class="fa fa-chevron-left"></i> OMV6在树莓派上的安装
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/04/NAS%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/" rel="next" title="NAS折腾记录">
+      NAS折腾记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Maxwell%E6%96%B9%E7%A8%8B%E5%92%8CYee%E5%85%83%E8%83%9E"><span class="nav-text">Maxwell方程和Yee元胞</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#YEE%E5%85%83%E8%83%9E%E7%A6%BB%E6%95%A3"><span class="nav-text">YEE元胞离散</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B4%E8%A7%92%E5%9D%90%E6%A0%87%E7%B3%BB%E4%B8%8B%E4%B8%89%E7%BB%B4%E7%A9%BA%E9%97%B4%E7%9A%84FDTD%E5%85%AC%E5%BC%8F"><span class="nav-text">直角坐标系下三维空间的FDTD公式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E7%BB%B4%E9%97%AE%E9%A2%98"><span class="nav-text">二维问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E7%BB%B4%E9%97%AE%E9%A2%98"><span class="nav-text">一维问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E7%A6%BB%E6%95%A3%E7%A8%8B%E5%BA%A6%E5%92%8C%E7%A9%BA%E9%97%B4%E7%A6%BB%E6%95%A3%E7%A8%8B%E5%BA%A6%E5%AF%B9%E7%A8%B3%E5%AE%9A%E6%80%A7%E5%BD%B1%E5%93%8D%E7%9A%84%E8%AE%A8%E8%AE%BA"><span class="nav-text">时间离散程度和空间离散程度对稳定性影响的讨论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E4%B8%8A%EF%BC%88%E4%BA%A6%E6%88%96%E6%98%AF%E6%95%B0%E5%80%BC%E7%A8%B3%E5%AE%9A%E6%9D%A1%E4%BB%B6%EF%BC%89"><span class="nav-text">时间上（亦或是数值稳定条件）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A2%9E%E9%95%BF%E5%9B%A0%E5%AD%90"><span class="nav-text">增长因子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%80%BC%E6%9D%A1%E4%BB%B6"><span class="nav-text">模值条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E4%BD%8D%E6%9D%A1%E4%BB%B6"><span class="nav-text">相位条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E7%A6%BB%E6%95%A3%E8%A6%81%E6%B1%82"><span class="nav-text">时间离散要求</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E9%97%B4%E4%B8%8A%EF%BC%88%E4%BA%A6%E6%88%96%E6%98%AF%E8%89%B2%E6%95%A3%E7%A8%B3%E5%AE%9A%E6%9D%A1%E4%BB%B6%EF%BC%89"><span class="nav-text">空间上（亦或是色散稳定条件）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Courant%E7%A8%B3%E5%AE%9A%E6%80%A7%E6%9D%A1%E4%BB%B6"><span class="nav-text">Courant稳定性条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%84%E5%90%91%E5%BC%82%E6%80%A7"><span class="nav-text">各向异性</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="全卡备份就是把当前的SD卡全部复制到另一张新的SD卡上。要求新卡的容量大于等于旧卡。（并不适用于我。。） 原卡备份 参考：https:&#x2F;&#x2F;blog.csdn.net&#x2F;qingtian11112&#x2F;article&#x2F;details&#x2F;99825257 https:&#x2F;&#x2F;github.com&#x2F;BigBubbleGum&#x2F;RaspberryBackup">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树莓派的备份与还原">
+<meta property="og:url" content="http://example.com/2021/12/02/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E8%BF%98%E5%8E%9F/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="全卡备份就是把当前的SD卡全部复制到另一张新的SD卡上。要求新卡的容量大于等于旧卡。（并不适用于我。。） 原卡备份 参考：https:&#x2F;&#x2F;blog.csdn.net&#x2F;qingtian11112&#x2F;article&#x2F;details&#x2F;99825257 https:&#x2F;&#x2F;github.com&#x2F;BigBubbleGum&#x2F;RaspberryBackup">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-02T09:22:31.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.027Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="raspios">
+<meta property="article:tag" content="备份">
+<meta property="article:tag" content="还原">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/12/02/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E8%BF%98%E5%8E%9F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>树莓派的备份与还原 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/02/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E8%BF%98%E5%8E%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          树莓派的备份与还原
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-02 17:22:31" itemprop="dateCreated datePublished" datetime="2021-12-02T17:22:31+08:00">2021-12-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全卡备份"><a href="#全卡备份" class="headerlink" title="全卡备份"></a>全卡备份</h2><p>就是把当前的SD卡全部复制到另一张新的SD卡上。要求新卡的容量大于等于旧卡。（并不适用于我。。）</p>
+<h2 id="原卡备份"><a href="#原卡备份" class="headerlink" title="原卡备份"></a>原卡备份</h2><blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qingtian11112/article/details/99825257">https://blog.csdn.net/qingtian11112/article/details/99825257</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/BigBubbleGum/RaspberryBackup">https://github.com/BigBubbleGum/RaspberryBackup</a></p>
+</blockquote>
+<span id="more"></span>
+<h3 id="安装所需的软件"><a href="#安装所需的软件" class="headerlink" title="安装所需的软件"></a>安装所需的软件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install dosfstools dump parted kpartx</span><br></pre></td></tr></table></figure>
+<p>dosfstools：fat32分区格式化工具</p>
+<p>dump：dump &amp; restore 备份工具</p>
+<p>parted &amp; kpartx：虚拟磁盘工具</p>
+<p>要求当前树莓派所占空间小于 SD 卡空间的 50%，就可以在树莓派内部直接生成镜像。否则要将备份的镜像生成到挂载的外置 SD 卡里面。<code>df -h</code>查看一下空间使用。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/root        29G  2.5G   26G   9% /</span><br><span class="line">devtmpfs        3.7G     0  3.7G   0% /dev</span><br><span class="line">tmpfs           3.9G     0  3.9G   0% /dev/shm</span><br><span class="line">tmpfs           1.6G  3.0M  1.6G   1% /run</span><br><span class="line">tmpfs           5.0M  4.0K  5.0M   1% /run/lock</span><br><span class="line">/dev/mmcblk0p1  253M   30M  223M  12% /boot</span><br><span class="line">/dev/sdb1       3.6T  3.4T   81G  98% /home/pi/DiskShare</span><br><span class="line">/dev/sda1       7.3T  3.2T  3.7T  47% /home/pi/share</span><br><span class="line">tmpfs           782M     0  782M   0% /run/user/1000</span><br></pre></td></tr></table></figure>
+<p>重点看<code>/dev/root</code>和<code>/dev/mmcblk0p1</code>，分别对应root区和boot区。这两个分区就是我们要备份的。可以看到我的树莓派使用的总空间不到2.6GB。</p>
+<h3 id="创建一个空白镜像"><a href="#创建一个空白镜像" class="headerlink" title="创建一个空白镜像"></a>创建一个空白镜像</h3><p>命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dd if=/dev/zero of=./DiskShare/raspberrypi.img bs=1M count=3000</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dd 可从标准输入或文件中读取数据，根据指定的格式来转换数据，再输出到文件、设备或标准输出。</p>
+</blockquote>
+<p><strong>参数说明:</strong></p>
+<ul>
+<li>if=文件名：输入文件名，默认为标准输入。即指定源文件。</li>
+<li>ibs=bytes：一次读入bytes个字节，即指定一个块大小为bytes个字节。<br>obs=bytes：一次输出bytes个字节，即指定一个块大小为bytes个字节。<br>bs=bytes：同时设置读入/输出的块大小为bytes个字节。</li>
+<li>bs=bytes：同时设置读入/输出的块大小为bytes个字节。</li>
+<li>count=blocks：仅拷贝blocks个块，块大小等于ibs指定的字节数。</li>
+</ul>
+<p><code>/dev/zero</code>随意，不存在都行。<code>./DiskShare/raspberrypi.img</code>是你要创建的镜像的路径。</p>
+<p>我创建的镜像大小为 3000 * 1MB，就是3GB，只要大小大于树莓派使用的总空间即可。</p>
+<h3 id="分割创建好的镜像文件"><a href="#分割创建好的镜像文件" class="headerlink" title="分割创建好的镜像文件"></a>分割创建好的镜像文件</h3><p>首先要看一下树莓派的磁盘结构</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo fdisk -l</span><br></pre></td></tr></table></figure>
+<p>找到树莓派所在的磁盘，其实通过之前的<code>df -h</code>命令可以看到boot分区在<code>/dev/mmcblk0p1</code>分区里，只要没有什么特殊设置，树莓派所在磁盘肯定有<code>/dev/mmcblk0p1</code>分区。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Disk &#x2F;dev&#x2F;mmcblk0: 29.72 GiB, 31914983424 bytes, 62333952 sectors</span><br><span class="line">Units: sectors of 1 * 512 &#x3D; 512 bytes</span><br><span class="line">Sector size (logical&#x2F;physical): 512 bytes &#x2F; 512 bytes</span><br><span class="line">I&#x2F;O size (minimum&#x2F;optimal): 512 bytes &#x2F; 512 bytes</span><br><span class="line">Disklabel type: dos</span><br><span class="line">Disk identifier: 0xea382736</span><br><span class="line"></span><br><span class="line">Device         Boot  Start      End  Sectors  Size Id Type</span><br><span class="line">&#x2F;dev&#x2F;mmcblk0p1        8192   532479   524288  256M  c W95 FAT32 (LBA)</span><br><span class="line">&#x2F;dev&#x2F;mmcblk0p2      532480 62333951 61801472 29.5G 83 Linux</span><br></pre></td></tr></table></figure>
+<p>第一个分区为 boot 分区，采用 FAT32 格式，从第8192个扇区到第532479 个扇区；第二个分区采用 EXT4，由第532480个扇区到结尾。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo parted DiskShare/raspberrypi.img --script -- mklabel msdos</span><br><span class="line">sudo parted DiskShare/raspberrypi.img --script -- mkpart primary fat32 8192s 532479s</span><br><span class="line">sudo parted DiskShare/raspberrypi.img --script -- mkpart primary ext4 532480s -1</span><br></pre></td></tr></table></figure>
+<p>-1表示到文件末尾。</p>
+<p>检查是否成功</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo parted DiskShare/raspberrypi.img</span><br><span class="line">GNU Parted 3.4</span><br><span class="line">Using /home/pi/DiskShare/raspberrypi.img</span><br><span class="line">Welcome to GNU Parted! Type &#x27;help&#x27; to view a list of commands.</span><br></pre></td></tr></table></figure>
+<p>输入<code>print free</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Model:  (file)</span><br><span class="line">Disk /home/pi/DiskShare/raspberrypi.img: 3146MB</span><br><span class="line">Sector size (logical/physical): 512B/512B</span><br><span class="line">Partition Table: msdos</span><br><span class="line">Disk Flags:</span><br><span class="line"></span><br><span class="line">Number  Start   End     Size    Type     File system  Flags</span><br><span class="line">        16.4kB  4194kB  4178kB           Free Space</span><br><span class="line"> 1      4194kB  273MB   268MB   primary               lba</span><br><span class="line"> 2      273MB   3145MB  2872MB  primary</span><br><span class="line">        3145MB  3146MB  1049kB           Free Space</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>输入<code>quit</code>退出</p>
+<h3 id="挂载镜像并且格式化"><a href="#挂载镜像并且格式化" class="headerlink" title="挂载镜像并且格式化"></a>挂载镜像并且格式化</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo losetup -f --show DiskShare/raspberrypi.img</span><br><span class="line">/dev/loop0</span><br></pre></td></tr></table></figure>
+<p>注意这里输出的<code>loop0</code>，如果你输出的是其他，把下面步骤的<code>loop0</code>都替换成你所输出的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo kpartx -va &#x2F;dev&#x2F;loop0</span><br></pre></td></tr></table></figure>
+<p>接着</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo kpartx -va /dev/loop0</span><br><span class="line">add map loop0p1 (254:0): 0 524288 linear 7:0 8192</span><br><span class="line">add map loop0p2 (254:1): 0 5609472 linear 7:0 532480</span><br></pre></td></tr></table></figure>
+<p>此时 loop device 就设置好了，<code>loop0p1</code> 对应的是镜像文件分区上的 <code>/boot</code>，<code>loop0p2</code> 对应的是 <code>/</code>。</p>
+<p>然后格式化镜像文件文件中的两个分区。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">sudo mkfs.vfat -n boot /dev/mapper/loop0p1</span><br><span class="line">mkfs.fat 4.2 (2021-01-31)</span><br><span class="line">mkfs.fat: Warning: lowercase labels might not work properly on some system</span><br><span class="line"></span><br><span class="line">sudo mkfs.ext4 /dev/mapper/loop0p2</span><br><span class="line">mke2fs 1.46.2 (28-Feb-2021)</span><br><span class="line">Discarding device blocks: done</span><br><span class="line">Creating filesystem with 701184 4k blocks and 175296 inodes</span><br><span class="line">Filesystem UUID: e41b54ae-ee95-42e5-b4df-df1a32a21859</span><br><span class="line">Superblock backups stored on blocks:</span><br><span class="line">        32768, 98304, 163840, 229376, 294912</span><br><span class="line"></span><br><span class="line">Allocating group tables: done</span><br><span class="line">Writing inode tables: done</span><br><span class="line">Creating journal (16384 blocks): done</span><br><span class="line">Writing superblocks and filesystem accounting information: done</span><br></pre></td></tr></table></figure>
+<p>格式化成功，将两个分区挂载。</p>
+<p>创建两个临时文件用于挂载</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir DiskShare/backup_boot</span><br><span class="line">mkdir DiskShare/backup_roo</span><br></pre></td></tr></table></figure>
+<p>先挂载<code>/boot</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mount -t vfat -o uid=pi,gid=pi,umask=0000 /dev/mapper/loop0p1 DiskShare/backup_boot/</span><br></pre></td></tr></table></figure>
+<p><code>uid=pi,gid=pi,umask=0000 /dev/mapper/loop0p1 DiskShare/backup_boot/</code>根据自己的情况修改</p>
+<p>再挂载<code>/</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mount -t ext4 /dev/mapper/loop0p2 DiskShare/backup_root/</span><br></pre></td></tr></table></figure>
+<p><code>df -h</code>查看是否成功</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Filesystem           Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/root             29G  2.5G   26G   9% /</span><br><span class="line">devtmpfs             3.7G     0  3.7G   0% /dev</span><br><span class="line">tmpfs                3.9G     0  3.9G   0% /dev/shm</span><br><span class="line">tmpfs                1.6G  3.0M  1.6G   1% /run</span><br><span class="line">tmpfs                5.0M  4.0K  5.0M   1% /run/lock</span><br><span class="line">/dev/mmcblk0p1       253M   30M  223M  12% /boot</span><br><span class="line">/dev/sdb1            3.6T  3.4T   81G  98% /home/pi/DiskShare</span><br><span class="line">/dev/sda1            7.3T  3.2T  3.7T  47% /home/pi/share</span><br><span class="line">tmpfs                782M     0  782M   0% /run/user/1000</span><br><span class="line">/dev/mapper/loop0p1  256M     0  256M   0% /home/pi/DiskShare/backup_boot</span><br><span class="line">/dev/mapper/loop0p2  2.6G   24K  2.5G   1% /home/pi/DiskShare/backup_root</span><br></pre></td></tr></table></figure>
+<p>可以看到已经成功挂载上去了。</p>
+<h3 id="开始备份"><a href="#开始备份" class="headerlink" title="开始备份"></a>开始备份</h3><ol>
+<li><p>先备份<code>/boot</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp -rfp /boot/* DiskShare/backup_boot/</span><br></pre></td></tr></table></figure>
+<p>大致会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp: failed to preserve ownership for &#39;DiskShare&#x2F;backup_boot&#x2F;System Volume Information&#39;: Operation not permitted</span><br></pre></td></tr></table></figure>
+<p>不管他，只要文件复制过来就好。</p>
+<p>查看一下文件大小是否对应</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df -h DiskShare/backup_boot/</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Filesystem           Size  Used Avail Use% Mounted on</span><br><span class="line">&#x2F;dev&#x2F;mapper&#x2F;loop0p1  256M   31M  226M  12% &#x2F;home&#x2F;pi&#x2F;DiskShare&#x2F;backup_boot</span><br></pre></td></tr></table></figure>
+<p>和原来的<code>/boot</code>大小一致。</p>
+</li>
+<li><p>备份根目录</p>
+<p>先变更一下权限</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod 777 DiskShare/backup_root</span><br><span class="line">sudo chmod pi:pi DiskShare/backup_root</span><br></pre></td></tr></table></figure>
+<p>开始备份</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd DiskShare/backup_root</span><br><span class="line">sudo dump -0uaf - / | sudo restore -rf -s</span><br></pre></td></tr></table></figure>
+<p>报了一堆错，不过好在出现了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DUMP: DUMP IS DONE</span><br></pre></td></tr></table></figure>
+<p>就说明完成了</p>
+</li>
+<li><p>修改相应的 PARTUUID</p>
+<p>此时备份已经完成，还需要修改下 Raspbian 启动对应分区的 PARTUUID。</p>
+<p>首先查看两个分区的 PARTUUID</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo blkid</span><br><span class="line">/dev/loop0: PTUUID=&quot;e2cf4a8e&quot; PTTYPE=&quot;dos&quot;</span><br><span class="line">/dev/mapper/loop0p1: SEC_TYPE=&quot;msdos&quot; LABEL_FATBOOT=&quot;boot&quot; LABEL=&quot;boot&quot; UUID=&quot;0B9E-4FAD&quot; BLOCK_SIZE=&quot;512&quot; TYPE=&quot;vfat&quot; PARTUUID=&quot;e2cf4a8e-01&quot;</span><br><span class="line">/dev/mapper/loop0p2: UUID=&quot;e41b54ae-ee95-42e5-b4df-df1a32a21859&quot; BLOCK_SIZE=&quot;4096&quot; TYPE=&quot;ext4&quot; PARTUUID=&quot;e2cf4a8e-02&quot;</span><br></pre></td></tr></table></figure>
+<p><code>/boot</code>对应<code>e2cf4a8e-01</code>，<code>/</code>对应<code>e2cf4a8e-02</code></p>
+<p>修改<code>cmdline.txt</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /home/pi/DiskShare/backup_boot/cmdline.txt</span><br></pre></td></tr></table></figure>
+<p>找到<code>root=PARTUUID=</code>把等号后面的值改为e2cf4a8e-02。（<code>/</code>对应<code>e2cf4a8e-02</code>）</p>
+<p>修改<code>fstab</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /home/pi/DiskShare/backup_root/e</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">proc            &#x2F;proc           proc    defaults          0       0</span><br><span class="line">PARTUUID&#x3D;ea382736-01  &#x2F;boot           vfat    defaults          0       2</span><br><span class="line">PARTUUID&#x3D;ea382736-02  &#x2F;               ext4    defaults,noatime  0       1</span><br><span class="line"># a swapfile is not a swap partition, no line here</span><br><span class="line">#   use  dphys-swapfile swap[on|off]  for that</span><br><span class="line">&#x2F;dev&#x2F;sda1       &#x2F;home&#x2F;pi&#x2F;share  ext4    defaults        1       1</span><br><span class="line">&#x2F;dev&#x2F;sdb1       &#x2F;home&#x2F;pi&#x2F;DiskShare  ext4    defaults        1       1</span><br></pre></td></tr></table></figure>
+<p>这里我挂载了两个外置硬盘，先删这两个。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">proc            &#x2F;proc           proc    defaults          0       0</span><br><span class="line">PARTUUID&#x3D;ea382736-01  &#x2F;boot           vfat    defaults          0       2</span><br><span class="line">PARTUUID&#x3D;ea382736-02  &#x2F;               ext4    defaults,noatime  0       1</span><br><span class="line"># a swapfile is not a swap partition, no line here</span><br><span class="line">#   use  dphys-swapfile swap[on|off]  for that</span><br></pre></td></tr></table></figure>
+<p>把<code>PARTUUID=</code>后面的值改为对应的值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">proc            &#x2F;proc           proc    defaults          0       0</span><br><span class="line">PARTUUID&#x3D;e2cf4a8e-01  &#x2F;boot           vfat    defaults          0       2</span><br><span class="line">PARTUUID&#x3D;e2cf4a8e-02  &#x2F;               ext4    defaults,noatime  0       1</span><br><span class="line"># a swapfile is not a swap partition, no line here</span><br><span class="line">#   use  dphys-swapfile swap[on|off]  for that</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>收尾</p>
+<p>卸载各挂载分区</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo umount /home/pi/DiskShare/backup_boot</span><br><span class="line">sudo umount /home/pi/DiskShare/backup_root</span><br></pre></td></tr></table></figure>
+<p>删除loop device</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo kpartx -d /dev/loop0</span><br><span class="line">sudo losetup -d /dev/loop0</span><br></pre></td></tr></table></figure>
+<p>删除挂载目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rmdir /home/pi/DiskShare/backup_boot</span><br><span class="line">rmdir /home/pi/DiskShare/backup_root</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="使用OMV插件backup备份"><a href="#使用OMV插件backup备份" class="headerlink" title="使用OMV插件backup备份"></a>使用OMV插件backup备份</h2><p>Failed to execute command ‘export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; export LANG=C.UTF-8; /usr/sbin/omv-backup 2&gt;&amp;1’: No backup volume set.  Please choose a backup volume.</p>
+<p>OMV\ExecException: Failed to execute command ‘export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; export LANG=C.UTF-8; /usr/sbin/omv-backup 2&gt;&amp;1’: No backup volume set.  Please choose a backup volume. in /usr/share/openmediavault/engined/rpc/backup.inc:72<br>Stack trace:</p>
+<h3 id="安装backup插件"><a href="#安装backup插件" class="headerlink" title="安装backup插件"></a>安装backup插件</h3><blockquote>
+<p>openmediavault-backup 6.0</p>
+</blockquote>
+<p>安装</p>
+<h3 id="创建用于备份的文件夹"><a href="#创建用于备份的文件夹" class="headerlink" title="创建用于备份的文件夹"></a>创建用于备份的文件夹</h3><p><code>存储器-&gt;共享文件夹-&gt;创建</code></p>
+<h3 id="开始备份-1"><a href="#开始备份-1" class="headerlink" title="开始备份"></a>开始备份</h3><p>安装完插件后应该可以看到导航</p>
+<p><code>系统-&gt;备份</code></p>
+<p>选择备份文件夹，方式我选择<code>dd</code>备份。</p>
+<p>点击备份等待即可。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/raspios/" rel="tag"># raspios</a>
+              <a href="/tags/%E5%A4%87%E4%BB%BD/" rel="tag"># 备份</a>
+              <a href="/tags/%E8%BF%98%E5%8E%9F/" rel="tag"># 还原</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/27/%E9%87%8D%E8%A3%85%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F/" rel="prev" title="重装树莓派系统">
+      <i class="fa fa-chevron-left"></i> 重装树莓派系统
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/06/OMV6%E5%9C%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E4%B8%8A%E7%9A%84%E5%AE%89%E8%A3%85/" rel="next" title="OMV6在树莓派上的安装">
+      OMV6在树莓派上的安装 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E5%8D%A1%E5%A4%87%E4%BB%BD"><span class="nav-text">全卡备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%8D%A1%E5%A4%87%E4%BB%BD"><span class="nav-text">原卡备份</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E6%89%80%E9%9C%80%E7%9A%84%E8%BD%AF%E4%BB%B6"><span class="nav-text">安装所需的软件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E7%A9%BA%E7%99%BD%E9%95%9C%E5%83%8F"><span class="nav-text">创建一个空白镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%89%B2%E5%88%9B%E5%BB%BA%E5%A5%BD%E7%9A%84%E9%95%9C%E5%83%8F%E6%96%87%E4%BB%B6"><span class="nav-text">分割创建好的镜像文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E9%95%9C%E5%83%8F%E5%B9%B6%E4%B8%94%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-text">挂载镜像并且格式化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E5%A4%87%E4%BB%BD"><span class="nav-text">开始备份</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8OMV%E6%8F%92%E4%BB%B6backup%E5%A4%87%E4%BB%BD"><span class="nav-text">使用OMV插件backup备份</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85backup%E6%8F%92%E4%BB%B6"><span class="nav-text">安装backup插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%94%A8%E4%BA%8E%E5%A4%87%E4%BB%BD%E7%9A%84%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-text">创建用于备份的文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E5%A4%87%E4%BB%BD-1"><span class="nav-text">开始备份</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

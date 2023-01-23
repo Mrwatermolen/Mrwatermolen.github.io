@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1.图的基础i.图的定义图是由顶点的有穷非空集合和顶点之间边的集合组成，表示为G（V,E），其中G表示一个图，V是图G中顶点的集合，E是图G中边的集合。其中G为有穷非空。图有分有向图和无向图。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初学图">
+<meta property="og:url" content="http://example.com/2020/11/24/%E5%88%9D%E5%AD%A6%E5%9B%BE/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="1.图的基础i.图的定义图是由顶点的有穷非空集合和顶点之间边的集合组成，表示为G（V,E），其中G表示一个图，V是图G中顶点的集合，E是图G中边的集合。其中G为有穷非空。图有分有向图和无向图。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/11/24/vghJzPoGNra8Epj.png">
+<meta property="article:published_time" content="2020-11-24T15:24:29.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.024Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="图">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/11/24/vghJzPoGNra8Epj.png">
+
+<link rel="canonical" href="http://example.com/2020/11/24/%E5%88%9D%E5%AD%A6%E5%9B%BE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>初学图 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/24/%E5%88%9D%E5%AD%A6%E5%9B%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          初学图
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-24 23:24:29" itemprop="dateCreated datePublished" datetime="2020-11-24T23:24:29+08:00">2020-11-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-图的基础"><a href="#1-图的基础" class="headerlink" title="1.图的基础"></a>1.图的基础</h2><h3 id="i-图的定义"><a href="#i-图的定义" class="headerlink" title="i.图的定义"></a>i.图的定义</h3><p>图是由顶点的有穷非空集合和顶点之间边的集合组成，表示为G（V,E），其中G表示一个图，V是图G中顶点的集合，E是图G中边的集合。其中<strong>G为有穷非空</strong>。<br>图有分有向图和无向图。</p>
+<span id="more"></span>
+<p>若顶点vi到vj之间的边没有方向，则这条边为无向边，表示为（vi，vj）或（vj，vi）。<br>反之为有向边（或弧），表示为＜vi，vj＞，其中vi称为弧尾，vj称为弧头。</p>
+<p>若图中所有边都为无向边，则该图为无向图，反之若都为有向边，则为有向图。</p>
+<p>简单图：不存在顶点到其自身的边，且同一条边不重复出现。 王道书只讨论简单图。<br>简单无向图：<br>简单有向图：</p>
+<p>边的权：赋予每个边一个权值<br>带权网/图：每个边都带有权<br>带权路径长度：一条路径上所有边的权值之和</p>
+<h3 id="ii-顶点"><a href="#ii-顶点" class="headerlink" title="ii.顶点"></a>ii.顶点</h3><p>无向图：顶点v的度：依附于该顶点的边的条数，既为$TD(v)$<br>在具有n个顶点、e条边的无向图</p>
+<script type="math/tex; mode=display">\sum_{i=1}^nTD(v_i)=2e</script><p>有向图：</p>
+<ul>
+<li>入度：是以顶点v为终点的有向边的数目，记为$ID(v)$；</li>
+<li>出度：是以顶点v为起点的有向边的数目，记为$OD(v)$；</li>
+<li>顶点v的度 $TD(v)=ID(v)+OD(v)$</li>
+</ul>
+<h4 id="iii-顶点-顶点关系"><a href="#iii-顶点-顶点关系" class="headerlink" title="iii.顶点-顶点关系"></a>iii.顶点-顶点关系</h4><ul>
+<li>路径： $v_p到v_q$之间的顶点序列(序列中不出现重复的顶点称为简单路径)</li>
+<li>回路:第一个顶点和最后一个顶点相同的路径(除了第一个顶点和最后一个顶点外，其余顶点不重复的路径称为简单回路)</li>
+</ul>
+<h4 id="iv-连通图"><a href="#iv-连通图" class="headerlink" title="iv.连通图"></a>iv.连通图</h4><p>无向图：如果两个顶点之间有路径，则称这两个顶点是连通的。如果图中任意两个顶点都是连通的，那么该图为连通图。<br>常见考点：<br>对于$n$个顶点的无向图，若为连通图，则最少有$n-1$条边，若为非连通图，最多有$C_{n-1}^2$条边</p>
+<p>有向图：如果对于任意两个顶点vi和vj，都存在vi到vj和vj到vi的路径，则称那图为强连通图。<br>常见考点：<br>对于$n$个顶点的有向图，若为强连通图，则最少有$n$条边</p>
+<h4 id="v-子图"><a href="#v-子图" class="headerlink" title="v.子图"></a>v.子图</h4><p>设有两个图$G=(V,E)、G’=(V,E’)$，若V’是V的子集，E’是E的子集，称G’为G的子图。<br><strong><em>若$V=V’$则G’为G的生成子图</em></strong></p>
+<p>连通分量：无向图中V尽可能大的<strong>连通子图</strong></p>
+<p>强连通分量：有向图中V尽可能大的<strong>强连通子图</strong></p>
+<p>连通图的生成树：包含全部全部顶点的一个极小连通子图（边尽量少）<br>若其顶点为$n$，则生成树有$n-1$条边</p>
+<p>非连通图的生成森林：非连通图中的连通分量的连通树构成。</p>
+<h4 id="vi-几种特殊的图"><a href="#vi-几种特殊的图" class="headerlink" title="vi.几种特殊的图"></a>vi.几种特殊的图</h4><ul>
+<li>无向完全图：任意两个顶点之间都存在边，即若$|V|=n$，则$|E|\in[0,C_n^2]$</li>
+<li>有向完全图：任意两个顶点之间都存在方向相反的两条弧，即若$|V|=n$，则$|E|\in[0,2C_n^2]$</li>
+<li>稀疏图：边数很少$\Leftrightarrow$稠密图：边数很多;分界线一般来说：$|E|&lt;|V|log|V|$</li>
+<li>树:不存在回路且连通的无向图（常见考点，若|E|&gt;1，则必有回路）</li>
+<li>有向树:一个顶点入度为0,其余为1的有向图</li>
+</ul>
+<h4 id="vii-总结"><a href="#vii-总结" class="headerlink" title="vii.总结"></a>vii.总结</h4><p><img src="https://i.loli.net/2020/11/24/vghJzPoGNra8Epj.png" alt="2020-11-24-232029_1504x823_scrot"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%9B%BE/" rel="tag"># 图</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/21/Masm/" rel="prev" title="Linux搭建汇编环境">
+      <i class="fa fa-chevron-left"></i> Linux搭建汇编环境
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/25/%E5%9B%BE%E7%9A%84%E5%AD%98%E5%82%A8/" rel="next" title="图的存储">
+      图的存储 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%9B%BE%E7%9A%84%E5%9F%BA%E7%A1%80"><span class="nav-text">1.图的基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#i-%E5%9B%BE%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-text">i.图的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ii-%E9%A1%B6%E7%82%B9"><span class="nav-text">ii.顶点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#iii-%E9%A1%B6%E7%82%B9-%E9%A1%B6%E7%82%B9%E5%85%B3%E7%B3%BB"><span class="nav-text">iii.顶点-顶点关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#iv-%E8%BF%9E%E9%80%9A%E5%9B%BE"><span class="nav-text">iv.连通图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#v-%E5%AD%90%E5%9B%BE"><span class="nav-text">v.子图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vi-%E5%87%A0%E7%A7%8D%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE"><span class="nav-text">vi.几种特殊的图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vii-%E6%80%BB%E7%BB%93"><span class="nav-text">vii.总结</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

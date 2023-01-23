@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言：树莓派不知道怎么的，很多服务都出问题了，虽然好像还能正常用，不过问题太大了，之前把树莓派当作主力机来使用的，装了太多冗余的东西了，直接重装。打算直接做nas了 设备：PI 4 8GB 系统：Debian 11 bullseye">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重装树莓派系统">
+<meta property="og:url" content="http://example.com/2021/11/27/%E9%87%8D%E8%A3%85%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="前言：树莓派不知道怎么的，很多服务都出问题了，虽然好像还能正常用，不过问题太大了，之前把树莓派当作主力机来使用的，装了太多冗余的东西了，直接重装。打算直接做nas了 设备：PI 4 8GB 系统：Debian 11 bullseye">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-27T03:05:23.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.027Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="raspios">
+<meta property="article:tag" content="还原">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/11/27/%E9%87%8D%E8%A3%85%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>重装树莓派系统 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/27/%E9%87%8D%E8%A3%85%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          重装树莓派系统
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-27 11:05:23" itemprop="dateCreated datePublished" datetime="2021-11-27T11:05:23+08:00">2021-11-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>前言：树莓派不知道怎么的，很多服务都出问题了，虽然好像还能正常用，不过问题太大了，之前把树莓派当作主力机来使用的，装了太多冗余的东西了，直接重装。打算直接做nas了</p>
+<p>设备：PI 4 8GB</p>
+<p>系统：Debian 11 bullseye</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><h3 id="pt相关"><a href="#pt相关" class="headerlink" title="pt相关"></a>pt相关</h3><p>把deluge的种子全部转移铺种到tr上</p>
+<p>备份tr</p>
+<p>备份transmission-daemon：</p>
+<p>数据目录位于(apt安装的)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;var&#x2F;lib&#x2F;transmission-daemon&#x2F;.config</span><br></pre></td></tr></table></figure>
+<p>复制一份</p>
+<p>种子迁移：跳过校验</p>
+<h3 id="下载相关"><a href="#下载相关" class="headerlink" title="下载相关"></a>下载相关</h3><p>备份aria2</p>
+<p>备份aria2配置文件，以及service</p>
+<p>我的配置文件位于用户目下的.aria2：<code>/home/pi/.aria2</code></p>
+<p><code>/etc/systemd/system/aria2.service</code></p>
+<p>复制一份</p>
+<h3 id="局域网共享相关"><a href="#局域网共享相关" class="headerlink" title="局域网共享相关"></a>局域网共享相关</h3><p>smb备份</p>
+<p>备份配置文件</p>
+<p>配置文件位于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;etc&#x2F;samba</span><br></pre></td></tr></table></figure>
+<p>复制一份</p>
+<h3 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h3><p>python脚本备份</p>
+<p>bash脚本备份</p>
+<h3 id="其余"><a href="#其余" class="headerlink" title="其余"></a>其余</h3><p>crontab</p>
+<p>latex</p>
+<h2 id="重装"><a href="#重装" class="headerlink" title="重装"></a>重装</h2><h3 id="镜像下载和系统启动："><a href="#镜像下载和系统启动：" class="headerlink" title="镜像下载和系统启动："></a>镜像下载和系统启动：</h3><p><code>2021-10-30-raspios-bullseye-arm64-lite</code></p>
+<p>才注意到Debian版本换成了bullseye，升级换代了。</p>
+<p>使用<code>rpi-imager</code>写入sd卡</p>
+<p>然后写入错误。。。错误：数据错误(循环冗余检查)</p>
+<p>这张卡用了很久了，一扫描果然出了坏道。唉，先屏蔽了凑合着用。。。新的sd卡还要几天才能到。。。</p>
+<p>屏蔽完了，测试了一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> *** 开始测试第 1 圈，共 1 圈 ***</span><br><span class="line"></span><br><span class="line">                 位置      当前速度      平均速度        余量  剩余时间</span><br><span class="line">正在写入       540 MB     3.22 MB&#x2F;s     3.21 MB&#x2F;s    29871 MB  02:34:55</span><br><span class="line"></span><br><span class="line">无法向文件 F:\HUT00001.BIN 写入数据！</span><br></pre></td></tr></table></figure>
+<p>根本不能往里面写数据。。。</p>
+<p>含泪使用switch的128g的内存卡，先备份一波switch。TT</p>
+<p>写入成功后，为开启ssh功能</p>
+<p>在sd卡的/boot上创建空白文件SSH</p>
+<p>树莓派在局域网上的域名为：<code>raspberrypi</code></p>
+<p>终端SSH访问：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh pi@raspberrypi</span><br></pre></td></tr></table></figure>
+<p>出现提示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><br><span class="line">@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @</span><br><span class="line">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><br><span class="line">IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!</span><br><span class="line">Someone could be eavesdropping on you right now (man-in-the-middle attack)!</span><br><span class="line">It is also possible that a host key has just been changed.</span><br><span class="line">The fingerprint for the ECDSA key sent by the remote host is</span><br><span class="line">SHA256:gYQNYVM3QMmcVj+stdH+2cXxo1EuQAz3aoLaMywTcXQ.</span><br><span class="line">Please contact your system administrator.</span><br><span class="line">Add correct host key in C:\\Users\\MY&#x2F;.ssh&#x2F;known_hosts to get rid of this message.</span><br><span class="line">Offending ECDSA key in C:\\Users\\MY&#x2F;.ssh&#x2F;known_hosts:4</span><br><span class="line">ECDSA host key for raspberrypi has changed and you have requested strict checking.</span><br><span class="line">Host key verification failed.</span><br></pre></td></tr></table></figure>
+<p>用个文本编辑器把用户目录下的<code>.ssh/known_hosts</code>的文件改了，我用的vscode</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code .\.ssh\known_hosts</span><br></pre></td></tr></table></figure>
+<p>树莓派我之前绑定了ip：192.168.1.6，在known_hosts把有关于树莓派的都删了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh pi@raspberrypi</span><br></pre></td></tr></table></figure>
+<p>默认密码是：raspberry</p>
+<p>进入后第一件事就是改密码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo raspi-config</span><br></pre></td></tr></table></figure>
+<p>选择<code>System Options-&gt;Password</code></p>
+<p>然后改时区，<code>Locaisation Options-&gt;Timezone-&gt;Asia-&gt;Shanghai</code></p>
+<h3 id="挂载备份盘"><a href="#挂载备份盘" class="headerlink" title="挂载备份盘"></a>挂载备份盘</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sudo df -h</span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/root       117G  3.0G  110G   3% /</span><br><span class="line">devtmpfs        3.7G     0  3.7G   0% /dev</span><br><span class="line">tmpfs           3.9G     0  3.9G   0% /dev/shm</span><br><span class="line">tmpfs           1.6G  908K  1.6G   1% /run</span><br><span class="line">tmpfs           5.0M  4.0K  5.0M   1% /run/lock</span><br><span class="line">/dev/mmcblk0p1  253M   30M  223M  12% /boot</span><br><span class="line">tmpfs           782M   24K  782M   1% /run/user/1000</span><br><span class="line">/dev/sdb1       3.6T  3.4T   89G  98% /media/pi/84e82e54-9eb3-4645-9b5b-aa7347415905</span><br><span class="line">/dev/sda1       7.3T  3.4T  3.6T  49% /media/pi/6cd86da0-3efc-41c4-adf8-34871490569c</span><br></pre></td></tr></table></figure>
+<p>先挂载磁盘分区<code>/dev/sdb1</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo mount /dev/sdb1 DiskShare/</span><br><span class="line">cd DiskShare/</span><br><span class="line">ls</span><br></pre></td></tr></table></figure>
+<h3 id="换源"><a href="#换源" class="headerlink" title="换源"></a>换源</h3><p>树莓派上版本了，所以原来备份的buster版本的就不能用了。。</p>
+<p>换成清华源</p>
+<blockquote>
+<p>Debian 镜像使用帮助</p>
+</blockquote>
+<p>Debian 的软件源配置文件是 <code>/etc/apt/sources.list</code>。将系统自带的该文件做个备份，将该文件替换为下面内容，即可使用 TUNA 的软件源镜像。</p>
+<p>如果遇到无法拉取 https 源的情况，请先使用 http 源并安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install apt-transport-https ca-certificates</span><br></pre></td></tr></table></figure>
+<p>再使用 TUNA 的软件源镜像。</p>
+<hr>
+<p>备份一下source.list再改</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">cp /etc/apt/sources.list ./</span><br><span class="line">sudo nano /etc/apt/sources.list</span><br><span class="line"><span class="meta">#</span><span class="bash"> 把里面的内容换成</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释</span></span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free</span><br><span class="line"><span class="meta">#</span><span class="bash"> deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free</span></span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free</span><br><span class="line"><span class="meta">#</span><span class="bash"> deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free</span></span><br><span class="line"></span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main contrib non-free</span><br><span class="line"><span class="meta">#</span><span class="bash"> deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main contrib non-free</span></span><br><span class="line"></span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free</span><br><span class="line"><span class="meta">#</span><span class="bash"> deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye-security main contrib non-free</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>更新一下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt upgrade</span><br></pre></td></tr></table></figure>
+<h3 id="安装v2rayA"><a href="#安装v2rayA" class="headerlink" title="安装v2rayA"></a>安装v2rayA</h3><h4 id="先装v2ray"><a href="#先装v2ray" class="headerlink" title="先装v2ray"></a>先装v2ray</h4><p>v2rayA 提供的镜像脚本（推荐）:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -Ls https://mirrors.v2raya.org/go.sh | sudo bash</span><br></pre></td></tr></table></figure>
+<p>感觉有点满。。</p>
+<p>安装后可以关掉服务，因为 v2rayA 不依赖于该 systemd 服务。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl disable v2ray --now ### Xray 需要替换服务为 xray</span><br></pre></td></tr></table></figure>
+<h4 id="通过软件源安装v2rayA"><a href="#通过软件源安装v2rayA" class="headerlink" title="通过软件源安装v2rayA"></a>通过软件源安装v2rayA</h4><p>添加公钥</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -qO - https://apt.v2raya.mzz.pub/key/public-key.asc | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+<p>添加 V2RayA 软件源</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;deb https://apt.v2raya.mzz.pub/ v2raya main&quot;</span> | sudo tee /etc/apt/sources.list.d/v2raya.list</span><br><span class="line">sudo apt update</span><br></pre></td></tr></table></figure>
+<p>安装 V2RayA</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install v2raya</span><br></pre></td></tr></table></figure>
+<p>启动 v2rayA / 设置 v2rayA 自动启动</p>
+<p>启动：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start v2raya.service</span><br></pre></td></tr></table></figure>
+<p>设置开机自动启动:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable v2raya.service</span><br></pre></td></tr></table></figure>
+<p>设置v2rayA</p>
+<p>网页访问：<a target="_blank" rel="noopener" href="http://raspberrypi:2017/">http://raspberrypi:2017/</a></p>
+<p>对于 Debian11 用户来说，iptables 已被弃用。使用 nftables 作为 iptables 的后端以进行适配：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">update-alternatives --<span class="built_in">set</span> iptables /usr/sbin/iptables-nft</span><br><span class="line">update-alternatives --<span class="built_in">set</span> ip6tables /usr/sbin/ip6tables-nft</span><br><span class="line">update-alternatives --<span class="built_in">set</span> arptables /usr/sbin/arptables-nft</span><br><span class="line">update-alternatives --<span class="built_in">set</span> ebtables /usr/sbin/ebtables-nft</span><br></pre></td></tr></table></figure>
+<p>如果你想切换回 legacy 版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">update-alternatives --<span class="built_in">set</span> iptables /usr/sbin/iptables-legacy</span><br><span class="line">update-alternatives --<span class="built_in">set</span> ip6tables /usr/sbin/ip6tables-legacy</span><br><span class="line">update-alternatives --<span class="built_in">set</span> arptables /usr/sbin/arptables-legacy</span><br><span class="line">update-alternatives --<span class="built_in">set</span> ebtables /usr/sbin/ebtables-legacy</span><br></pre></td></tr></table></figure>
+<p>切换后重启即可。</p>
+<p>设置一下暂时代理：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export http_proxy=http://127.0.0.1:20172</span><br><span class="line">export https_proxy=http://127.0.0.1:20172</span><br></pre></td></tr></table></figure>
+<h3 id="安装smb"><a href="#安装smb" class="headerlink" title="安装smb"></a>安装smb</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install samba</span><br></pre></td></tr></table></figure>
+<p>还原配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br></pre></td><td class="code"><pre><span class="line">sudo cp DiskShare/smb.conf /etc/samba/</span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="bash"><span class="comment"># Sample configuration file for the Samba suite for Debian GNU/Linux.</span></span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="bash"><span class="comment">#</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> This is the main Samba configuration file. You should <span class="built_in">read</span> the</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> smb.conf(5) manual page <span class="keyword">in</span> order to understand the options listed</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> here. Samba has a huge number of configurable options most of <span class="built_in">which</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> are not shown <span class="keyword">in</span> this example</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="bash"><span class="comment"># Some options that are often worth tuning have been included as</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> commented-out examples <span class="keyword">in</span> this file.</span></span><br><span class="line"><span class="meta">#</span><span class="bash">  - When such options are commented with <span class="string">&quot;;&quot;</span>, the proposed setting</span></span><br><span class="line"><span class="meta">#</span><span class="bash">    differs from the default Samba behaviour</span></span><br><span class="line"><span class="meta">#</span><span class="bash">  - When commented with <span class="string">&quot;#&quot;</span>, the proposed setting is the default</span></span><br><span class="line"><span class="meta">#</span><span class="bash">    behaviour of Samba but the option is considered important</span></span><br><span class="line"><span class="meta">#</span><span class="bash">    enough to be mentioned here</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="bash"><span class="comment"># <span class="doctag">NOTE:</span> Whenever you modify this file you should run the command</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="string">&quot;testparm&quot;</span> to check that you have not made any basic syntactic</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> errors.</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">======================= Global Settings =======================</span></span><br><span class="line"></span><br><span class="line">[global]</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># Browsing/Identification ###</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Change this to the workgroup/NT-domain name your Samba server will part of</span></span><br><span class="line">   workgroup = WORKGROUP</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">### Networking ####</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> The specific <span class="built_in">set</span> of interfaces / networks to <span class="built_in">bind</span> to</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> This can be either the interface name or an IP address/netmask;</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> interface names are normally preferred</span></span><br><span class="line">;   interfaces = 127.0.0.0/8 eth0</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Only <span class="built_in">bind</span> to the named interfaces and/or networks; you must use the</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="string">&#x27;interfaces&#x27;</span> option above to use this.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> It is recommended that you <span class="built_in">enable</span> this feature <span class="keyword">if</span> your Samba machine is</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> not protected by a firewall or is a firewall itself.  However, this</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> option cannot handle dynamic or non-broadcast interfaces correctly.</span></span><br><span class="line">;   bind interfaces only = yes</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">### Debugging/Accounting ####</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> This tells Samba to use a separate <span class="built_in">log</span> file <span class="keyword">for</span> each machine</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> that connects</span></span><br><span class="line">   log file = /var/log/samba/log.%m</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Cap the size of the individual <span class="built_in">log</span> files (<span class="keyword">in</span> KiB).</span></span><br><span class="line">   max log size = 1000</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> We want Samba to only <span class="built_in">log</span> to /var/<span class="built_in">log</span>/samba/<span class="built_in">log</span>.&#123;smbd,nmbd&#125;.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Append syslog@1 <span class="keyword">if</span> you want important messages to be sent to syslog too.</span></span><br><span class="line">   logging = file</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Do something sensible when Samba crashes: mail the admin a backtrace</span></span><br><span class="line">   panic action = /usr/share/samba/panic-action %d</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">###### Authentication #######</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Server role. Defines <span class="keyword">in</span> <span class="built_in">which</span> mode Samba will operate. Possible</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> values are <span class="string">&quot;standalone server&quot;</span>, <span class="string">&quot;member server&quot;</span>, <span class="string">&quot;classic primary</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> domain controller<span class="string">&quot;, &quot;</span>classic backup domain controller<span class="string">&quot;, &quot;</span>active</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> directory domain controller<span class="string">&quot;.</span></span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="bash"><span class="comment"># Most people will want &quot;standalone server&quot; or &quot;member server&quot;.</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Running as <span class="string">&quot;active directory domain controller&quot;</span> will require first</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> running <span class="string">&quot;samba-tool domain provision&quot;</span> to wipe databases and create a</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> new domain.</span></span><br><span class="line">   server role = standalone server</span><br><span class="line"></span><br><span class="line">   obey pam restrictions = yes</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> This boolean parameter controls whether Samba attempts to sync the Unix</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> password with the SMB password when the encrypted SMB password <span class="keyword">in</span> the</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> passdb is changed.</span></span><br><span class="line">   unix password sync = yes</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> For Unix password sync to work on a Debian GNU/Linux system, the following</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> parameters must be <span class="built_in">set</span> (thanks to Ian Kahan &lt;&lt;<span class="string">kahan@informatik.tu-muenchen.de&gt; for</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> sending the correct chat script <span class="keyword">for</span> the passwd program <span class="keyword">in</span> Debian Sarge).</span></span><br><span class="line">   passwd program = /usr/bin/passwd %u</span><br><span class="line">   passwd chat = *Enter\snew\s*\spassword:* %n\n *Retype\snew\s*\spassword:* %n\n *password\supdated\ssuccessfully* .</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> This boolean controls whether PAM will be used <span class="keyword">for</span> password changes</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> when requested by an SMB client instead of the program listed <span class="keyword">in</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="string">&#x27;passwd program&#x27;</span>. The default is <span class="string">&#x27;no&#x27;</span>.</span></span><br><span class="line">   pam password change = yes</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> This option controls how unsuccessful authentication attempts are mapped</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> to anonymous connections</span></span><br><span class="line">   map to guest = bad user</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">######### Domains ###########</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="bash"><span class="comment"># The following settings only takes effect if &#x27;server role = classic</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> primary domain controller<span class="string">&#x27;, &#x27;</span>server role = classic backup domain controller<span class="string">&#x27;</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> or <span class="string">&#x27;domain logons&#x27;</span> is <span class="built_in">set</span></span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"></span><br><span class="line"><span class="bash"><span class="comment"># It specifies the location of the user&#x27;s</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> profile directory from the client point of view) The following</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> required a [profiles] share to be setup on the samba server (see</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> below)</span></span><br><span class="line">;   logon path = \\%N\profiles\%U</span><br><span class="line"><span class="meta">#</span><span class="bash"> Another common choice is storing the profile <span class="keyword">in</span> the user<span class="string">&#x27;s home directory</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> (this is Samba<span class="string">&#x27;s default)</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">   logon path = \\%N\%U\profile</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> The following setting only takes effect <span class="keyword">if</span> <span class="string">&#x27;domain logons&#x27;</span> is <span class="built_in">set</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> It specifies the location of a user<span class="string">&#x27;s home directory (from the client</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> point of view)</span></span><br><span class="line">;   logon drive = H:</span><br><span class="line"><span class="meta">#</span><span class="bash">   logon home = \\%N\%U</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> The following setting only takes effect <span class="keyword">if</span> <span class="string">&#x27;domain logons&#x27;</span> is <span class="built_in">set</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> It specifies the script to run during logon. The script must be stored</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">in</span> the [netlogon] share</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> NOTE: Must be store <span class="keyword">in</span> <span class="string">&#x27;DOS&#x27;</span> file format convention</span></span><br><span class="line">;   logon script = logon.cmd</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> This allows Unix users to be created on the domain controller via the SAMR</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> RPC pipe.  The example <span class="built_in">command</span> creates a user account with a disabled Unix</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> password; please adapt to your needs</span></span><br><span class="line">; add user script = /usr/sbin/adduser --quiet --disabled-password --gecos &quot;&quot; %u</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> This allows machine accounts to be created on the domain controller via the</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> SAMR RPC pipe.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The following assumes a <span class="string">&quot;machines&quot;</span> group exists on the system</span></span><br><span class="line">; add machine script  = /usr/sbin/useradd -g machines -c &quot;%u machine account&quot; -d /var/lib/samba -s /bin/false %u</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> This allows Unix groups to be created on the domain controller via the SAMR</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> RPC pipe.</span></span><br><span class="line">; add group script = /usr/sbin/addgroup --force-badname %g</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">########### Misc ############</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Using the following line enables you to customise your configuration</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> on a per machine basis. The %m gets replaced with the netbios name</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> of the machine that is connecting</span></span><br><span class="line">;   include = /home/samba/etc/smb.conf.%m</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Some defaults <span class="keyword">for</span> winbind (make sure you<span class="string">&#x27;re not using the ranges</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">for</span> something <span class="keyword">else</span>.)</span></span><br><span class="line">;   idmap config * :              backend = tdb</span><br><span class="line">;   idmap config * :              range   = 3000-7999</span><br><span class="line">;   idmap config YOURDOMAINHERE : backend = tdb</span><br><span class="line">;   idmap config YOURDOMAINHERE : range   = 100000-999999</span><br><span class="line">;   template shell = /bin/bash</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Setup usershare options to <span class="built_in">enable</span> non-root users to share folders</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> with the net usershare <span class="built_in">command</span>.</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Maximum number of usershare. 0 means that usershare is disabled.</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   usershare max shares = 100</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Allow users who<span class="string">&#x27;ve been granted usershare privileges to create</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> public shares, not just authenticated ones</span></span><br><span class="line">   usershare allow guests = yes</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">======================= Share Definitions =======================</span></span><br><span class="line"></span><br><span class="line">[homes]</span><br><span class="line">   comment = Home Directories</span><br><span class="line">   browseable = no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> By default, the home directories are exported read-only. Change the</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> next parameter to <span class="string">&#x27;no&#x27;</span> <span class="keyword">if</span> you want to be able to write to them.</span></span><br><span class="line">   read only = yes</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> File creation mask is <span class="built_in">set</span> to 0700 <span class="keyword">for</span> security reasons. If you want to</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> create files with group=rw permissions, <span class="built_in">set</span> next parameter to 0775.</span></span><br><span class="line">   create mask = 0700</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Directory creation mask is <span class="built_in">set</span> to 0700 <span class="keyword">for</span> security reasons. If you want to</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> create <span class="built_in">dirs</span>. with group=rw permissions, <span class="built_in">set</span> next parameter to 0775.</span></span><br><span class="line">   directory mask = 0700</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> By default, \\server\username shares can be connected to by anyone</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> with access to the samba server.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The following parameter makes sure that only <span class="string">&quot;username&quot;</span> can connect</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> to \\server\username</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> This might need tweaking when using external authentication schemes</span></span><br><span class="line">   valid users = %S</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Un-comment the following and create the netlogon directory <span class="keyword">for</span> Domain Logons</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> (you need to configure Samba to act as a domain controller too.)</span></span><br><span class="line">;[netlogon]</span><br><span class="line">;   comment = Network Logon Service</span><br><span class="line">;   path = /home/samba/netlogon</span><br><span class="line">;   guest ok = yes</span><br><span class="line">;   read only = yes</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Un-comment the following and create the profiles directory to store</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> users profiles (see the <span class="string">&quot;logon path&quot;</span> option above)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> (you need to configure Samba to act as a domain controller too.)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The path below should be writable by all users so that their</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> profile directory may be created the first time they <span class="built_in">log</span> on</span></span><br><span class="line">;[profiles]</span><br><span class="line">;   comment = Users profiles</span><br><span class="line">;   path = /home/samba/profiles</span><br><span class="line">;   guest ok = no</span><br><span class="line">;   browseable = no</span><br><span class="line">;   create mask = 0600</span><br><span class="line">;   directory mask = 0700</span><br><span class="line"></span><br><span class="line">[printers]</span><br><span class="line">   comment = All Printers</span><br><span class="line">   browseable = no</span><br><span class="line">   path = /var/spool/samba</span><br><span class="line">   printable = yes</span><br><span class="line">   guest ok = no</span><br><span class="line">   read only = yes</span><br><span class="line">   create mask = 0700</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Windows clients look <span class="keyword">for</span> this share name as a <span class="built_in">source</span> of downloadable</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> printer drivers</span></span><br><span class="line"><span class="meta">[print$</span><span class="bash">]</span></span><br><span class="line">   comment = Printer Drivers</span><br><span class="line">   path = /var/lib/samba/printers</span><br><span class="line">   browseable = yes</span><br><span class="line">   read only = yes</span><br><span class="line">   guest ok = no</span><br><span class="line"><span class="meta">#</span><span class="bash"> Uncomment to allow remote administration of Windows <span class="built_in">print</span> drivers.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> You may need to replace <span class="string">&#x27;lpadmin&#x27;</span> with the name of the group your</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> admin users are members of.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Please note that you also need to <span class="built_in">set</span> appropriate Unix permissions</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> to the drivers directory <span class="keyword">for</span> these users to have write rights <span class="keyword">in</span> it</span></span><br><span class="line">;   write list = root, @lpadmin</span><br><span class="line"></span><br><span class="line">[8T]</span><br><span class="line">   comment = Users profiles</span><br><span class="line">   path = /home/pi/share</span><br><span class="line">   guest ok = no</span><br><span class="line">   browseable = yes</span><br><span class="line">   writable = yes</span><br><span class="line">   create mask = 0777</span><br><span class="line">   directory mask = 0777</span><br><span class="line">   valid users = pi</span><br><span class="line">[4T]</span><br><span class="line">   comment = Users profiles</span><br><span class="line">   path = /home/pi/DiskShare</span><br><span class="line">   guest ok = no</span><br><span class="line">   browseable = yes</span><br><span class="line">   writable = yes</span><br><span class="line">   create mask = 0777</span><br><span class="line">   directory mask = 0777</span><br><span class="line">   valid users = pi</span><br></pre></td></tr></table></figure>
+<p>添加用户</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo smbpasswd -a pi</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl reload smbd.service</span><br></pre></td></tr></table></figure>
+<h3 id="编译安装transmission"><a href="#编译安装transmission" class="headerlink" title="编译安装transmission"></a>编译安装transmission</h3><h4 id="目前不建议软件源安装"><a href="#目前不建议软件源安装" class="headerlink" title="目前不建议软件源安装"></a>目前不建议软件源安装</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install transmission-daemon</span><br></pre></td></tr></table></figure>
+<p>先检查一下版本。。。（我备份的是2.94）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">transmission-daemon  -V</span><br><span class="line">transmission-daemon 3.00 (bb6b5a062e)</span><br></pre></td></tr></table></figure>
+<p>。。。居然变成了3.00，还好升级兼容数据。。。但还是不建议使用3.0 （目前而言，很多pt站会把3.0当成被ban的客户端。。。u2甚至出现了:错误信息：    No UA presents! (2)。）</p>
+<h4 id="下载源码"><a href="#下载源码" class="headerlink" title="下载源码"></a>下载源码</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/transmission/transmission-releases/master/transmission-2.94.tar.xz</span><br></pre></td></tr></table></figure>
+<p>下载依赖<a target="_blank" rel="noopener" href="https://packages.debian.org/buster/libevent-2.1-6">libevent-2.1-6</a> <strong>(&gt;= 2.1.8-stable)</strong> ，<strong>dep:</strong> <a target="_blank" rel="noopener" href="https://packages.debian.org/buster/zlib1g">zlib1g</a> <strong>(&gt;= 1:1.1.4)</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz</span><br><span class="line">wget http://www.zlib.net/zlib-1.2.11.tar.gz</span><br></pre></td></tr></table></figure>
+<h4 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h4><ol>
+<li><p>安装libevent</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tar zxf libevent-2.1.8-stable.tar.gz</span><br><span class="line">cd ./libevent-2.1.8-stable</span><br><span class="line">sudo ./configure</span><br><span class="line">sudo make</span><br><span class="line">sudo make install</span><br><span class="line">cd ..</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装zlib</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tar zxf zlib-1.2.11.tar.gz</span><br><span class="line">cd ./zlib-1.2.11</span><br><span class="line">sudo ./configure</span><br><span class="line">sudo make</span><br><span class="line">sudo make install</span><br><span class="line">cd ..</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装transmission 2.94</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar xvf transmission-2.94.tar.xz</span><br><span class="line">cd transmission-2.94</span><br><span class="line">sudo ./configure</span><br></pre></td></tr></table></figure>
+<p>分割线下都是报错！谨慎按照分割线下的方法操作。（因为啥也不懂，直接乱来）</p>
+<hr>
+<p>结果报错</p>
+<blockquote>
+<p>No package ‘libcurl’ found</p>
+<p>Consider adjusting the PKG_CONFIG_PATH environment variable if you<br>installed software in a non-standard prefix.</p>
+<p>Alternatively, you may set the environment variables LIBCURL_CFLAGS<br>and LIBCURL_LIBS to avoid the need to call pkg-config.<br>See the pkg-config man page for more details.</p>
+</blockquote>
+<p>找不到<code>libcurl</code>。阿哲，明明有装<code>curl</code>，先看一下在不在。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ldconfig -p | grep libcurl</span><br><span class="line">		libcurl.so.4 (libc6,AArch64) =&gt; /lib/aarch64-linux-gnu/libcurl.so.4</span><br><span class="line">        libcurl-gnutls.so.4 (libc6,AArch64) =&gt; /lib/aarch64-linux-gnu/libcurl-gnutls.so.4</span><br></pre></td></tr></table></figure>
+<p>再检查一下<code>curl</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -confg --version</span><br><span class="line">curl 7.74.0 (aarch64-unknown-linux-gnu) libcurl/7.74.0 OpenSSL/1.1.1k zlib/1.2.11 brotli/1.0.9 libidn2/2.3.0 libpsl/0.21.0 (+libidn2/2.3.0) libssh2/1.9.0 nghttp2/1.43.0 librtmp/2.3</span><br><span class="line">Release-Date: 2020-12-09</span><br><span class="line">Protocols: dict file ftp ftps gopher http https imap imaps ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp</span><br><span class="line">Features: alt-svc AsynchDNS brotli GSS-API HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM NTLM_WB PSL SPNEGO SSL TLS-SRP UnixSockets</span><br></pre></td></tr></table></figure>
+<p>我。。。。现在还不会配置<code>./configure</code>，再装一个<code>curl</code>吧</p>
+<p>先退出<code>transmission 2.94</code>安装目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ..</span><br></pre></td></tr></table></figure>
+<p>编译安装<code>curl</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/curl/curl/releases/download/curl-7_76_1/curl-7.76.1.tar.gz</span><br><span class="line">tar zxf curl-7.76.1.tar.gz</span><br><span class="line">cd curl-7.76.1/</span><br><span class="line">sudo ./configure</span><br><span class="line">sudo make</span><br><span class="line">sudo make install</span><br><span class="line">cd ..</span><br><span class="line">rm curl-7.76.1.tar.gz</span><br></pre></td></tr></table></figure>
+<p>继续编译安装<code>transmission 2.94</code>！</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd transmission-2.94</span><br><span class="line">sudo ./configure</span><br></pre></td></tr></table></figure>
+<p>结果又报错</p>
+<blockquote>
+<p>checking for OPENSSL… no<br>checking for WOLFSSL… no<br>checking for CYASSL… no<br>checking for MBEDTLS… no<br>checking polarssl/version.h usability… no<br>checking polarssl/version.h presence… no<br>checking for polarssl/version.h… no<br>configure: error: Unable to find any supported crypto library.</p>
+</blockquote>
+<p>(这步不要尝试，下面的才是解决方法)我。。。。。再编译安装<code>openssl</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cd ..</span><br><span class="line">wget https://www.openssl.org/source/openssl-1.1.1l.tar.gz</span><br><span class="line">tar xf openssl-1.1.1l.tar.gz</span><br><span class="line">cd openssl-1.1.1l</span><br><span class="line">sudo ./configure</span><br><span class="line">sudo make</span><br><span class="line">sudo make install</span><br><span class="line">cd ..</span><br><span class="line">rm openssl-1.1.1l.tar.gz</span><br></pre></td></tr></table></figure>
+<p>结果一看还是这个错误。。。查了一下资料。。</p>
+<blockquote>
+<p>The OpenSSL library is usually already installed, but you have to install the header files. Depending on your <a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?from=pc_blog_highlight&amp;q=Linux">Linux</a> distribution, you’ll need these packages:</p>
+</blockquote>
+<ul>
+<li>Red Hat, Fedora, CentOS - <code>openssl-devel</code></li>
+<li>Debian, Ubuntu - <code>libssl-dev</code></li>
+<li>Arch - <code>openssl</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install libssl-dev</span><br></pre></td></tr></table></figure>
+<p>人裂开。。</p>
+<p>继续安装<code>transmission</code>报错</p>
+<blockquote>
+<p>./configure: line 20079: intltool-update: command not found<br>checking for intltool &gt;= 0.35.0…  found<br>configure: error: Your intltool is too old.  You need intltool 0.35.0 or later.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install intltool</span><br></pre></td></tr></table></figure>
+<p>继续装transmission去</p>
+<hr>
+<p>执行<code>sudo ./configure</code>后出现</p>
+<blockquote>
+<p>Configuration:</p>
+<p>Source code location:                              .<br>Compiler:                                          g++</p>
+<p>Build libtransmission:                             yes</p>
+<pre><code>* optimized for low-resource systems:           no
+* µTP enabled:                                  yes
+* crypto library:                               openssl
+</code></pre><p> Build Command-Line client:                         no</p>
+<p> Build GTK+ client:                                 no</p>
+<pre><code>* libappindicator for an Ubuntu-style tray:     no
+</code></pre><p> Build Daemon:                                      yes</p>
+<p> Build Mac client:                                  no</p>
+</blockquote>
+<p>可以继续了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo make</span><br><span class="line">sudo make install</span><br><span class="line">cd ..</span><br><span class="line">transmission-daemon -V</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="配置transmission服务"><a href="#配置transmission服务" class="headerlink" title="配置transmission服务"></a>配置transmission服务</h4><ol>
+<li><p>配置进程守护脚本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/systemd/system/transmission-daemon.service</span><br></pre></td></tr></table></figure>
+<p>写入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Transmission BitTorrent Daemon</span><br><span class="line">After&#x3D;network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">User&#x3D;root</span><br><span class="line">Type&#x3D;notify</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;bin&#x2F;transmission-daemon -f --log-error</span><br><span class="line">NoNewPrivileges&#x3D;true</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置 setting文件</p>
+<p>执行<code>sudo systemctl start transmission</code>后，会在<code>/usr/local/share/transmission</code>生成一个settings.json的配置文件</p>
+<p>先停止服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl stop transmission.service</span><br><span class="line">sudo nano /usr/local/share/transmission/settings.json</span><br></pre></td></tr></table></figure>
+<p>还原数据</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp -r DiskShare/.config/transmission-daemon/* /usr/local/share/transmission</span><br></pre></td></tr></table></figure>
+<p>3.0降级为2.94，要手动跳检，以后写。手动跳过校验后还要注意修改曾经改过目录名的种子</p>
+<p>我是备份的<code>apt</code>安装的数据，所以还要还原设置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp DiskShare/transmission-daemon/setting.json /usr/local/share/transmission</span><br></pre></td></tr></table></figure>
+<p>重新启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart transmission</span><br><span class="line">ps -aux | grep transmission</span><br><span class="line">sudo /bin/kill -s HUP 889 # reload</span><br></pre></td></tr></table></figure>
+<p>访问(如果你没有做特殊设置的话)：<a target="_blank" rel="noopener" href="http://raspberrypi:9091/">http://raspberrypi:9091/</a></p>
+</li>
+</ol>
+<p>美化，安装transmission-web-control：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/ronggang/transmission-web-control/raw/master/release/install-tr-control-cn.sh</span><br><span class="line">sudo bash install-tr-control-cn.sh</span><br></pre></td></tr></table></figure>
+<h3 id="安装Aria2"><a href="#安装Aria2" class="headerlink" title="安装Aria2"></a>安装Aria2</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install aria2</span><br></pre></td></tr></table></figure>
+<p>还原配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mv DiskShare/aria2.service /etc/systemd/</span><br><span class="line">mv DiskShare/.aria2/ ./</span><br></pre></td></tr></table></figure>
+<p>确认配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line">cat .aria2/aria2.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># &#x27;#&#x27;开头为注释内容, 选项都有相应的注释说明, 根据需要修改 ##</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 被注释的选项填写的是默认值, 建议在需要修改时再取消注释  ##</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 文件保存相关 ##</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 文件的保存路径(可使用绝对路径或相对路径), 默认: 当前启动位置</span></span><br><span class="line">dir=/home/pi/share/Aria2Download</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启用磁盘缓存, 0为禁用缓存, 需1.16以上版本, 默认:16M</span></span><br><span class="line">disk-cache=32M</span><br><span class="line"><span class="meta">#</span><span class="bash"> 文件预分配方式, 能有效降低磁盘碎片, 默认:prealloc</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 预分配所需时间: none &lt; falloc ? trunc &lt; prealloc</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> falloc和trunc则需要文件系统和内核支持</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> NTFS建议使用falloc, EXT3/4建议trunc, MAC 下需要注释此项</span></span><br><span class="line">file-allocation=trunc</span><br><span class="line"><span class="meta">#</span><span class="bash"> 断点续传</span></span><br><span class="line">continue=true</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 下载连接相关 ##</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 最大同时下载任务数, 运行时可修改, 默认:5</span></span><br><span class="line">max-concurrent-downloads=5</span><br><span class="line"><span class="meta">#</span><span class="bash"> 同一服务器连接数, 添加时可指定, 默认:1</span></span><br><span class="line">max-connection-per-server=5</span><br><span class="line"><span class="meta">#</span><span class="bash"> 最小文件分片大小, 添加时可指定, 取值范围1M -1024M, 默认:20M</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 假定size=10M, 文件为20MiB 则使用两个来源下载; 文件为15MiB 则使用一个来源下载</span></span><br><span class="line">min-split-size=10M</span><br><span class="line"><span class="meta">#</span><span class="bash"> 单个任务最大线程数, 添加时可指定, 默认:5</span></span><br><span class="line">split=5</span><br><span class="line"><span class="meta">#</span><span class="bash"> 整体下载速度限制, 运行时可修改, 默认:0</span></span><br><span class="line"><span class="meta">#</span><span class="bash">max-overall-download-limit=0</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 单个任务下载速度限制, 默认:0</span></span><br><span class="line"><span class="meta">#</span><span class="bash">max-download-limit=0</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 整体上传速度限制, 运行时可修改, 默认:0</span></span><br><span class="line"><span class="meta">#</span><span class="bash">max-overall-upload-limit=0</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 单个任务上传速度限制, 默认:0</span></span><br><span class="line"><span class="meta">#</span><span class="bash">max-upload-limit=0</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 禁用IPv6, 默认:<span class="literal">false</span></span></span><br><span class="line">disable-ipv6=true</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 进度保存相关 ##</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 从会话文件中读取下载任务</span></span><br><span class="line">input-file=/home/pi/.aria2/aria2.session</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在Aria2退出时保存`错误/未完成`的下载任务到会话文件</span></span><br><span class="line">save-session=/home/pi/.aria2/aria2.session</span><br><span class="line"><span class="meta">#</span><span class="bash"> 定时保存会话, 0为退出时才保存, 需1.16.1以上版本, 默认:0</span></span><br><span class="line">save-session-interval=60</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># RPC相关设置 ##</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 启用RPC, 默认:<span class="literal">false</span></span></span><br><span class="line">enable-rpc=true</span><br><span class="line"><span class="meta">#</span><span class="bash"> 允许所有来源, 默认:<span class="literal">false</span></span></span><br><span class="line">rpc-allow-origin-all=true</span><br><span class="line"><span class="meta">#</span><span class="bash"> 允许非外部访问, 默认:<span class="literal">false</span></span></span><br><span class="line">rpc-listen-all=true</span><br><span class="line"><span class="meta">#</span><span class="bash"> 事件轮询方式, 取值:[epoll, kqueue, port, poll, select], 不同系统默认值不同</span></span><br><span class="line"><span class="meta">#</span><span class="bash">event-poll=select</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> RPC监听端口, 端口被占用时可以修改, 默认:6800</span></span><br><span class="line"><span class="meta">#</span><span class="bash">rpc-listen-port=6800</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># BT/PT下载相关 ##</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 当下载的是一个种子(以.torrent结尾)时, 自动开始BT任务, 默认:<span class="literal">true</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">follow-torrent=<span class="literal">true</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> BT监听端口, 当端口被屏蔽时使用, 默认:6881-6999</span></span><br><span class="line">listen-port=51417</span><br><span class="line"><span class="meta">#</span><span class="bash"> 单个种子最大连接数, 默认:55</span></span><br><span class="line"><span class="meta">#</span><span class="bash">bt-max-peers=55</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 打开DHT功能, PT需要禁用, 默认:<span class="literal">true</span></span></span><br><span class="line">enable-dht=true</span><br><span class="line"><span class="meta">#</span><span class="bash"> 打开IPv6 DHT功能, PT需要禁用</span></span><br><span class="line"><span class="meta">#</span><span class="bash">enable-dht6=<span class="literal">false</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> DHT网络监听端口, 默认:6881-6999</span></span><br><span class="line"><span class="meta">#</span><span class="bash">dht-listen-port=6881-6999</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 本地节点查找, PT需要禁用, 默认:<span class="literal">false</span></span></span><br><span class="line">bt-enable-lpd=true</span><br><span class="line"><span class="meta">#</span><span class="bash"> 种子交换, PT需要禁用, 默认:<span class="literal">true</span></span></span><br><span class="line">enable-peer-exchange=true</span><br><span class="line"><span class="meta">#</span><span class="bash"> 每个种子限速, 对少种的PT很有用, 默认:50K</span></span><br><span class="line"><span class="meta">#</span><span class="bash">bt-request-peer-speed-limit=50K</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 客户端伪装, PT需要</span></span><br><span class="line">peer-id-prefix=-TR2770-</span><br><span class="line">user-agent=Transmission/2.77</span><br><span class="line"><span class="meta">#</span><span class="bash"> 当种子的分享率达到这个数时, 自动停止做种, 0为一直做种, 默认:1.0</span></span><br><span class="line">seed-ratio=0</span><br><span class="line"><span class="meta">#</span><span class="bash"> 强制保存会话, 话即使任务已经完成, 默认:<span class="literal">false</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 较新的版本开启后会在任务完成后依然保留.aria2文件</span></span><br><span class="line"><span class="meta">#</span><span class="bash">force-save=<span class="literal">false</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> BT校验相关, 默认:<span class="literal">true</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">bt-hash-check-seed=<span class="literal">true</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 继续之前的BT任务时, 无需再次校验, 默认:<span class="literal">false</span></span></span><br><span class="line">bt-seed-unverified=true</span><br><span class="line"><span class="meta">#</span><span class="bash"> 保存磁力链接元数据为种子文件(.torrent文件), 默认:<span class="literal">false</span></span></span><br><span class="line">bt-save-metadata=false</span><br><span class="line"></span><br><span class="line">cat /etc/systemd/system/aria2.service</span><br><span class="line">[Unit]</span><br><span class="line"></span><br><span class="line">Description=qBittorrent-nox</span><br><span class="line"></span><br><span class="line">After=network.target</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line"></span><br><span class="line">User=root</span><br><span class="line"></span><br><span class="line">Type=forking</span><br><span class="line"></span><br><span class="line">RemainAfterExit=yes</span><br><span class="line"></span><br><span class="line">ExecStart=/usr/bin/aria2c --conf-path=&quot;/home/pi/.aria2/aria2.conf&quot; -D</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line"></span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+<p>启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start aria2.service</span><br></pre></td></tr></table></figure>
+<p>查看是否成功</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl status aria2.service</span><br></pre></td></tr></table></figure>
+<p>设置开机启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable aria2.service</span><br></pre></td></tr></table></figure>
+<h3 id="安装proxychains"><a href="#安装proxychains" class="headerlink" title="安装proxychains"></a>安装proxychains</h3><p>为了更好的配置代理</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/rofl0r/proxychains-ng.git</span><br><span class="line">cd proxychains-ng/</span><br><span class="line">./configure --prefix=/usr --sysconfdir=/etc</span><br><span class="line">sudo make &amp;&amp; sudo make install</span><br><span class="line">sudo make install-config</span><br><span class="line">sudo nano /etc/proxychains.conf</span><br></pre></td></tr></table></figure>
+<p>拉到最后一行</p>
+<p>改成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socks5  127.0.0.1 20170</span><br></pre></td></tr></table></figure>
+<p>v2rayA是这么配置的。</p>
+<h3 id="安装Flexget"><a href="#安装Flexget" class="headerlink" title="安装Flexget"></a>安装Flexget</h3><p>先更新一下pip3的源</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip3 install pip -U</span><br><span class="line">pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
+<p>安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 install flexget</span><br></pre></td></tr></table></figure>
+<p>备份还原</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv DiskShare/.flexget/ ./</span><br></pre></td></tr></table></figure>
+<p>测试</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip3 install transmission-rpc #我配置文件写的是transmission</span><br><span class="line">flexget --test execute</span><br></pre></td></tr></table></figure>
+<p>问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">WARNING: The script calc-prorate is installed in &#39;&#x2F;home&#x2F;pi&#x2F;.local&#x2F;bin&#39; which is not on PATH.</span><br><span class="line"> Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.</span><br></pre></td></tr></table></figure>
+<p>环境变量没设置</p>
+<p>解决:</p>
+<p>flexget的启动路径是在<code>/home/pi/.local/bin</code>，把它加到环境变量里面</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo &#x27;export PATH=/home/pi/.local/bin:$PATH&#x27; &gt;&gt;~/.bashrc</span><br><span class="line">source ~/.bashrc</span><br></pre></td></tr></table></figure>
+<p>配置Flexget</p>
+<p>在当前用户目录下创建</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir .flexget</span><br><span class="line">nano .flexget/config.yml</span><br></pre></td></tr></table></figure>
+<p>写入以下内容</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tasks:</span></span><br><span class="line">  <span class="attr">Kimetsu_no_Yaiba-Mugen_Ressha_Hen:</span></span><br><span class="line">    <span class="attr">rss:</span> <span class="string">https://mikanani.me/RSS/Bangumi?bangumiId=2497&amp;subgroupid=562</span> <span class="comment"># pt rss 订阅地址</span></span><br><span class="line">    <span class="attr">download:</span> <span class="string">/home/pi/share/transmissionDownload</span> <span class="comment"># flexget 下载种子存放位置</span></span><br><span class="line">    <span class="attr">transmission:</span></span><br><span class="line">      <span class="attr">host:</span> <span class="string">raspberrypi</span> <span class="comment"># transmission 主机ip</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">9091</span>            <span class="comment"># transmission 端口</span></span><br><span class="line">      <span class="attr">username:</span> <span class="string">user</span>      <span class="comment"># transmission 用户名</span></span><br><span class="line">      <span class="attr">password:</span> <span class="string">password</span>      <span class="comment"># transmission 密码</span></span><br><span class="line">    <span class="attr">content_size:</span> <span class="comment"># 识别文件体积</span></span><br><span class="line">      <span class="attr">min:</span> <span class="number">100</span></span><br><span class="line">      <span class="attr">max:</span> <span class="number">1000</span></span><br><span class="line">      <span class="attr">strict:</span> <span class="literal">yes</span></span><br><span class="line"><span class="comment"># Flexget WebUI 设定，可以不改</span></span><br><span class="line"><span class="attr">web_server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">6566</span></span><br><span class="line">  <span class="attr">web_ui:</span> <span class="literal">yes</span></span><br><span class="line"><span class="comment"># base_url: /flexget</span></span><br><span class="line"><span class="comment"># base_url 是为了反代设置的，需要使用反代的话就取消这个的注释，然后在安装了 rTorrent 的情况下（不装 rt 的话没有 nginx）</span></span><br><span class="line"><span class="comment"># Flexget WebUI 地址就变成了 https://你盒子的 IP 地址/flexget</span></span><br><span class="line"><span class="comment"># 这里关闭 schedules 功能，也就是说没有启用 RSS，如何启用请看下文</span></span><br><span class="line"><span class="attr">schedules:</span> <span class="literal">no</span></span><br></pre></td></tr></table></figure>
+<p>测试是否正常</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flexget --test  -c /home/pi/.flexget/config.yml execute</span><br></pre></td></tr></table></figure>
+<p>写入crontab</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -e</span><br></pre></td></tr></table></figure>
+<p>每周一，0-8点，每两小时执行一次</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 0-8&#x2F;2 * * 1 &#x2F;home&#x2F;pi&#x2F;.local&#x2F;bin&#x2F;flexget -c &#x2F;home&#x2F;pi&#x2F;.flexget&#x2F;config.yml --cron execute</span><br></pre></td></tr></table></figure>
+<p>更多详见</p>
+<p><a target="_blank" rel="noopener" href="https://wiki.ukenn.top/seedbox-wiki-1/untitled-1">https://wiki.ukenn.top/seedbox-wiki-1/untitled-1</a></p>
+<p><a target="_blank" rel="noopener" href="https://tool.lu/crontab/">https://tool.lu/crontab/</a></p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>fstab开机挂载磁盘</p>
+<p>先查看磁盘</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo fdisk -l</span><br></pre></td></tr></table></figure>
+<p>找到对应<code>Device</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/fstab</span><br><span class="line"><span class="meta">#</span><span class="bash"> 后面加上</span></span><br><span class="line">/dev/sda1       /home/pi/share  ext4    defaults        1       1</span><br><span class="line">/dev/sdb1       /home/pi/DiskShare  ext4    defaults        1       1</span><br><span class="line"></span><br><span class="line">sudo mount -a #测试</span><br></pre></td></tr></table></figure>
+<p>crontab任务</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/raspios/" rel="tag"># raspios</a>
+              <a href="/tags/%E8%BF%98%E5%8E%9F/" rel="tag"># 还原</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/04/FDTD%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87/" rel="prev" title="FDTD前期准备">
+      <i class="fa fa-chevron-left"></i> FDTD前期准备
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/02/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E8%BF%98%E5%8E%9F/" rel="next" title="树莓派的备份与还原">
+      树莓派的备份与还原 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="nav-text">前期准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pt%E7%9B%B8%E5%85%B3"><span class="nav-text">pt相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E7%9B%B8%E5%85%B3"><span class="nav-text">下载相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E5%9F%9F%E7%BD%91%E5%85%B1%E4%BA%AB%E7%9B%B8%E5%85%B3"><span class="nav-text">局域网共享相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%9A%E6%9C%AC"><span class="nav-text">脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BD%99"><span class="nav-text">其余</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E8%A3%85"><span class="nav-text">重装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%95%9C%E5%83%8F%E4%B8%8B%E8%BD%BD%E5%92%8C%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%EF%BC%9A"><span class="nav-text">镜像下载和系统启动：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E5%A4%87%E4%BB%BD%E7%9B%98"><span class="nav-text">挂载备份盘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%A2%E6%BA%90"><span class="nav-text">换源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85v2rayA"><span class="nav-text">安装v2rayA</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%88%E8%A3%85v2ray"><span class="nav-text">先装v2ray</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E8%BD%AF%E4%BB%B6%E6%BA%90%E5%AE%89%E8%A3%85v2rayA"><span class="nav-text">通过软件源安装v2rayA</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85smb"><span class="nav-text">安装smb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85transmission"><span class="nav-text">编译安装transmission</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E5%89%8D%E4%B8%8D%E5%BB%BA%E8%AE%AE%E8%BD%AF%E4%BB%B6%E6%BA%90%E5%AE%89%E8%A3%85"><span class="nav-text">目前不建议软件源安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E7%A0%81"><span class="nav-text">下载源码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85"><span class="nav-text">编译安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEtransmission%E6%9C%8D%E5%8A%A1"><span class="nav-text">配置transmission服务</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Aria2"><span class="nav-text">安装Aria2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85proxychains"><span class="nav-text">安装proxychains</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Flexget"><span class="nav-text">安装Flexget</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-text">其他</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

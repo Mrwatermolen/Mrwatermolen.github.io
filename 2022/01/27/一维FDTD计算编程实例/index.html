@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="考虑真空中，一无限大平面电流源：  \vec{J}(z, t) &#x3D; - \hat{x} I \cdot \cos(\omega t + \phi) \cdot \delta(z)其中$\delta(z)$为冲激函数。求解电磁场分布。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一维FDTD计算编程实例">
+<meta property="og:url" content="http://example.com/2022/01/27/%E4%B8%80%E7%BB%B4FDTD%E8%AE%A1%E7%AE%97%E7%BC%96%E7%A8%8B%E5%AE%9E%E4%BE%8B/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="考虑真空中，一无限大平面电流源：  \vec{J}(z, t) &#x3D; - \hat{x} I \cdot \cos(\omega t + \phi) \cdot \delta(z)其中$\delta(z)$为冲激函数。求解电磁场分布。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2022/01/27/DHeFmdpQMzPTYRL.png">
+<meta property="article:published_time" content="2022-01-27T03:19:35.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.024Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="FDTD">
+<meta property="article:tag" content="计算物理">
+<meta property="article:tag" content="吸收边界">
+<meta property="article:tag" content="Fortran">
+<meta property="article:tag" content="一维FDTD">
+<meta property="article:tag" content="面电流源的电磁场分布">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/01/27/DHeFmdpQMzPTYRL.png">
+
+<link rel="canonical" href="http://example.com/2022/01/27/%E4%B8%80%E7%BB%B4FDTD%E8%AE%A1%E7%AE%97%E7%BC%96%E7%A8%8B%E5%AE%9E%E4%BE%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>一维FDTD计算编程实例 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/27/%E4%B8%80%E7%BB%B4FDTD%E8%AE%A1%E7%AE%97%E7%BC%96%E7%A8%8B%E5%AE%9E%E4%BE%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一维FDTD计算编程实例
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-27 11:19:35" itemprop="dateCreated datePublished" datetime="2022-01-27T11:19:35+08:00">2022-01-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%B5%E7%A3%81%E5%9C%BA/" itemprop="url" rel="index"><span itemprop="name">电磁场</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>考虑真空中，一无限大平面电流源：</p>
+<script type="math/tex; mode=display">
+\vec{J}(z, t) = - \hat{x} I \cdot \cos(\omega t + \phi) \cdot \delta(z)</script><p>其中$\delta(z)$为冲激函数。求解电磁场分布。</p>
+<span id="more"></span>
+<h2 id="解析式"><a href="#解析式" class="headerlink" title="解析式"></a>解析式</h2><p>使用<strong>Fourier变换</strong>将时域转为频域：</p>
+<script type="math/tex; mode=display">
+\vec{J}(z, t) = - \Re\left[ I \delta(z) \exp(\jmath \omega t + \phi) \right] \cdot \hat{x}\tag {1-2}</script><p>其中$F(\omega)$是$\cos(\omega t + \phi)$的傅里叶变换对。</p>
+<p>对无源区，有时谐电磁场波动方程：详见<a target="_blank" rel="noopener" href="https://blog.franzero.net/2021/11/04/FDTD%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87/">FDTD前期准备</a></p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \nabla^2 \vec{E} + k \frac{\partial^2 \vec{E}}{\partial t^2} & = 0 \\
+    \nabla^2 \vec{H} + k \frac{\partial^2 \vec{H}}{\partial t^2} & = 0 \\
+     k = \frac{\omega^2}{\epsilon \mu}
+\end{cases} \tag {1-3}</script><p>可解得：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \vec{E}(z, \omega) & = \vec{E}^+(z) \exp(-\jmath kz) + \vec{E}^-(z) \exp(\jmath kz) \\
+    \vec{H}(z, \omega) & = \vec{H}^+(z) \exp(-\jmath kz) + \vec{H}^-(z) \exp(\jmath kz) \\
+\end{cases} \tag {1-3}</script><p>$\vec{E}^+(z) \exp(-\jmath kz)$是沿z轴正方向传播，反之反之。</p>
+<p>由对称性不难得出：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \vec{H}(z, \omega) & = \hat{y} H^+(z) \exp(-\jmath kz) & z > 0 \\
+    \vec{H}(z, \omega) & = \hat{y} H^-(z) \exp(\jmath kz) & z < 0 \\
+\end{cases}</script><p>由<strong>Maxwell方程</strong>中的：$\nabla \times \vec{H} - \frac{\partial \vec{D}}{\partial t} = \vec{J}$，取一边长为a的正方形<code>yoz</code>面。可得：</p>
+<script type="math/tex; mode=display">
+2 a |H_y| = a I \Rightarrow |H_y| = \frac{I}{2}  \tag {1-1}</script><p>以后填坑，实在没明白时域频域互转。</p>
+<p>解析解：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \vec{H}(z, t) & = \hat{y} \frac{I}{2} \cos(\omega t - kz + \phi) & z > 0 \\
+    \vec{H}(z, t) & = \hat{y} \frac{I}{2} \cos(\omega t + kz + \phi) & z < 0 \\
+    \vec{E}(z, t) & = \hat{x} \frac{I}{2Z_0} \cos(\omega t - kz + \phi) & z > 0 \\
+    \vec{E}(z, t) & = -\hat{x} \frac{I}{2Z_0} \cos(\omega t + kz + \phi) & z < 0 \\
+\end{cases}</script><h2 id="FDTD计算"><a href="#FDTD计算" class="headerlink" title="FDTD计算"></a>FDTD计算</h2><p>在$z = 0$和$z = 500 \Delta t$边界采用一阶Mur近似吸收边界，区域中心为平面电流源</p>
+<h3 id="获取差分公式"><a href="#获取差分公式" class="headerlink" title="获取差分公式"></a>获取差分公式</h3><p>对于该问题，真空中一维FTDT问题，为求解TEM波。则对于麦克斯韦旋度方程有：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    - \frac{\partial H_y}{\partial z} = \epsilon_0 \frac{\partial E_x}{\partial t} + \sigma E_x \\
+    \frac{\partial E_x}{\partial z} = - \mu_0 \frac{\partial H_y}{\partial t} -\sigma_m H_y \\
+\end{cases}</script><h4 id="元胞不含电流源"><a href="#元胞不含电流源" class="headerlink" title="元胞不含电流源"></a>元胞不含电流源</h4><p>元胞不含电流源，且真空中无损耗，有：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    - \frac{\partial H_y}{\partial z} = \epsilon_0 \frac{\partial E_x}{\partial t} \\
+    \frac{\partial E_x}{\partial z} = - \mu_0 \frac{\partial H_y}{\partial t} \\
+\end{cases}</script><p>差分有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    - \frac{H_y^{n+1/2}(k + 1/2) - H_y^{n+1/2}(k-1/2)}{\Delta z} = \epsilon_0 \frac{E_x^{n+1}(k) - E_x^n(k)}{\Delta t} \\
+    E_x^{n+1}(k) = E_x^n(k) - \frac{\Delta t}{\epsilon_0} \frac{H_y^{n+1/2}(k + 1/2) - H_y^{n+1/2}(k-1/2)}{\Delta z} \\
+    E_x^{n+1}(k) = CA \cdot E_x^n(k) - CB \cdot [H_y^{n+1/2}(k + 1/2) - H_y^{n+1/2}(k-1/2)]
+\end{aligned}</script><p>对应<code>Fortran</code>代码：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ex(z,t) = ca * Ex(z, t - <span class="number">1</span>) - cb * ( Hy(z, t - <span class="number">1</span>) - Hy(z - <span class="number">1</span>, t - <span class="number">1</span>) )</span><br></pre></td></tr></table></figure>
+<p>求Hy也同理有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    \frac{E_x^{n}(k+1) - E_x^{n}(k)}{\Delta z} = \mu_0 \frac{H_y^{n+1/2}(k+1/2) - H_y^{n-1/2}(k+1/2)}{\Delta t} \\
+    H_y^{n+1/2}(k+1/2) = H_y^{n-1/2}(k+1/2) + \frac{\Delta t}{\mu_0} \frac{E_x^{n}(k+1) - E_x^{n}(k)}{\Delta z} \\
+    H_y^{n+1/2}(k+1/2) = CP \cdot H_y^{n-1/2}(k+1/2) - CQ \cdot [E_x^{n}(k+1) - E_x^{n}(k)]
+\end{aligned}</script><p>对应<code>Fortran</code>代码：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hy(z,t) = cp * Hy(z, t - <span class="number">1</span>) - cq * ( Ex(z + <span class="number">1</span>, t) - Ex(z, t) )</span><br></pre></td></tr></table></figure>
+<h4 id="元胞包含电流源"><a href="#元胞包含电流源" class="headerlink" title="元胞包含电流源"></a>元胞包含电流源</h4><p>假定在$z=k_s$处包含，且电流源附近是无耗介质。因为该电流源不是磁电流源，则只需改变$- \frac{\partial H_y}{\partial z} = \epsilon_0 \frac{\partial E_x}{\partial t}$</p>
+<p>原始的微分形式为：</p>
+<script type="math/tex; mode=display">
+- \frac{\partial H_y}{\partial z} = \epsilon_0 \frac{\partial E_x}{\partial t} + \sigma E_x</script><p>这里把右边最后一项拆解为：</p>
+<script type="math/tex; mode=display">
+\sigma E_x = J_x + \sigma E_x</script><p>即一是：外部强加电流，二是：服从欧姆定律的传导电流。</p>
+<p>电流源附近是无耗介质，则：</p>
+<script type="math/tex; mode=display">
+- \frac{\partial H_y}{\partial z} = \epsilon_0 \frac{\partial E_x}{\partial t} + J_x</script><p>对于该问题而言，面电流密度：</p>
+<script type="math/tex; mode=display">
+J_x = \frac{I \cdot \cos(\omega t + \phi)}{\Delta z}</script><p>代入有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    E_x^{n+1}(k_s) = E_x^n(k_s) - \frac{\Delta t}{\epsilon_0} \frac{H_y^{n+1/2}(k_s + 1/2) - H_y^{n+1/2}(k_s-1/2)}{\Delta z} -  \frac{\Delta t}{\epsilon_0} \frac{I(n+1/2)}{\Delta z} \\
+    E_x^{n+1}(k) = CA \cdot E_x^n(k) - CB \cdot [H_y^{n+1/2}(k + 1/2) - H_y^{n+1/2}(k-1/2)] - CB \cdot \frac{I(n+1/2)}{\Delta z}
+\end{aligned}</script><p>对应<code>Fortran</code>代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ex(z,t) &#x3D; ca * Ex(z, t - 1) - cb * ( Hy(z, t - 1) - Hy(z - 1, t - 1) ) - cb * current_source( (t + 0.5) * delta_t )</span><br></pre></td></tr></table></figure>
+<h4 id="截断边界"><a href="#截断边界" class="headerlink" title="截断边界"></a>截断边界</h4><p>一维Mur吸收边界的解析式：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \left. \left( \frac{\partial f}{\partial z} - \frac{1}{v} \frac{\partial f}{\partial t} \right) \right |_{z = 0} =  0 \\
+    \left. \left( \frac{\partial f}{\partial z} + \frac{1}{v} \frac{\partial f}{\partial t} \right) \right |_{z = z_0} =  0 \\
+\end{cases}</script><p>左边界：</p>
+<p>要计算的是Ex，因为Hy的计算不涉及边界外的节点</p>
+<p>取观察点为：$E_x^{n+1/2}(1/2)$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    \frac{E_x^{n+1/2}(1) - E_x^{n+1/2}(0)}{\Delta z} =  \frac{E_x^{n+1}(1/2) - E_x^{n}(1/2)}{c \Delta t} \\
+    \frac{\frac{E_x^{n+1}(1) + E_x^{n}(1)}{2} - \frac{E_x^{n+1}(0) + E_x^{n}(0)}{2}}{\Delta z} = \frac{\frac{E_x^{n+1}(1) + E_x^{n+1}(0)}{2} - \frac{E_x^{n}(1) + E_x^{n}(0)}{2}}{c \Delta t} \\
+    E_x^{n+1}(0) = E_x^{n}(1) + \frac{c \Delta t - \Delta z}{c \Delta t + \Delta z} [E_x^{n+1}(1) - E_x^n(0)] \\
+    E_x^{n+1}(0) = E_x^{n}(1) + \alpha [E_x^{n+1}(1) - E_x^n(0)] \\
+\end{aligned}</script><p>对应<code>Fortran</code>代码：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ex(<span class="number">0</span>, t) = Ex(<span class="number">1</span>, t - <span class="number">1</span>) + alpha * ( Ex(<span class="number">1</span>, t) - Ex(<span class="number">0</span>, t - <span class="number">1</span>) )</span><br></pre></td></tr></table></figure>
+<p>右边界：</p>
+<p>要计算的是Ex，右边界的YEE元胞的Hy分量无需计算</p>
+<p>同理有：</p>
+<script type="math/tex; mode=display">
+E_z^{n+1}(i) = E_z^{n}(i-1) + \alpha [E_z^{n+1}(i-1) - E_z^{n}(i)]</script><p>对应<code>Fortran</code>代码：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ex(<span class="keyword">end</span>, t) = Ex(<span class="keyword">end</span> - <span class="number">1</span>, t - <span class="number">1</span>) + alpha * ( Ex(<span class="keyword">end</span> - <span class="number">1</span>, t) - Ex(<span class="keyword">end</span>, t - <span class="number">1</span>) )</span><br></pre></td></tr></table></figure>
+<h2 id="编程求解"><a href="#编程求解" class="headerlink" title="编程求解"></a>编程求解</h2><h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">program</span></span> one_dimensional_FDTD_radiation_field</span><br><span class="line">    <span class="comment">! 平面电流源的辐射场分布，边界采用Mur一阶近似吸收边界</span></span><br><span class="line">    <span class="comment">! 场源位于z=250处，为xoy平面，源为一时谐源：cos(2*pi*3*1e8*t)，区域为真空</span></span><br><span class="line">    <span class="comment">! z = 0， 500 * deltaZ处采用一阶吸收边界</span></span><br><span class="line">    <span class="keyword">real</span> mu_0, epsilon_0, pi, c, delta_z, delta_t, ca, cb, cp, cq, alpha</span><br><span class="line">    <span class="keyword">real</span> Ex(<span class="number">0</span>:<span class="number">500</span>,<span class="number">0</span>:<span class="number">500</span>), Hy(<span class="number">0</span>:<span class="number">500</span>,<span class="number">0</span>:<span class="number">500</span>) <span class="comment">!(z,t)</span></span><br><span class="line">    <span class="keyword">integer</span> step, source_z, t, z</span><br><span class="line">    <span class="keyword">external</span> current_source</span><br><span class="line"></span><br><span class="line">    pi = <span class="number">3.14</span></span><br><span class="line">    mu_0 = <span class="number">4</span> * pi * <span class="number">1.0e-7</span></span><br><span class="line">    epsilon_0 = <span class="number">8.85</span> * <span class="number">1.0e-12</span></span><br><span class="line">    c = <span class="number">3.0e8</span></span><br><span class="line">    delta_z = <span class="number">1.0</span> / <span class="number">40.0</span></span><br><span class="line">    delta_t = delta_z / (<span class="number">2</span> * c)</span><br><span class="line">    step = <span class="number">500</span></span><br><span class="line">    source_z = <span class="number">250</span></span><br><span class="line">    ca = <span class="number">1.0</span></span><br><span class="line">    cb = (delta_t) / (epsilon_0 * delta_z)</span><br><span class="line">    cp = <span class="number">1.0</span></span><br><span class="line">    cq = (delta_t) / (mu_0 * delta_z)</span><br><span class="line">    alpha = (c * delta_t - delta_z) / (c * delta_t + delta_z)</span><br><span class="line"></span><br><span class="line">    <span class="comment">! 赋初值</span></span><br><span class="line">    <span class="keyword">do</span> i = <span class="number">0</span>, step</span><br><span class="line">        <span class="keyword">do</span> j = <span class="number">0</span>, step</span><br><span class="line">            Ex(i,j) = <span class="number">0</span></span><br><span class="line">            Hy(i,j) = <span class="number">0</span></span><br><span class="line">        <span class="keyword">end</span> <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">end</span> <span class="keyword">do</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">! 主体</span></span><br><span class="line">    <span class="keyword">do</span> t = <span class="number">1</span>, step</span><br><span class="line">        <span class="comment">! 先计算非截断边界处的Ex</span></span><br><span class="line">        <span class="keyword">do</span> z = <span class="number">1</span>, step - <span class="number">1</span></span><br><span class="line">            Ex(z,t) = Ex(z, t - <span class="number">1</span>) - cb * ( Hy(z, t - <span class="number">1</span>) - Hy(z - <span class="number">1</span>, t - <span class="number">1</span>) )</span><br><span class="line">            <span class="comment">! 处理元胞包含电流源时</span></span><br><span class="line">            <span class="keyword">if</span> ( z == source_z ) <span class="keyword">then</span>                </span><br><span class="line">                Ex(z,t) = Ex(z,t) - cb * current_source( (t + <span class="number">0.5</span>) * delta_t )                </span><br><span class="line">            <span class="keyword">end</span> <span class="keyword">if</span></span><br><span class="line">        <span class="keyword">end</span> <span class="keyword">do</span></span><br><span class="line">        <span class="comment">! 处理边界 Mur一阶近似吸收边界</span></span><br><span class="line">        Ex(<span class="number">0</span>, t) = Ex(<span class="number">1</span>, t - <span class="number">1</span>) + alpha * ( Ex(<span class="number">1</span>, t) - Ex(<span class="number">0</span>, t - <span class="number">1</span>) )</span><br><span class="line">        Ex(step, t) = Ex(step - <span class="number">1</span>, t - <span class="number">1</span>) + alpha * ( Ex(step - <span class="number">1</span>, t) - Ex(step, t - <span class="number">1</span>) )</span><br><span class="line">        <span class="comment">! Hy分量 z = 0时 Hy(z + 1/2)的计算不涉及截断边界以外的计算</span></span><br><span class="line">        <span class="keyword">do</span> z = <span class="number">0</span>, step - <span class="number">1</span></span><br><span class="line">            Hy(z,t) = cp * Hy(z, t - <span class="number">1</span>) - cq * ( Ex(z + <span class="number">1</span>, t) - Ex(z, t) )</span><br><span class="line">        <span class="keyword">end</span> <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">end</span> <span class="keyword">do</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">! 数据整理</span></span><br><span class="line">    open(<span class="number">6</span>,<span class="keyword">file</span>=<span class="string">&#x27;electric_field_FDTD_solution_while_step_t_400.dat&#x27;</span>)</span><br><span class="line">    open(<span class="number">7</span>,<span class="keyword">file</span>=<span class="string">&#x27;electric_field_analytic_solution_while_step_t_400.dat&#x27;</span>)</span><br><span class="line">    open(<span class="number">8</span>,<span class="keyword">file</span>=<span class="string">&#x27;compare_analytic_solution_and_FDTD_solution_while_step_t_400.dat&#x27;</span>)</span><br><span class="line">    <span class="keyword">do</span> z = <span class="number">0</span>, step</span><br><span class="line">        <span class="built_in">write</span>(<span class="number">6</span>, *)z, Ex(z, <span class="number">400</span>) <span class="comment">! t=400*delta_t时的由FDTD解出的Ex</span></span><br><span class="line">        temp = electric_field_analytic_solution(<span class="number">400.0</span> * delta_t, z * delta_z, c) <span class="comment">! t=400*delta_t时的由解析解解出的Ex</span></span><br><span class="line">        <span class="built_in">write</span>(<span class="number">7</span>, *)z, temp</span><br><span class="line">        <span class="built_in">write</span>(<span class="number">8</span>, *)z, Ex(z, <span class="number">400</span>), temp</span><br><span class="line">    <span class="keyword">end</span> <span class="keyword">do</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">end</span> <span class="function"><span class="keyword">program</span></span> one_dimensional_FDTD_radiation_field</span><br><span class="line"></span><br><span class="line"><span class="comment">!电流源</span></span><br><span class="line"><span class="function"><span class="keyword">function</span></span> current_source(t)</span><br><span class="line">    <span class="keyword">real</span> pi, current_source, t</span><br><span class="line">    pi = <span class="number">3.14</span></span><br><span class="line">    current_source = <span class="built_in">cos</span>(<span class="number">2</span> * pi * <span class="number">3</span> * <span class="number">1e8</span> * t)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">!由解析式求得的精确解</span></span><br><span class="line"><span class="function"><span class="keyword">function</span></span> electric_field_analytic_solution(t, z, v)</span><br><span class="line">    <span class="keyword">real</span> pi, impedance, electric_field_analytic_solution, t, z, v</span><br><span class="line">    <span class="keyword">external</span> current_source</span><br><span class="line">    pi = <span class="number">3.14</span></span><br><span class="line">    impedance = <span class="number">120.0</span> * pi <span class="comment">!波阻抗</span></span><br><span class="line">    electric_field_analytic_solution = (impedance / <span class="number">2</span>) * current_source(t - z / v)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h3 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h3><p><img src="https://s2.loli.net/2022/01/27/DHeFmdpQMzPTYRL.png" alt="compare_analytic_solution_and_FDTD_solution_while_step_t_400.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FDTD/" rel="tag"># FDTD</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E7%89%A9%E7%90%86/" rel="tag"># 计算物理</a>
+              <a href="/tags/%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C/" rel="tag"># 吸收边界</a>
+              <a href="/tags/Fortran/" rel="tag"># Fortran</a>
+              <a href="/tags/%E4%B8%80%E7%BB%B4FDTD/" rel="tag"># 一维FDTD</a>
+              <a href="/tags/%E9%9D%A2%E7%94%B5%E6%B5%81%E6%BA%90%E7%9A%84%E7%94%B5%E7%A3%81%E5%9C%BA%E5%88%86%E5%B8%83/" rel="tag"># 面电流源的电磁场分布</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/25/LetsEncrypt%E7%94%B3%E8%AF%B7%E6%B3%9B%E5%9F%9F%E5%90%8D%E8%AF%81%E4%B9%A6/" rel="prev" title="Let's Encrypt申请泛域名证书">
+      <i class="fa fa-chevron-left"></i> Let's Encrypt申请泛域名证书
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/19/MIT6-824Note/" rel="next" title="MIT6.824Note">
+      MIT6.824Note <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E5%BC%8F"><span class="nav-text">解析式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FDTD%E8%AE%A1%E7%AE%97"><span class="nav-text">FDTD计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%B7%AE%E5%88%86%E5%85%AC%E5%BC%8F"><span class="nav-text">获取差分公式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%83%E8%83%9E%E4%B8%8D%E5%90%AB%E7%94%B5%E6%B5%81%E6%BA%90"><span class="nav-text">元胞不含电流源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%83%E8%83%9E%E5%8C%85%E5%90%AB%E7%94%B5%E6%B5%81%E6%BA%90"><span class="nav-text">元胞包含电流源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%AA%E6%96%AD%E8%BE%B9%E7%95%8C"><span class="nav-text">截断边界</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E7%A8%8B%E6%B1%82%E8%A7%A3"><span class="nav-text">编程求解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-text">代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="nav-text">结果分析</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

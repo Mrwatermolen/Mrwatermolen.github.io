@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="铺垫线性可分：  \text{点集}D_0,D_1,\text{对任意一点$x$有}:\\ \begin{aligned} &amp;\omega^Tx+b\lt0,\quad x\in D_0\\ &amp;\omega^Tx+b\gt0,\quad x\in D_1\\ \end{aligned}称两个集合线性可分 最大间隔超平面： 能将两个线性可分的集合正确划分开的平面就是超平面：$\omega^Tx+b&#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习笔记三：SVM支持向量机">
+<meta property="og:url" content="http://example.com/2021/07/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%89/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="铺垫线性可分：  \text{点集}D_0,D_1,\text{对任意一点$x$有}:\\ \begin{aligned} &amp;\omega^Tx+b\lt0,\quad x\in D_0\\ &amp;\omega^Tx+b\gt0,\quad x\in D_1\\ \end{aligned}称两个集合线性可分 最大间隔超平面： 能将两个线性可分的集合正确划分开的平面就是超平面：$\omega^Tx+b&#x3D;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-08T13:52:50.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.026Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="线性模型">
+<meta property="article:tag" content="吴恩达">
+<meta property="article:tag" content="机器学习西瓜书">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/07/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>机器学习笔记三：SVM支持向量机 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器学习笔记三：SVM支持向量机
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-08 21:52:50" itemprop="dateCreated datePublished" datetime="2021-07-08T21:52:50+08:00">2021-07-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MachineLearning/" itemprop="url" rel="index"><span itemprop="name">MachineLearning</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="铺垫"><a href="#铺垫" class="headerlink" title="铺垫"></a>铺垫</h2><p>线性可分：</p>
+<script type="math/tex; mode=display">
+\text{点集}D_0,D_1,\text{对任意一点$x$有}:\\
+\begin{aligned}
+&\omega^Tx+b\lt0,\quad x\in D_0\\
+&\omega^Tx+b\gt0,\quad x\in D_1\\
+\end{aligned}</script><p>称两个集合线性可分</p>
+<p>最大间隔超平面：</p>
+<p>能将两个线性可分的集合正确划分开的平面就是超平面：$\omega^Tx+b=0$</p>
+<p>为了使这个超平面更具鲁棒性，我们会去找最佳超平面，以最大间隔把两类样本分开的超平面，也称之为最大间隔超平面。</p>
+<ul>
+<li>两类样本分别分割在该超平面的两侧；</li>
+<li>两侧距离超平面最近的样本点到超平面的距离被最大化了。</li>
+</ul>
+<p>支持向量（Support Vector）：</p>
+<p>样本中距离超平面最近的一些点，这些点叫做支持向量。</p>
+<span id="more"></span>
+<h2 id="SVM最优化问题"><a href="#SVM最优化问题" class="headerlink" title="SVM最优化问题"></a>SVM最优化问题</h2><p>找到一个最优超平面划分两类样本$y\in{1,-1}$。</p>
+<p>对任意超平面：</p>
+<script type="math/tex; mode=display">
+\omega^Tx+b=0</script><p>任一点$x$到其上的距离为：</p>
+<script type="math/tex; mode=display">
+l=\frac{|\omega^Tx+b|}{||\omega||}</script><p>设支持向量到超平面的距离为$d$（为了便于区分），对样本集${x,y}$有：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\frac{\omega^Tx+b}{||\omega||}\ge d,\quad y=1\\
+\frac{\omega^Tx+b}{||\omega||}\le  -d,\quad y=-1\\
+\end{cases}</script><p>也就是</p>
+<script type="math/tex; mode=display">
+\Leftrightarrow\quad\frac{y(\omega^Tx+b)}{||\omega||}\ge d\\
+\Leftrightarrow\quad\frac{y(\omega^Tx+b)}{d||\omega||}\ge 1\\</script><p>对支持向量${x’,y’}$有：</p>
+<script type="math/tex; mode=display">
+\frac{y'(\omega^Tx'+b)}{||\omega||}=d</script><p>我们的目标是在样本集中，选取最大的$d$，即</p>
+<script type="math/tex; mode=display">
+\max{d}</script><p>在此我们做一些处理：</p>
+<script type="math/tex; mode=display">
+\text{令$\omega'=\frac{\omega}{d||\omega||},b'=\frac{b}{d||\omega||}$}\\</script><p>探究一下距离会如何变换：</p>
+<script type="math/tex; mode=display">
+||\omega'||=\frac{||\omega||}{d||\omega||}=1/d\\
+d'=\frac{y'(\omega'^Tx'+b')}{||\omega'||}=\frac{y'(\omega^Tx'+b)}{||\omega||}=d\\</script><p>发现并不影响距离。</p>
+<p>那么我们可令：</p>
+<script type="math/tex; mode=display">
+d=\frac{1}{||\omega'||}</script><p>由此我们可以重写以上的优化问题：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\max{\frac{1}{||\omega||}}\\
+s.t\quad y(\omega^Tx+b)\ge 1\\
+\end{cases}</script><p>其等价于</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\min{\frac{1}{2}||\omega||^2}\\
+s.t.\quad y(\omega^Tx+b)\ge 1\\
+\end{cases}</script><p>这就是最后我们要优化的约束问题。</p>
+<h2 id="拉格朗日数乘法"><a href="#拉格朗日数乘法" class="headerlink" title="拉格朗日数乘法"></a>拉格朗日数乘法</h2><h3 id="KKT条件"><a href="#KKT条件" class="headerlink" title="KKT条件"></a>KKT条件</h3><p>只看不等式的约束条件（无推导直接用）：</p>
+<p>要优化：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\min{f(x)}\\
+s.t.\quad g_j(x)\le0,\quad j=1,2,\cdots,p(\text{不等式约束条件的个数})\\
+h_k(x)=0,\quad k=1,2,\cdots,q(\text{等式约束条件的个数})\\
+\end{cases}</script><p>KKT条件给出了判断$\pmb{x^*}$是否为最优解的必要条件，即：</p>
+<script type="math/tex; mode=display">
+L(x,\lambda,\mu)=f(x)+\sum_{j=1}^q{\mu_jg_j(x)}+\sum^p_{k=1}{\lambda_kh_k(x)}</script><p>若要求解上述优化问题，必须满足条件：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+    \frac{\partial L}{\partial\omega}|_{x=x^*}=0 \\
+    \lambda_j\neq0 \\
+    u_k\ge0 \\
+    u_kg_k(x^*)=0 \\
+    h_j(x^*)=0 \\
+    g_k(x^*)\le0 \\
+\end{align}</script><p>其实都能解释的，只挑第四个必要条件解释，分两种情况：1：解在不等式约束条件外部，则可无视该不等式约束条件；2：解在不等式边界条件的边界上，此时不等式为0。</p>
+<h3 id="对偶化"><a href="#对偶化" class="headerlink" title="对偶化"></a>对偶化</h3><script type="math/tex; mode=display">
+\begin{cases}
+\min{\frac{1}{2}||\omega||^2}\\
+s.t.\quad 1-y(\omega^Tx+b)\le 0\\
+\end{cases}</script><p>假定有m个样本。</p>
+<p>其拉格朗日数乘函数：</p>
+<script type="math/tex; mode=display">
+L(w,\mu)=\frac{1}{2}||\omega||^2+\sum^m_{k=1}\mu_k\left[1-y_k(\omega^Tx_k+b)\right]</script><p>要得：</p>
+<script type="math/tex; mode=display">
+\min_{\omega,b}{L}</script><p>可以先去<strong>go to</strong></p>
+<h4 id="插入一个小插曲，其实很重要，但是可能会产生困扰，先在这打个标记"><a href="#插入一个小插曲，其实很重要，但是可能会产生困扰，先在这打个标记" class="headerlink" title="插入一个小插曲，其实很重要，但是可能会产生困扰，先在这打个标记"></a>插入一个小插曲，其实很重要，但是可能会产生困扰，先在这打个标记</h4><p>在这之前，插入一个对偶化，这一步可以暂时不看，推出超平面后可以回来看看。</p>
+<p>我们记一个函数：</p>
+<script type="math/tex; mode=display">
+\Theta(\omega)=\max_{\mu}{L}</script><p>对任意点（不止是样本点）满足：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\mu_k=\infty,\quad&1-y(\omega^Tx+b)>0\\
+\mu_k\text{不变},\quad&1-y(\omega^Tx+b)\le0
+\end{cases}</script><p>则</p>
+<script type="math/tex; mode=display">
+\Theta(\omega)=\max_{\mu}{L}=
+\begin{cases}
+\infty,\quad&1-y(\omega^Tx+b)>0\\
+\frac{1}{2}||\omega||^2,\quad&1-y(\omega^Tx+b)\le0\\
+\end{cases}</script><p>那么：</p>
+<script type="math/tex; mode=display">
+\min_{\omega}(\max_{\mu}{L})=\frac{1}{2}||\omega||^2</script><p>与我们的优化目标相同。</p>
+<p>一般而言，有：</p>
+<script type="math/tex; mode=display">
+\min(\max)\ge\max(\min)</script><p>如果问题是凸优化问题，则有强对偶关系：</p>
+<script type="math/tex; mode=display">
+\min(\max)=\max(\min)</script><p>由此我们的优化问题可为：</p>
+<script type="math/tex; mode=display">
+\max_{\mu}(\min_{\omega,b}{L})</script><h4 id="go-to"><a href="#go-to" class="headerlink" title="go to"></a>go to</h4><p>由KKT条件：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\frac{\partial L}{\partial\omega}=0\\
+\frac{\partial L}{\partial b}=0\\
+\end{cases}</script><p>又有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial L}{\partial\omega}&=\omega-\sum^m_{k=1}\mu_ky_kx_k\\
+\frac{\partial L}{\partial b}&=-\sum^m_{k=1}\mu_ky_k\\
+\end{aligned}</script><p>解得：</p>
+<script type="math/tex; mode=display">
+\omega=\sum^m_{k=1}\mu_ky_kx_k\\
+\sum^m_{k=1}\mu_ky_k=0\\</script><p>注意$\omega\in R^n$以及$x_i\in R^n$</p>
+<p>有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+L&=\frac{1}{2}\omega^T\omega+\sum^m_{i=1}\mu_i\left[1-y_i(\omega^Tx_i+b)\right]\\
+&=\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\mu_i\mu_jx_j^Tx_iy_iy_j+\sum^m_{i=1}\mu_i\left[1-y_i(\sum^m_{j=1}\mu_jy_jx_j^Tx_i+b)\right]\\
+&=\sum^m_{i=1}\mu_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\mu_i\mu_jx_j^Tx_iy_iy_j
+\end{aligned}</script><p>还有未知系数$\mu_i$，此时可以回看小插曲。</p>
+<p>有：</p>
+<script type="math/tex; mode=display">
+\max_{\mu}\left(\sum^m_{i=1}\mu_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\mu_i\mu_jx_j^Tx_iy_iy_j\right)\\
+s.t.\quad\sum^m_{i=1}\mu_iy_i=0\\
+\mu_i\ge0\\</script><p>好了只要解决最后这个问题就可以了。</p>
+<h2 id="SMO-Sequential-Minimal-Optimization-算法求解"><a href="#SMO-Sequential-Minimal-Optimization-算法求解" class="headerlink" title="SMO(Sequential Minimal Optimization) 算法求解"></a>SMO(Sequential Minimal Optimization) 算法求解</h2><ol>
+<li><p>选择需要更新的两个参数</p>
+<script type="math/tex; mode=display">
+\mu_i,\mu_j</script></li>
+<li><p>固定其他参数，由等式约束条件解得</p>
+<script type="math/tex; mode=display">
+\mu_iy_i+\mu_jy_j=c=-\sum^m_{k=1}\mu_ky_k=0(k\neq i,j)\\
+\mu_j=\frac{c-\mu_iy_i}{y_j}</script></li>
+<li><p>对于仅有一个约束条件的最优化问题</p>
+<p>只要让对于其的导数为0即可，求出$\mu_i$</p>
+</li>
+<li><p>多次迭代直至收敛。</p>
+</li>
+</ol>
+<p>最后可得：</p>
+<script type="math/tex; mode=display">
+\omega=\sum^m_{k=1}\mu_ky_kx_k\\</script><p>对任意一个支持向量$x_s$，都满足：</p>
+<script type="math/tex; mode=display">
+y_s(\omega^Tx_S+b)=1\\
+b=y_s-\omega^Tx_s</script><p>当然，取均值最好。</p>
+<h2 id="决策"><a href="#决策" class="headerlink" title="决策"></a>决策</h2><p>已经获得超平面，将其带入决策函数即可得样本的分类。</p>
+<h2 id="软间隔"><a href="#软间隔" class="headerlink" title="软间隔"></a>软间隔</h2><p>实际中，完全线性可分的样本是很少的。那么我们可以允许一些样本落在隔离带内，即允许有部分样本：</p>
+<script type="math/tex; mode=display">
+1-y(\omega^Tx+b)>0</script><p>为了度量我们的松弛程度引入松弛变量</p>
+<script type="math/tex; mode=display">
+\xi_i\ge0</script><p>对每个样本：</p>
+<script type="math/tex; mode=display">
+1-y_i(\omega^Tx_i+b)-\xi_i\le0</script><p>由此，优化目标为：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\min{\frac{1}{2}||\omega||^2}+C\sum^m_{i=1}\xi_i\\
+s.t.\quad 1-y_i(\omega^Tx_i+b)-\xi_i\le0\\
+\xi_i\ge0
+\end{cases}</script><p>C为惩罚因子，越大对离群的样本惩罚就更大，也就是越不关注异常样本。</p>
+<h3 id="构造拉格朗日函数"><a href="#构造拉格朗日函数" class="headerlink" title="构造拉格朗日函数"></a>构造拉格朗日函数</h3><p>由之前的强对偶化，可有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\max_{\mu,\lambda}\left(\min_{\omega,b,\xi}\left\{\frac{1}{2}||\omega||^2+C\sum^m_{i=1}\xi_i+\sum^m_{i=1}\mu_i\left[1-y_i(\omega^Tx_i+b)-\xi_i\right])-\sum^m_{i=1}\lambda_i\xi_i\right\}\right)
+\end{aligned}</script><h3 id="求导"><a href="#求导" class="headerlink" title="求导"></a>求导</h3><p>有：</p>
+<script type="math/tex; mode=display">
+\omega=\sum^m_{k=1}\mu_ky_kx_k\\
+\sum^m_{k=1}\mu_ky_k=0\\
+C=\mu_i+\lambda_i</script><h3 id="带回原函数"><a href="#带回原函数" class="headerlink" title="带回原函数"></a>带回原函数</h3><p>有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+L&=\sum^m_{i=1}\mu_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\mu_i\mu_jx_j^Tx_iy_iy_j+\sum^m_{i=1}(\mu_i+\lambda_i)\xi_i-\sum^m_{i=1}(\mu_i\xi_i+\lambda_i\xi_i)\\
+&=\sum^m_{i=1}\mu_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\mu_i\mu_jx_j^Tx_iy_iy_j
+\end{aligned}</script><p>则无需最大化$\lambda$：</p>
+<script type="math/tex; mode=display">
+\max_{\mu}\left(\sum^m_{i=1}\mu_i-\frac{1}{2}\sum_{i=1}^m\sum_{j=1}^m\mu_i\mu_jx_j^Tx_iy_iy_j\right)\\
+s.t.\quad\sum^m_{i=1}\mu_iy_i=0\\
+\mu_i\ge0\\
+C-\mu_i-\lambda_i=0\\</script><p>最后SMO优化即可</p>
+<p><strong>这边要注意一个问题，在间隔内的那部分样本点是不是支持向量？</strong></p>
+<p>我们可以由求参数$\omega=\sum^m_{i=1}\mu_iy_ix_i$ 的那个式子可看出，只要$\mu_i&gt;0$ 的点都能够影响我们的超平面，因此都是支持向量。（？？）</p>
+<h2 id="核函数"><a href="#核函数" class="headerlink" title="核函数"></a>核函数</h2><p>我们刚刚讨论的硬间隔和软间隔都是在说样本的完全线性可分或者大部分样本点的线性可分。但我们可能会碰到的一种情况是样本点不是线性可分的。</p>
+<p>把样本映射到高维空间去：</p>
+<script type="math/tex; mode=display">
+x'=\phi(x),y'=y</script><h3 id="常见核函数"><a href="#常见核函数" class="headerlink" title="常见核函数"></a>常见核函数</h3><ol>
+<li><strong>线性核函数</strong></li>
+<li><strong>多项式核函数</strong></li>
+<li><strong>高斯核函数</strong></li>
+</ol>
+<h2 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h2><h3 id="6-1-优点"><a href="#6-1-优点" class="headerlink" title="6.1 优点"></a>6.1 优点</h3><ul>
+<li>有严格的数学理论支持，可解释性强，不依靠统计方法，从而简化了通常的分类和回归问题；</li>
+<li>能找出对任务至关重要的关键样本（即：支持向量）；</li>
+<li>采用核技巧之后，可以处理非线性分类/回归任务；</li>
+<li>最终决策函数只由少数的支持向量所确定，计算的复杂性取决于支持向量的数目，而不是样本空间的维数，这在某种意义上避免了“维数灾难”。</li>
+</ul>
+<h3 id="6-2-缺点"><a href="#6-2-缺点" class="headerlink" title="6.2 缺点"></a>6.2 缺点</h3><ul>
+<li>训练时间长。当采用 SMO 算法时，由于每次都需要挑选一对参数，因此时间复杂度为$O(N^2)$ ，其中 N 为训练样本的数量；</li>
+<li>当采用核技巧时，如果需要存储核矩阵，则空间复杂度为$O(N^2)$ ；</li>
+<li>模型预测时，预测时间与支持向量的个数成正比。当支持向量的数量较大时，预测计算复杂度较高。</li>
+</ul>
+<p>因此支持向量机目前只适合小批量样本的任务，无法适应百万甚至上亿样本的任务。</p>
+<hr>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/77750026">https://zhuanlan.zhihu.com/p/77750026</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/" rel="tag"># 线性模型</a>
+              <a href="/tags/%E5%90%B4%E6%81%A9%E8%BE%BE/" rel="tag"># 吴恩达</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%A5%BF%E7%93%9C%E4%B9%A6/" rel="tag"># 机器学习西瓜书</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%BA%8C/" rel="prev" title="机器学习笔记二：神经网络">
+      <i class="fa fa-chevron-left"></i> 机器学习笔记二：神经网络
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/21/KMP%E7%AE%97%E6%B3%95/" rel="next" title="KMP算法">
+      KMP算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BA%E5%9E%AB"><span class="nav-text">铺垫</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVM%E6%9C%80%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98"><span class="nav-text">SVM最优化问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%95%B0%E4%B9%98%E6%B3%95"><span class="nav-text">拉格朗日数乘法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KKT%E6%9D%A1%E4%BB%B6"><span class="nav-text">KKT条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E5%81%B6%E5%8C%96"><span class="nav-text">对偶化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E4%B8%80%E4%B8%AA%E5%B0%8F%E6%8F%92%E6%9B%B2%EF%BC%8C%E5%85%B6%E5%AE%9E%E5%BE%88%E9%87%8D%E8%A6%81%EF%BC%8C%E4%BD%86%E6%98%AF%E5%8F%AF%E8%83%BD%E4%BC%9A%E4%BA%A7%E7%94%9F%E5%9B%B0%E6%89%B0%EF%BC%8C%E5%85%88%E5%9C%A8%E8%BF%99%E6%89%93%E4%B8%AA%E6%A0%87%E8%AE%B0"><span class="nav-text">插入一个小插曲，其实很重要，但是可能会产生困扰，先在这打个标记</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#go-to"><span class="nav-text">go to</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SMO-Sequential-Minimal-Optimization-%E7%AE%97%E6%B3%95%E6%B1%82%E8%A7%A3"><span class="nav-text">SMO(Sequential Minimal Optimization) 算法求解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B3%E7%AD%96"><span class="nav-text">决策</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E9%97%B4%E9%9A%94"><span class="nav-text">软间隔</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E5%87%BD%E6%95%B0"><span class="nav-text">构造拉格朗日函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B1%82%E5%AF%BC"><span class="nav-text">求导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%A6%E5%9B%9E%E5%8E%9F%E5%87%BD%E6%95%B0"><span class="nav-text">带回原函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%87%BD%E6%95%B0"><span class="nav-text">核函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%A0%B8%E5%87%BD%E6%95%B0"><span class="nav-text">常见核函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-text">优缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E4%BC%98%E7%82%B9"><span class="nav-text">6.1 优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E7%BC%BA%E7%82%B9"><span class="nav-text">6.2 缺点</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

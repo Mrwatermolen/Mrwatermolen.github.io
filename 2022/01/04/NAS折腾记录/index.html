@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="放假回家，正好家里有3台闲置的主机，就想折腾一下，也顺便做个记录和回忆。悲剧的是，这篇文章本应该在新年前夕完成，结果没备份，还被我误删了，唉，一直拖到现在才开始写。就不打算写成技术笔记了，多写一点感想吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NAS折腾记录">
+<meta property="og:url" content="http://example.com/2022/01/04/NAS%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="放假回家，正好家里有3台闲置的主机，就想折腾一下，也顺便做个记录和回忆。悲剧的是，这篇文章本应该在新年前夕完成，结果没备份，还被我误删了，唉，一直拖到现在才开始写。就不打算写成技术笔记了，多写一点感想吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2022/01/04/7kI8et5bGq6KJV2.jpg">
+<meta property="og:image" content="https://s2.loli.net/2022/01/04/UkDgVPlicKMuAX7.jpg">
+<meta property="og:image" content="https://s2.loli.net/2022/01/04/Rs8pX3nxodvkS1e.jpg">
+<meta property="article:published_time" content="2022-01-04T15:14:51.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.023Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="pt">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/01/04/7kI8et5bGq6KJV2.jpg">
+
+<link rel="canonical" href="http://example.com/2022/01/04/NAS%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>NAS折腾记录 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/04/NAS%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          NAS折腾记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-04 23:14:51" itemprop="dateCreated datePublished" datetime="2022-01-04T23:14:51+08:00">2022-01-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nas/" itemprop="url" rel="index"><span itemprop="name">nas</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>放假回家，正好家里有3台闲置的主机，就想折腾一下，也顺便做个记录和回忆。悲剧的是，这篇文章本应该在新年前夕完成，结果没备份，还被我误删了，唉，一直拖到现在才开始写。就不打算写成技术笔记了，多写一点感想吧。</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="三台电脑的记忆"><a href="#三台电脑的记忆" class="headerlink" title="三台电脑的记忆"></a>三台电脑的记忆</h2><h3 id="第一台"><a href="#第一台" class="headerlink" title="第一台"></a>第一台</h3><p>应该是在我小升初的时候，家里配的，也可能更早，记不太清楚了。陪伴了我很久，我也折磨了他许久。这次拆机，把硬盘里的存档给拿出来看了，还真是无比的怀念啊。拆上电脑时还报毒了，哈哈，小时候下载的各种单价版和外挂居然还能继续暗自启动。</p>
+<p>下记录一些参数</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>内存</td>
+<td>4GB DDR3-1333MHz</td>
+<td></td>
+</tr>
+<tr>
+<td>硬盘</td>
+<td>250GB希捷+40GB</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>附图：</p>
+<p><img src="https://s2.loli.net/2022/01/04/7kI8et5bGq6KJV2.jpg" alt="1.jpg"></p>
+<h3 id="第二台"><a href="#第二台" class="headerlink" title="第二台"></a>第二台</h3><p>似乎是高中时别人送给我家里的（亦或是初三。不得不说，那时候的它，在我眼里实属高尚。黑金机箱的外壳搭配上好似有沙皮包裹的机箱前盖，安静而又稳定运行着。年少的我，第一次感觉到自己好像是在用什么高档主机。顺带一提，显示器还是三星的S24E309，对那时候还在用VGA显示器的我简直是降维打击，无比怀念被砸烂的它。这台主机一直陪伴了我很多年，我的主力机，10FPS的守望先锋至今仍然在我脑海里挥之不去。（使命召唤6、8真好玩！我居然没想到cod4我居然是在第一台主机上通关的，天啊！）最终我选取了这台主机的机箱作为Nas的机箱，有一说一，即使经历了时间的腐蚀，它在清洗之后，依旧散发着那股迷人的魅力。</p>
+<p>最终选用机箱，内存条，以及固态硬盘作为Nas组件。</p>
+<p>参数：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主板</td>
+<td>Colorful C.A88AK</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>AMD Athlon(tm) X4 760K</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>2 x 4 GB DDR3-1600 DDR3</td>
+</tr>
+<tr>
+<td>显卡</td>
+<td>GT 610 1GB</td>
+</tr>
+<tr>
+<td>硬盘</td>
+<td>KINGSTON SV300S37A60G (55 GB) + KINGSTON SV300S37A60G (55 GB)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>附图：</p>
+<p><img src="https://s2.loli.net/2022/01/04/UkDgVPlicKMuAX7.jpg" alt="2.jpg"></p>
+<h3 id="第三台"><a href="#第三台" class="headerlink" title="第三台"></a>第三台</h3><p>准确来说我都对他根本没有记忆，上大学回来就发现它在躺尸了，直接被另一台取代了，记忆ZERO！</p>
+<p>选用了其主板以及CPU和电源。</p>
+<p>参数：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主板</td>
+<td>铭瑄 A10 5600</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>AMD A8-5550M</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>4 GB DDR3-1600 DDR3</td>
+</tr>
+<tr>
+<td>硬盘</td>
+<td>128G SSD</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>CPU带核显，TDW：35W。就它差不多了.缺点是配套的主板，SATA接口太少了，不过我硬盘也不多，多的话考虑换成C.A88AK。</p>
+<p><img src="https://s2.loli.net/2022/01/04/Rs8pX3nxodvkS1e.jpg" alt="4.jpg"></p>
+<h2 id="NAS组装安装记录"><a href="#NAS组装安装记录" class="headerlink" title="NAS组装安装记录"></a>NAS组装安装记录</h2><p>没啥好记录的吧。</p>
+<p>参数</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主板</td>
+<td>铭瑄 A10 5600</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>AMD A8-5550M</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>2 x 4 GB DDR3-1600 DDR3</td>
+</tr>
+<tr>
+<td>硬盘</td>
+<td>西数紫盘4T + 两块hc32</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>系统装OMV5.用来跑pt下载，挂代理，jellyfin啥的。</p>
+<p>启动瞬间功耗峰值：110w</p>
+<p>空载功耗：55w</p>
+<p>CPU满载：75w</p>
+<p>正常使用（挂pt，外网访问，带宽跑满）：60w之间波动。</p>
+<p>正常使用下：24小时不关机，50小时，电费1.7￥，那么预估一年耗电为300￥。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/pt/" rel="tag"># pt</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/16/FDTD%E5%9F%BA%E6%9C%AC%E5%85%AC%E5%BC%8F/" rel="prev" title="FDTD基本公式">
+      <i class="fa fa-chevron-left"></i> FDTD基本公式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/10/%E8%BF%91%E4%BC%BC%E5%90%B8%E6%94%B6%E8%BE%B9%E7%95%8C/" rel="next" title="Engquist-Majda吸收边界">
+      Engquist-Majda吸收边界 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E5%8F%B0%E7%94%B5%E8%84%91%E7%9A%84%E8%AE%B0%E5%BF%86"><span class="nav-text">三台电脑的记忆</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E5%8F%B0"><span class="nav-text">第一台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E5%8F%B0"><span class="nav-text">第二台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E5%8F%B0"><span class="nav-text">第三台</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NAS%E7%BB%84%E8%A3%85%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95"><span class="nav-text">NAS组装安装记录</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

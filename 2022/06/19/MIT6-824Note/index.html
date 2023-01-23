@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-mac-osx.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="今年4月份到现在6月份，抽了许多时间，大体上把MIT 6.824的4个lab给做了。截止目前，除了Lab4的Challenge：Garbage collection of state还未成功通过，其余的已成功通过测试。不得不说，一套做下来的收获满满。这里就记录一下自己做实验的思路以及遇到的坑吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT6.824Note">
+<meta property="og:url" content="http://example.com/2022/06/19/MIT6-824Note/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="今年4月份到现在6月份，抽了许多时间，大体上把MIT 6.824的4个lab给做了。截止目前，除了Lab4的Challenge：Garbage collection of state还未成功通过，其余的已成功通过测试。不得不说，一套做下来的收获满满。这里就记录一下自己做实验的思路以及遇到的坑吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-19T15:19:48.000Z">
+<meta property="article:modified_time" content="2023-01-23T15:55:27.023Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="MIT课程">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/06/19/MIT6-824Note/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MIT6.824Note | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/19/MIT6-824Note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MIT6.824Note
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-19 23:19:48" itemprop="dateCreated datePublished" datetime="2022-06-19T23:19:48+08:00">2022-06-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>今年4月份到现在6月份，抽了许多时间，大体上把MIT 6.824的4个lab给做了。截止目前，除了Lab4的Challenge：<code>Garbage collection of state</code>还未成功通过，其余的已成功通过测试。不得不说，一套做下来的收获满满。这里就记录一下自己做实验的思路以及遇到的坑吧。</p>
+<span id="more"></span>
+<h2 id="Lab-1-MapReduce"><a href="#Lab-1-MapReduce" class="headerlink" title="Lab 1: MapReduce"></a>Lab 1: MapReduce</h2><p>现在回想起来，Lab 1是一个很简单的小任务。要求我们实现一个MapReduce，在<code>src/main/mrsequential.go</code>中展示了任务的线性实现顺序。在开始实验前，首先把<em>Rules</em>以及<em>Hints</em>先理解清楚。其实对于每一个实验<em>Rules</em>和<em>Hints</em>都是很好的提示。对于Lab 1我并未去实现其的<code>No-credit challenge exercises</code>。</p>
+<p>这里，由于我是初学go，Lab 1也是我第一个go项目的使用，所以Lab 1的实现我参考了他人的实现。主要的思路是：Worker不断向Coordinator发送请求索取一个任务，每当Worker完成一个任务向Coordinator报告后并请求下一个任务；对于Coordinator，其需要维护整个当前阶段（Map、Reduce阶段）中任务队列内的所有任务状态，Coordinator内部有一个定时线程检查任务队列中所有任务的状态，如超时检查等。当所有任务结束后，对于Worker的请求，Coordinator通知Worker退出即可。这里需要讨论的空间是Worker对于完成任务的处理，这里我简单的由Worker将临时文件重命名为正式的结果文件，再向Coordinator汇报成功。其实这么做是不妥当的，但是在通过了100次Test后我就暂时不管这个了。</p>
+<p>Lab 1所踩的坑基本都是集中在<code>Go</code>语言的语法上的问题，比如通道引起的线程阻塞等。这个Lab基本是一个牛刀小试，写完Lab 1对于<code>Go</code>的语法也有了一定的了解。</p>
+<h2 id="Lab-2-Raft"><a href="#Lab-2-Raft" class="headerlink" title="Lab 2: Raft"></a>Lab 2: Raft</h2><p>Lab 2应该是这门课程的重头戏了，其要实现一个<code>Raft</code>。Lab 2是之后的实验Lab 3以及Lab 4的基础。如果要打算继续做下去，Lab 2的正确性将成为往后实验顺利进行的一块重要的基石。<br>在开始实验之前，强烈建议阅读：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://raft.github.io/raft.pdf">Raft论文</a>至少要阅读到第5.4节</li>
+<li><a target="_blank" rel="noopener" href="http://thesecretlivesofdata.com/raft/">Raft的流程演示</a></li>
+<li><a target="_blank" rel="noopener" href="https://raft.github.io/">Raft Visualization</a></li>
+</ul>
+<p>同时对于Lab 2的每一部分的<code>Hint</code>都应该认真阅读，在实验过程中<a target="_blank" rel="noopener" href="https://raft.github.io/raft.pdf">Raft论文</a>以及<a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/">Students’ Guide to Raft</a>都能有极大的帮助。对于<code>Raft</code>论文中的规定，只要实验要求中未作出特殊说明，请一定要百分百遵守。一般而言，遵守<a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/">Students’ Guide to Raft</a>的建议对实验的帮助非常之大。</p>
+<p>我的心跳间隔为：80 ms，选举时间间隔为：150-300 ms。</p>
+<p>一个对每一个Part都非常有帮助的tips：对于一个要长期执行的For循环，请一定要加上检查<code>killed()</code>。</p>
+<p>Raft的Debug是十分困难的，所以对于程序运行的日志的输出一定要做好规范，针对每一个函数的出入口都要有一个日志的打印。这里推荐一个非常棒的<a target="_blank" rel="noopener" href="https://blog.josejg.com/debugging-pretty/">一个非常棒的并行调试工具</a></p>
+<h3 id="Part-2A-leader-election"><a href="#Part-2A-leader-election" class="headerlink" title="Part 2A: leader election"></a>Part 2A: leader election</h3><p>这部分主要是实现<code>Raft</code>中关于Leader的选举以及选举成功后发送Heartbeat的流程的实现。实现的主体是<code>Figure2</code>中的<code>RequestVote RPC</code>以及<code>AppendEntries RPC</code>，这里对于涉及到日志的部分，默认为空或0即可。</p>
+<p>涉及Leader选举的部分在论文中的5.2以及5.4.1有提及，就Part 2A而言，实现5.2中涉及的即可。整体思路为：Raft启动后，开启一个循环的线程，每次醒来时首先检查是否为Leader，否则继续检查Raft在自己沉睡时是否有收到过Heartbeat，否则开启选举，然后继续沉睡随机时间。对于选举，遵守<code>Raft</code>的要求去实现即可，对于其的实现，我参照了官方课程中的Lecture 5 - Go, Thread and Raft，采用了条件变量等待投票过半成为Leader。</p>
+<p>对于Heartbeat的发送，实现思路是：Raft启动后，开启一个定时的线程，检查自己是否为Leader，是则向其他所有节点发送<code>AppendEntries RPC</code>。这里对于Part 2A而言Entries应为空。</p>
+<p>这里踩的坑主要有：在发送RPC时采用异步发送；发送RPC请求时，不要持有锁，否则当两两互相发送RPC请求时可能会造成死锁；选举计时器的沉睡时间要保证随机；不要向自己发送RPC请求。</p>
+<h3 id="Part-2B-log"><a href="#Part-2B-log" class="headerlink" title="Part 2B: log"></a>Part 2B: log</h3><p>Part 2B要求实现日志的同步，在这里你需要实现论文<code>Figure2</code>中的全部内容。如果你顺利的实现了Part 2A，那么Part 2B中的日志的同步应该不算太难。对Part 2B的日志同步，我采用了和Part 2A选举的实现一样的框架，异步向每一个Follower发送心跳即发送<code>AppendEntries RPC</code>，使用条件变量等待半数以上的节点同意日志的同步，然后选取合适的index，更变<code>commitIndex</code>。对于日志的Apply，我采用的方案是，当<code>commitIndex</code>改变时，立刻判断其与<code>lastApplied</code>的大小，如果<code>commitIndex</code>大小大于<code>lastApplied</code>，则开启一个线程将日志中的<code>[lastApplied+1:commitIndex+1]</code>提交，也就是传入<code>applyCh</code>中，这里需要注意的是传入<code>applyCh</code>时，线程不应该持有锁。</p>
+<p>在Part 2B中，选举也多了限制，除了Part 2A实现的限制条件外，我们还要实现论文中5.4.1提及的<code>Election restriction</code>。</p>
+<p>这里说明一下在做Part 2B时的一点小疑惑：<br>在<code>AppendEntries RPC</code>提及</p>
+<blockquote>
+<p>Reply false if log doesn’t contain an entry at prevLogIndex<br>whose term matches prevLogTerm (§5.3)</p>
+</blockquote>
+<p>以及</p>
+<blockquote>
+<p>If an existing entry conflicts with a new one (same index<br>but different terms), delete the existing entry and all that<br>follow it (§5.3)</p>
+</blockquote>
+<p>基本上，只要<strong>百分之百</strong>的遵照<code>Raft</code>论文的要求，Part 2B应该能够成功通过，不过论文有一个小细节可能没有提及，关于重置<code>election timeout</code>的说明，在实验中，我基本上遵从收到正确的心跳重置、收到更高的<code>Term</code>重置、授予投票时重置，这里有一个与这些操作高度相关的操作为：更变自己的状态为Follower，所以我在实现时，将更变状态为Follower与重置<code>election timeout</code>绑定在一起。这里有一个隐藏得很深的坑：在收到投票请求时，在其通过了<code>Term</code>检查后，我会将自己转为Follower，之后继续判断是否授予投票。这里如果将更变状态为Follower与重置<code>election timeout</code>绑定，导致的错误是无法选举产生Leader。这里一定要将更变状态为Follower与重置<code>election timeout</code>解绑，只有在授予投票后，才重置<code>election timeout</code>，否则可能自己永远无法触发选举，只能给他人投票。</p>
+<p>这里可能还会存在的小问题可能是关于<code>matchIndex</code>和<code>nextIndex</code>的计算，这里我的建议是：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">matchIndex = args.PrevLogIndex + <span class="built_in">len</span>(args.Entries)</span><br><span class="line">nextIndex = matchIndex + <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>其余的case基本上在Students’ Guide to Raft都有提到。</p>
+<p>Part 2B基本可以算是整个Lab 2最难的一部分，而且其的正确实现关系到后面的每一个实验。在Part 2B中即使通过了多次测试也不要太过于高兴，到Part 2C可能问题就会暴露出来。（我进入Part 2C前，跑了Part 2B两千次不出错，结果到了Part 2C还是发现了一个很小很小的错误。）</p>
+<h3 id="Part-2C-persistence"><a href="#Part-2C-persistence" class="headerlink" title="Part 2C: persistence"></a>Part 2C: persistence</h3><p>要求实现持久化，即实现<code>persist()</code>以及<code>readPersist()</code>即可。每一次Raft的启动都调用一次<code>readPersist()</code>。而对于<code>persist()</code>的调用，只要有涉及论文中提及的持久化变量的变换就调用<code>persist()</code>即可。对于Part 2C我们还需要作出一些优化，也就是论文中提交的可能无需作出的优化：加速<code>nextIndex</code>的同步，这里具体参考<a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/">Students’ Guide to Raft</a>。</p>
+<p>这里的主要难点是在于对论文中<code>Figure8</code>的理解，我的理解是：commit的日志中如果不存在当前term的项，就无法提交。也就是：</p>
+<blockquote>
+<p>If there exists an N such that N &gt; commitIndex, a majority<br>of matchIndex[i] ≥ N, and log[N].term == currentTerm:<br>set commitIndex = N</p>
+</blockquote>
+<p>对于Part 2C主要的失败点是<code>TestFigure8Unreliable2C()</code>。这里的调试花了我不少的时间，最终的问题锁定在了一个很低级的问题上在对获取<code>N</code>时我对<code>matchIndex</code>数组进行了排序，忘记copy了，直接采用赋值排序了，导致了<code>matchIndex</code>全乱了。对<code>Go</code>语言的不熟悉。<br>错误类似于</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">commits := rf.leaderStateRecord.matchIndex</span><br><span class="line">sort.Ints(commits)</span><br></pre></td></tr></table></figure>
+<p>很惊奇的是，这样一个低级的错误居然过了2B。</p>
+<h3 id="Part-2D-log-compaction"><a href="#Part-2D-log-compaction" class="headerlink" title="Part 2D: log compaction"></a>Part 2D: log compaction</h3><p>先提及一点是<code>CondInstallSnapshot()</code>这个函数，Lab的要求中说不建议实现，直接返回true。<br>对于Part 2D，最重要的是梳理其过程：<br>首先是上层发现log太大了，就会调用<code>Snapshot()</code>函数进行日志压缩。Lab 2中由Tester调用。关于这一点我们只需实现<code>Snapshot()</code>使其能够对日志进行压缩保存即可。<br>其次是<code>InstallSnapshot RPC</code>请求，这个是由我们去调用的，当Leader发现一个Follower落后太多时，就会将自己的快照发送给Follower。论文中对这个实现有具体的说明。当Follwer收到Leader的<code>InstallSnapshot RPC</code>请求后，判断Term是否满足，若满足而后正确的流程应该是将<code>ApplyMsg</code>设置为快照有效，并将此次快照信息通过<code>applyCh</code>传给上层，上层接收到这个信息后，会调用<code>CondInstallSnapshot()</code>由Raft去判断是否应该安装这个快照，Raft接受安装后<code>CondInstallSnapshot()</code>返回true，上层也会进行快照安装。在Part 2D中，我将问题简化，<code>CondInstallSnapshot()</code>不做实现，直接返回true，Follwer收到Leader的<code>InstallSnapshot RPC</code>请求后，自行判断是否接受这个快照的安装（具体的判断由Term以及Index决定），以及在接受安装请求后将此次快照信息通过<code>applyCh</code>传给上层，注意向<code>applyCh</code>传递时，应该单独<code>go func &#123;&#125;()</code>去传递。（这里的化简对于Lab 2而言是可以接受的，到了Lab 3请一定要遵守上述的正确流程。）</p>
+<p>Part 2D由于涉及日志的压缩，对于log的处理就不能向传统的<code>Go silce</code>一般处理了。这里我的处理是重新封装关于log的<code>Get</code>、<code>Set</code>、<code>Append</code>函数，在不更变太多代码的情况下，顺利的通过了Part 2D的测试。这里有一个很好的技巧是：将<code>snapshot</code>的<code>includeTerm</code>和<code>includeIndex</code>存储在<code>rf.log[0]</code>内，对于Part 2D的实现有不少的方便之处。</p>
+<h3 id="Lab-2小总结"><a href="#Lab-2小总结" class="headerlink" title="Lab 2小总结"></a>Lab 2小总结</h3><p>我在整个Lab 2完成后，跑了2k次的Test，无一错误。不过在重复跑了很多遍的2k次的完整的Test后，仍旧是出现了一次错误，在查看日志后发现发现，如果当前任期内一直没有命令到来，会导致无法提交之前Term的日志，这会导致<code>TestFigure8Unreliable2C()</code>的失败，因为这个测试要求在网络恢复的10秒后，所有的Server要达到一致。</p>
+<h2 id="Lab-3-Fault-tolerant-Key-Value-Service"><a href="#Lab-3-Fault-tolerant-Key-Value-Service" class="headerlink" title="Lab 3: Fault-tolerant Key/Value Service"></a>Lab 3: Fault-tolerant Key/Value Service</h2><p>Lab 3基于Lab 2实现的<code>Raft</code>构建一个可容错的K/V服务。关于这一部分的一些参考可以阅读<code>Raft</code>作者的<a target="_blank" rel="noopener" href="https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf">博士论文</a>，具体的流程说明在第六章，同时对于其要求的线性一致性，可以参考官方课程Lecture 7的后一部分以及Lecture 8的前一部分。值得说明的，你无需一定要按照博士论文中所提到的流程具体实现，这是一个思路的参考。这张<a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.824/notes/raft_diagram.pdf">Raft交互图</a>也是一个参考。Lab 3的实现还是蛮自由的，这里就简单介绍一下我的思路吧。</p>
+<p>本次的实验中，一些值得注意的事项有：</p>
+<ol>
+<li>数据库由一个<code>map</code>来代替，数据全部存储在内存中。</li>
+<li>单个客户端的请求是串行的。</li>
+<li>所有操作均由Leader进行回应。</li>
+</ol>
+<p>Lab 3的重点我认为应该是对线性一致性的保证，这一点我们可以把所有的读写操作加入Raft日志以及请求去重保证。<br>对于客户端请求的去重，结合到本次实验的具体情况单个客户端不支持并行的请求，对每个客户端在发送请求时，除了携带最基本的参数外，还应该携带客户端的<code>clientId</code>和命令序号<code>sequenceNum</code>的标识。<code>clientId</code>在clerk生成时由<code>nrand()</code>生成，<code>int64</code>保证在本次实验中的<code>clientId</code>的唯一性。命令序号<code>sequenceNum</code>初始值为0，一个clerk在发送一个命令请求时自动将<code>sequenceNum</code>增加1。由于客户端的执行是串行，<code>clientId</code>和<code>sequenceNum</code>保证了请求的唯一性。而对于server端，在接收到client的读写请求后，要先经过去重判断，才能加入<code>rf.Start()</code>。<br>server端应该针对每一个<code>clientId</code>存储一个最新的处理结果，对重复的请求，直接回复这一个存储最新的处理结果。<br>同时在应用日志到状态机内时，也要有一次去重判断。</p>
+<p>server端在启动时，应该开启一个线程监听<code>applyCh</code>，以便将命令应用到状态机中。</p>
+<p>整个server端与client的交互流程：大致为clinet向Leader发送RPC请求，server端在Leader状态时接收RPC请求，并将此RPC请求挂起，等待<code>applyCh</code>中该命令应用到状态机后回复client。</p>
+<h3 id="Part-B-Key-value-service-with-snapshots"><a href="#Part-B-Key-value-service-with-snapshots" class="headerlink" title="Part B: Key/value service with snapshots"></a>Part B: Key/value service with snapshots</h3><p>将Part 2D中忽略的<code>CondInstallSnapshot()</code>实现后，需要我们实现的大致会有两个函数创建快照<code>snapshot()</code>以及读取快照<code>readSnapshot()</code>，在合适的地方执行这两个函数即可。</p>
+<h3 id="我的实现的一些小瑕疵"><a href="#我的实现的一些小瑕疵" class="headerlink" title="我的实现的一些小瑕疵"></a>我的实现的一些小瑕疵</h3><p>由于我在实现Lab 2时，将日志的提交与心跳的广播绑定到一起。我的思路是，心跳会更新<code>commitIndex</code>，只有<code>commitIndex</code>更新后才会提交日志，导致server对于每个操作的执行时间与心跳频率高度相关。在Lab 3中有一测试为<code>TestSpeed3A()</code>，其要求server处理每个命令的最长平均耗时不超过33ms，由于我的心跳频率为80ms，所以我的server处理每个命令的平均耗时为80ms，无法通过<code>TestSpeed3A()</code>。其他测试均测试1k次以上，无一错误。</p>
+<h2 id="Lab-4-Sharded-Key-Value-Service"><a href="#Lab-4-Sharded-Key-Value-Service" class="headerlink" title="Lab 4: Sharded Key/Value Service"></a>Lab 4: Sharded Key/Value Service</h2><p>Lab 4要求实现一个<code>Multi-Raft</code>。我认为Lab 4与Lab 2的难度不相上下，Lab 2的难度可能是在各种可能错误的case的情况的考虑，而Lab 4的难度主要是来源于对于整个模式的设计。首先，必须要梳理整个实验的思路。实验要求将数据通过<code>key2shard()</code>将数据按键分布在不同的<code>shard</code>中。一个集群中运行着几个Raft服务组。一个Raft服务组管理几个<code>shard</code>。在本次Lab中，我们有<code>NShard = 10</code>个<code>shard</code>以及三个Raft服务组。这样就解决了单个Raft系统的性能受制于单机的性能（读写请求都由Leader节点处理）的问题。</p>
+<h3 id="Part-A-The-Shard-controller"><a href="#Part-A-The-Shard-controller" class="headerlink" title="Part A: The Shard controller"></a>Part A: The Shard controller</h3><p>这是一个<code>easy</code>等级的任务，主要是要实现一个分区控制器，指定哪一组的Raft服务<code>Servers</code>管理哪几块分区<code>Shard</code>。<code>Shard[i]</code>表示第<code>i</code>块分区由哪一个Raft服务组管理，辨别Raft服务组通过非0值<code>Gid</code>辨别，<code>Groups[gid]</code>表示<code>gid</code>Raft组中所有的Servers。<br>主要任务是，当<code>Group</code>加入或者离开集群后如何将分区均衡得分配到新的<code>Groups</code>中的服务组去，要求是尽量少的Raft组间的数据交换。这一块的思路就是削多补少。</p>
+<p>这里有一个小细节，<code>Hint</code>也有所提及：</p>
+<blockquote>
+<p>In Go, map iteration order is not deterministic.</p>
+</blockquote>
+<p>这里带来的影响是在重平衡的削多补少时，仅仅以某一种情况为例子：可能在同一个<code>ConfigNum</code>下，出现两种配置：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Shard = [<span class="number">100</span>,<span class="number">100</span>,<span class="number">100</span>,<span class="number">101</span>,<span class="number">101</span>,<span class="number">101</span>]</span><br><span class="line">Shard = [<span class="number">101</span>,<span class="number">101</span>,<span class="number">101</span>,<span class="number">100</span>,<span class="number">100</span>,<span class="number">100</span>]</span><br></pre></td></tr></table></figure>
+<p>解决的方法，与自己的具体实现有关。我的解决方案是，先对key即<code>gid</code>进行排序，再对<code>gid</code>拥有的<code>shard</code>数进行排序。</p>
+<h3 id="Part-B-Sharded-Key-Value-Server"><a href="#Part-B-Sharded-Key-Value-Server" class="headerlink" title="Part B: Sharded Key/Value Server"></a>Part B: Sharded Key/Value Server</h3><p>这一块，我前前后后设计了三种方案，第一种方案是，对某一个Raft强制其所有分区共用一个Config配置，这是一个过于保守的方案，而且对于后面Challenge的实现不利，最后被抛弃。第二个方案是，对某一个Raft，10个分区允许其有不同的Config，但是这在实现是对这个10个分区，每一个分区都进行一次Query操作，很费时间，经常性丢失Leader。最终采用了折中的方案：kv维护一个config，这是10个分区中最低ConfigNum的配置，在Client端保证，发送请求时一定按照最新的配置发送请求，这样了保证Shard的独立性，也减少了Query操作次数。</p>
+<p>关于Shard数据的迁移，最开始采用<code>Pull</code>模式，即由<code>Join</code>操作的Raft服务组向旧的分区所有者请求数据。但是在<code>TestJoinLeave</code>测试中，当某个<code>Group</code>离去时，就一直请求数据RPC失败。在查阅了资料后发现原来还有<code>Push</code>模式，由旧的分区所有者向新的分区所有者推送分区。体感这是一个很好的模式，减少了RPC交互次数，而且在Push成功后可以直接清除该分区中的数据，应该可以直接实现Challenge1（但是我始终是过不了，总是提示我too big）。</p>
+<p>具体的其他细节，都应该是因人而异。一些需要注意的点是：分区数据的迁移的操作也不要忘了加入日志中去，同时要注意该项操作需要去重处理，以及注意Think about how the shardkv client and server should deal with ErrWrongGroup.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/go/" rel="tag"># go</a>
+              <a href="/tags/MIT%E8%AF%BE%E7%A8%8B/" rel="tag"># MIT课程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/27/%E4%B8%80%E7%BB%B4FDTD%E8%AE%A1%E7%AE%97%E7%BC%96%E7%A8%8B%E5%AE%9E%E4%BE%8B/" rel="prev" title="一维FDTD计算编程实例">
+      <i class="fa fa-chevron-left"></i> 一维FDTD计算编程实例
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/10/11/%E7%94%B5%E7%A3%81%E6%B3%A2%E5%9F%BA%E6%9C%AC%E7%90%86%E8%AE%BA/" rel="next" title="电磁波基本理论">
+      电磁波基本理论 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lab-1-MapReduce"><span class="nav-text">Lab 1: MapReduce</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lab-2-Raft"><span class="nav-text">Lab 2: Raft</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Part-2A-leader-election"><span class="nav-text">Part 2A: leader election</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Part-2B-log"><span class="nav-text">Part 2B: log</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Part-2C-persistence"><span class="nav-text">Part 2C: persistence</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Part-2D-log-compaction"><span class="nav-text">Part 2D: log compaction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab-2%E5%B0%8F%E6%80%BB%E7%BB%93"><span class="nav-text">Lab 2小总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lab-3-Fault-tolerant-Key-Value-Service"><span class="nav-text">Lab 3: Fault-tolerant Key&#x2F;Value Service</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Part-B-Key-value-service-with-snapshots"><span class="nav-text">Part B: Key&#x2F;value service with snapshots</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%91%95%E7%96%B5"><span class="nav-text">我的实现的一些小瑕疵</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lab-4-Sharded-Key-Value-Service"><span class="nav-text">Lab 4: Sharded Key&#x2F;Value Service</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Part-A-The-Shard-controller"><span class="nav-text">Part A: The Shard controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Part-B-Sharded-Key-Value-Server"><span class="nav-text">Part B: Sharded Key&#x2F;Value Server</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
