@@ -4,7 +4,7 @@ tags:
   - CMake
   - CPP
 categories:
-  - My Tutorial of CPP
+  - Tutorial of CMake
 date: 2023-02-13 18:09:31
 ---
 
@@ -27,7 +27,7 @@ Add an INTERFACE library target to specify the required C++ standard.
 
 为我们的目标已经库明确`C++`标准。
 
-修改`CMakelists.txt，创建库并添加编译器特性
+修改`CMakelists.txt`，创建库并添加编译器特性
 
 ```cmake
 # 创建一个interface库:tutorial_compiler_flags
@@ -42,7 +42,7 @@ target_compile_features(tutorial_compiler_flags INTERFACE cxx_std_17)
 target_link_libraries(target1 PUBLIC ${EXTRA_LIBS} tutorial_compiler_flags)
 ```
 
-为库`MathFunctions`添加编译器特性
+为库`MathFunctions`添加编译器特性，修改`libs/mathFunctions/CMakeLists.txt`
 
 ```cmake
 # link our MathFunctions library to our new tutorial_compiler_flags library

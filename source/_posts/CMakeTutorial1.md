@@ -2,7 +2,7 @@
 title: CMake教程（一）：构建一个简单的可执行文件
 date: 2023-01-28 13:34:52
 categories:
-  - My Tutorial of CPP
+  - Tutorial of CMake
 tags:
   - CMake
   - CPP
@@ -111,17 +111,17 @@ configure_file("MyProject.h.in"
 cmake -B build
 ```
 
-项目目录`build`下会生成一个头文件`MyProject.h`
-在项目中使用
+会在项目二进制目录目录下会生成一个头文件`MyProject.h`，在`CMake`中有保留变量`PROJECT_BINARY_DIR`指示目录位置。在这个例子中为`build`目录。
+
+在项目中使用，修改`CMakelists.txt`
 
 ```cmake
-# 构建生成target1需要的目录文件
+# 指定目标target1包含的头文件路径
+# PUBLIC表示当前目标target1可以使用这些头文件 如果外部目标依赖target1，也可以使用这些头文件
 target_include_directories(target1 PUBLIC
                           "${PROJECT_BINARY_DIR}"
                           )
 ```
-
-`PROJECT_BINARY_DIR`是`CMake`保留变量。在cpp文件可以包含这个头文件然后打印版本号。
 
 ## CMake分离编译
 
@@ -137,7 +137,7 @@ target_include_directories(target1 PUBLIC
 ├── MyProject.h.in
 ├── include
 │   └── hello.h
-└── source
+└── src
     ├── hello.cpp
     └── main.cpp
 ```
@@ -173,7 +173,7 @@ int main() {
 }
 ```
 
-### `CMakelists.txt`的修改
+`CMakelists.txt`文件为
 
 ```cmake
 # CMake最低版本要求 VERSION >= 3.25.0
@@ -183,9 +183,9 @@ cmake_minimum_required(VERSION 3.25.0)
 # 语义化版本 参考https://semver.org/
 project(MyProject VERSION 1.0.0)
 
-# 生成版本号头文件
-configure_file("${PROJECT_SOURCE_DIR}/MyProject.h.in"
-               "${PROJECT_SOURCE_DIR}/include/MyProject.h")
+# 生成项目配置头文件
+configure_file("MyProject.h.in"
+               "MyProject.h")
 
 # 设置c++标准为C++17标准
 set(CMAKE_CXX_STANDARD 17)
@@ -197,19 +197,17 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # file 命令使用示例
 # file(GLOB sources CMAKE_CONFIGURE_DEPENDS *.cpp *.h)
 
-# 添加提供查找头文件的目录
-# 当前CMakeList.txt中的所有目标以及所有在其调用点之后添加的子目录中的所有目标将具有此头文件搜索路径
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
-# 搜索项目目录/source下的所有的源文件并赋值给变量sources
-aux_source_directory(${PROJECT_SOURCE_DIR}/source sources)
+# 搜索项目目录/src下的所有的源文件并赋值给变量sources
+aux_source_directory(${PROJECT_SOURCE_DIR}/src sources)
 
 # 为MyProject添加一个可执行目标target1
 add_executable(target1)
 
-# 构建生成target1需要的目录文件
+# 指定目标target1包含的头文件路径
+# PUBLIC表示当前目标target1可以使用这些头文件 如果外部目标依赖target1，也可以使用这些头文件
 target_include_directories(target1 PUBLIC
                           "${PROJECT_BINARY_DIR}"
+                          "include"
                           )
 
 # Specifies sources to use when building a target and/or its dependents.

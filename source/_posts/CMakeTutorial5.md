@@ -4,7 +4,7 @@ tags:
   - CMake
   - CPP
 categories:
-  - My Tutorial of CPP
+  - Tutorial of CMake
 date: 2023-02-13 18:09:33
 ---
 
@@ -29,10 +29,10 @@ install(FILES mathfunctions.h DESTINATION include)
 修改`CMakeLists.txt`，添加
 
 ```cmake
-install(TARGETS target1 DESTINATION bin)
 install(FILES "${PROJECT_BINARY_DIR}/MyProject.h"
-  DESTINATION include
-  )
+              "include/hello.h"
+              DESTINATION include
+)
 ```
 
 运行命令
@@ -40,7 +40,24 @@ install(FILES "${PROJECT_BINARY_DIR}/MyProject.h"
 ```shell
 cmake -B build
 cmake --build build
-cmake --install build --prefix "/home/myuser/installdir" --config Release
+--config Release
+```
+
+执行安装
+
+```shell
+cmake --install build
+```
+
+默认情况下，安装路径为`/usr/local`，window系统为`C:/Program Files/${PROJECT_NAME}`。可以设定安装路径：
+
+```shell
+cmake --install build --prefix "/home/myuser/installdir" 
+```
+
+安装成功后，执行命令
+
+```shell
 cd /home/myuser/installdir
 tree .
 ```
@@ -53,9 +70,12 @@ tree .
 │   └── target1
 ├── include
 │   ├── MyProject.h
+│   ├── hello.h
 │   └── mathfunctions.h
 └── lib
     └── libMathFunctions.a
 ```
 
 可执行文件在`bin`目录中。
+
+## Exercise 2 - Testing Support

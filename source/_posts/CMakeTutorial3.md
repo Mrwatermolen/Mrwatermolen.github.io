@@ -4,7 +4,7 @@ tags:
   - CMake
   - CPP
 categories:
-  - My Tutorial of CPP
+  - Tutorial of CMake
 date: 2023-02-13 14:55:13
 ---
 
@@ -41,7 +41,7 @@ target_include_directories(MathFunctions
 ```cmake
 if(USE_MYMATH)
   # 添加子文件夹./library
-  add_subdirectory(library)
+  add_subdirectory(libs/mathFunctions)
   # 把库MathFunctions添加入EXTRA_LIBS列表中去
   list(APPEND EXTRA_LIBS MathFunctions)
 endif()
@@ -54,5 +54,7 @@ target_include_directories(target1 PUBLIC
                           "${PROJECT_BINARY_DIR}"
                           )
 ```
+
+这里我们无需额外告知库的头文件的位置了，我们把关于`EXTRA_INCLUDES`都删除了。
 
 Notice that with this technique, the only thing our executable target does to use our library is call target_link_libraries() with the name of the library target. In larger projects, the classic method of specifying library dependencies manually becomes very complicated very quickly.

@@ -2,7 +2,7 @@
 title: CMake教程（二）：创建一个简单的静态库
 date: 2023-01-28 13:44:59
 categories:
-  - My Tutorial of CPP
+  - Tutorial of CMake
 tags:
   - CMake
   - CPP
@@ -18,16 +18,25 @@ tags:
 
 ## 创建生成一个静态库
 
-考虑，我们需要一个数学库的开方运算。首先创建一个文件夹就叫做`library`吧，其中包含文件`mathfuctions.h`和`mysqrt.cpp`以及一个`CMakeLists.txt`。
+考虑，我们需要一个数学库的开方运算。自建一个数学库。目录结构如下
 
-```shell
-mkdir library
-touch library/mathfunctions.h
-touch library/mysqrt.cpp
-touch library/CMakeLists.txt
+```tree
+.
+├── CMakeLists.txt
+├── MyProject.h.in
+├── include
+│   └── hello.h
+├── libs
+│   └── mathFunctions
+│       ├── CMakeLists.txt
+│       ├── mathfunctions.h
+│       └── mysqrt.cpp
+└── src
+    ├── hello.cpp
+    └── main.cpp
 ```
 
-在`mathfunctions.h`中写入
+在`mathfunctions.h`声明方法，写入
 
 ```cpp
 #ifndef _MATHFUNCTIONS_H_
@@ -48,7 +57,7 @@ int mySqrt(int x);
 #endif // _MATHFUNCTIONS_H_
 ```
 
-在`mysqrt.cpp`实现这个方法
+在`mysqrt.cpp`实现开方运算这个方法
 
 ```cpp
 #include "mathfunctions.h"
@@ -57,7 +66,7 @@ int mymath::mySqrt(int x) {
   int l = 0, r = x, ans = -1;
   while (l <= r) {
     int mid = l + (r - l) / 2;
-    if ((long long)mid * mid <= x) {
+    if ( static_cast<long long>(mid * mid) <= x) {
       ans = mid;
       l = mid + 1;
     } else {
@@ -68,7 +77,7 @@ int mymath::mySqrt(int x) {
 }
 ```
 
-编辑`library/CMakeList.txt`文件。
+编辑`libs/mathFunctions/CMakeList.txt`文件。
 
 我们要告知`CMake`创建一个库目标，向其添加文件。
 
@@ -84,11 +93,11 @@ add_library(MathFunctions STATIC mysqrt.cpp)
 我们返回`MyProject`项目的目录。修改`CMakeList.txt`文件。
 
 为了使用我们自定义的`MathFunctions`库，我们需要告知`CMake`这个库的位置在哪。
-库`MathFunctions`定义在`./library/CMakeLists.txt`中。
+库`MathFunctions`定义在`libs/mathFunctions/CMakeList.txt`中。
 
 ```cmake
-# 添加子文件夹./library
-add_subdirectory(library)
+# 添加子目录libs/mathFunctions并构建
+add_subdirectory(libs/mathFunctions)
 ```
 
 而后我们在告知`CMake`在生成可执行文件`target1`前要将库`MathFunctions`链接进来。
@@ -101,10 +110,10 @@ target_link_libraries(target1 PUBLIC MathFunctions)
 最后我们需要告知库`MathFunctions`的头文件在哪。
 
 ```cmake
-# 构建生成target1需要的目录文件
 target_include_directories(target1 PUBLIC
                           "${PROJECT_BINARY_DIR}"
-                          "${PROJECT_SOURCE_DIR}/library"
+                          "include"
+                          "libs/mathFunctions"
                           )
 ```
 
@@ -118,9 +127,9 @@ cmake_minimum_required(VERSION 3.25.0)
 # 语义化版本 参考https://semver.org/
 project(MyProject VERSION 1.0.0)
 
-# 生成版本号头文件
-configure_file("${PROJECT_SOURCE_DIR}/MyProject.h.in"
-               "${PROJECT_SOURCE_DIR}/include/MyProject.h")
+# 生成项目配置头文件
+configure_file("MyProject.h.in"
+               "MyProject.h")
 
 # 设置c++标准为C++17标准
 set(CMAKE_CXX_STANDARD 17)
@@ -129,15 +138,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 # 生成一个compile_commands.json文件，和基于clang的工具一起使用
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# 添加子文件夹./library
-add_subdirectory(library)
+# 添加子目录libs/mathFunctions并构建
+add_subdirectory(libs/mathFunctions)
 
-# 添加提供查找头文件的目录
-# 当前CMakeList.txt中的所有目标以及所有在其调用点之后添加的子目录中的所有目标将具有此头文件搜索路径
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
-# 搜索项目目录/source下的所有的源文件并赋值给变量sources
-aux_source_directory(${PROJECT_SOURCE_DIR}/source sources)
+# 搜索项目目录/src下的所有的源文件并赋值给变量sources
+aux_source_directory(${PROJECT_SOURCE_DIR}/src sources)
 
 # 为MyProject添加一个可执行目标target1
 add_executable(target1)
@@ -145,10 +150,12 @@ add_executable(target1)
 # 为target1链接库MathFunctions
 target_link_libraries(target1 PUBLIC MathFunctions)
 
-# 构建生成target1需要的目录文件
+# 指定目标target1包含的头文件路径
+# PUBLIC表示当前目标target1可以使用这些头文件 如果外部目标依赖target1，也可以使用这些头文件
 target_include_directories(target1 PUBLIC
                           "${PROJECT_BINARY_DIR}"
-                          "${PROJECT_SOURCE_DIR}/library"
+                          "include"
+                          "libs/mathFunctions"
                           )
 
 # Specifies sources to use when building a target and/or its dependents.
@@ -156,12 +163,12 @@ target_include_directories(target1 PUBLIC
 target_sources(target1 PUBLIC ${sources})
 ```
 
-修改`./source/main.cpp`文件，调用自定义库中的库函数。
+修改`./src/main.cpp`文件，调用自定义库中的库函数。
 
 ```cpp
 #include "hello.h"
-#include "mathfunctions.h"
 
+#include <mathfunctions.h>
 #include <iostream>
 
 int main() {
@@ -187,17 +194,19 @@ Hello World!
 
 我们为自定义的库创建一个宏定义`USE_MYMATH`去控制是否导入这个库。
 
-修改`CMakeLists.txt`文件，添加一行
+修改`CMakeLists.txt`文件，添加
 
 ```cmake
 # 添加一个变量选项 用户能选择是否开启或关闭 ON为true OFF为false
 option(USE_MYMATH "Use tutorial provided math implementation" ON)
 
 if(USE_MYMATH)
-  # 添加子文件夹./library
-  add_subdirectory(library)
+  # 添加子文件夹libs/mathFunctions
+  add_subdirectory(libs/mathFunctions)
   # 把库MathFunctions添加入EXTRA_LIBS列表中去
   list(APPEND EXTRA_LIBS MathFunctions)
+  # 添加库MathFunctions的头文件到变量EXTRA_INCLUDES
+  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/libs/mathFunctions")
 endif()
 ```
 
@@ -207,7 +216,8 @@ endif()
 # 为target1链接库
 target_link_libraries(target1 PUBLIC ${EXTRA_LIBS})
 
-# 构建生成target1需要的目录文件
+# 指定目标target1包含的头文件路径
+# PUBLIC表示当前目标target1可以使用这些头文件 如果外部目标依赖target1，也可以使用这些头文件
 target_include_directories(target1 PUBLIC
                           "${PROJECT_BINARY_DIR}"
                           ${EXTRA_INCLUDES}
@@ -239,20 +249,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(USE_MYMATH "Use tutorial provided math implementation" ON)
 
 if(USE_MYMATH)
-  # 添加子文件夹./library
-  add_subdirectory(library)
+  # 添加子文件夹libs/mathFunctions
+  add_subdirectory(libs/mathFunctions)
   # 把库MathFunctions添加入EXTRA_LIBS列表中去
   list(APPEND EXTRA_LIBS MathFunctions)
-  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/library")
+  # 添加库MathFunctions的头文件到变量EXTRA_INCLUDES
+  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/libs/mathFunctions")
 endif()
 
-message("${EXTRA_LIBS}")
 # 添加提供查找头文件的目录
 # 当前CMakeList.txt中的所有目标以及所有在其调用点之后添加的子目录中的所有目标将具有此头文件搜索路径
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-# 搜索项目目录/source下的所有的源文件并赋值给变量sources
-aux_source_directory(${PROJECT_SOURCE_DIR}/source sources)
+# 搜索项目目录src下的所有的源文件并赋值给变量sources
+aux_source_directory(${PROJECT_SOURCE_DIR}/src sources)
 
 # 为MyProject添加一个可执行目标target1
 add_executable(target1)
@@ -260,7 +270,8 @@ add_executable(target1)
 # 为target1链接库
 target_link_libraries(target1 PUBLIC ${EXTRA_LIBS})
 
-# 构建生成target1需要的目录文件
+# 指定目标target1包含的头文件路径
+# PUBLIC表示当前目标target1可以使用这些头文件 如果外部目标依赖target1，也可以使用这些头文件
 target_include_directories(target1 PUBLIC
                           "${PROJECT_BINARY_DIR}"
                           ${EXTRA_INCLUDES}
@@ -280,14 +291,14 @@ target_sources(target1 PUBLIC ${sources})
 #cmakedefine USE_MYMATH
 ```
 
-在项目中使用`USE_MYMATH`控制，修改`source/main.cpp`
+在项目中使用`USE_MYMATH`控制，修改`src/main.cpp`
 
 ```cpp
 #include "MyProject.h"
 #include "hello.h"
 
 #ifdef USE_MYMATH
-#include "mathfunctions.h"
+#include <mathfunctions.h>
 #endif
 
 #include <cmath>
