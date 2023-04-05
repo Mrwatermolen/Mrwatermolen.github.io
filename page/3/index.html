@@ -121,12 +121,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">50</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">51</span></a>
 
   </li>
   </ul>
@@ -152,6 +152,114 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/16/FDTD%E5%9F%BA%E6%9C%AC%E5%85%AC%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/16/FDTD%E5%9F%BA%E6%9C%AC%E5%85%AC%E5%BC%8F/" class="post-title-link" itemprop="url">FDTD基本公式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-16 21:01:32" itemprop="dateCreated datePublished" datetime="2021-12-16T21:01:32+08:00">2021-12-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%B5%E7%A3%81%E5%9C%BA/" itemprop="url" rel="index"><span itemprop="name">电磁场</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Maxwell方程和Yee元胞"><a href="#Maxwell方程和Yee元胞" class="headerlink" title="Maxwell方程和Yee元胞"></a>Maxwell方程和Yee元胞</h2><p>选择Maxwell的旋度方程：</p>
+<script type="math/tex; mode=display">
+\left\{ 
+    \begin{array}{a}
+        \nabla \times \vec{E} + \frac{\partial \vec{B}}{\partial t} = -\vec{J_m} \\ 
+        \nabla \times \vec{H} - \frac{\partial \vec{D}}{\partial t} = \vec{J} \\
+    \end{array}
+\right.
+\tag {1-1}</script><p>注意到这里带上了$\vec{J_m}$，这是考虑到在磁介质中，有磁电流的存在。</p>
+<p>线性各项同性介质中，本构关系为：</p>
+<script type="math/tex; mode=display">
+\left\{ 
+    \begin{array}{}
+        \vec{D} = \epsilon \vec{E} \\ 
+        \vec{H} = \mu \vec{B} \\ 
+        \vec{J} = \sigma \vec{E} \\
+        \vec{J_m} = \sigma_m \vec{H}
+    \end{array}
+\right.
+\tag {1-2}</script><p>选取直角坐标系：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+    \frac{\partial E_z}{\partial y} - \frac{\partial E_y}{\partial z} & = -\mu \frac{\partial H_x}{\partial t} - \sigma_m H_x \\
+    & \vdots \\
+    \frac{\partial H_z}{\partial y} - \frac{\partial H_y}{\partial z} & = \epsilon \frac{\partial E_x}{\partial t} + \sigma E_x \\
+    & \vdots \\
+\end{cases}
+\tag {1-3}</script><p>有微分形式了就可以试试有限差分了。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/12/16/FDTD%E5%9F%BA%E6%9C%AC%E5%85%AC%E5%BC%8F/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -960,95 +1068,10 @@ a^{(L)}_i:\text{第i个输入数据的输出},y_k:\text{第k个数据的实际�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
-      <meta itemprop="name" content="MH">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MH's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/06/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80/" class="post-title-link" itemprop="url">机器学习笔记一</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-17 09:06:17" itemprop="dateCreated datePublished" datetime="2021-06-17T09:06:17+08:00">2021-06-17</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MachineLearning/" itemprop="url" rel="index"><span itemprop="name">MachineLearning</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>写在前边，大纲基于吴恩达机器学习系列课程，以机器学习西瓜书作为补充。<br>大部分靠随堂记的笔记写成，所以可能概念上很不清楚<br>MH 2021.06.12</p>
-</blockquote>
-<h2 id="什么是机器学习"><a href="#什么是机器学习" class="headerlink" title="什么是机器学习"></a>什么是机器学习</h2><p>NULL</p>
-<h2 id="线性模型"><a href="#线性模型" class="headerlink" title="线性模型"></a>线性模型</h2><h3 id="LinearRegression线性回归"><a href="#LinearRegression线性回归" class="headerlink" title="LinearRegression线性回归"></a>LinearRegression线性回归</h3><p>基于输入数据，由假设函数去预测值。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/06/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1116,14 +1139,14 @@ a^{(L)}_i:\text{第i个输入数据的输出},y_k:\text{第k个数据的实际�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-count">51</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

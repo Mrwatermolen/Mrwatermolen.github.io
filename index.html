@@ -121,12 +121,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">50</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">51</span></a>
 
   </li>
   </ul>
@@ -156,6 +156,132 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/05/MyTourofCPP01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/05/MyTourofCPP01/" class="post-title-link" itemprop="url">MyTourofCPP01</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-04-05 23:23:43" itemprop="dateCreated datePublished" datetime="2023-04-05T23:23:43+08:00">2023-04-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/My-Tour-of-CPP/" itemprop="url" rel="index"><span itemprop="name">My Tour of CPP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>Focus on programming techniques, not on language features.</p>
+</blockquote>
+<p>基于c++17标准<br>快速入门<a target="_blank" rel="noopener" href="http://web.stanford.edu/class/cs106l/">CS106L</a><br>阅读书籍笔记《A tour of C++》，《Beginning C++17》</p>
+<h2 id="Introduce"><a href="#Introduce" class="headerlink" title="Introduce"></a>Introduce</h2><p>C++是编译型语言，是静态类型语言。</p>
+<p>Hello World，Type，Variables，Arithmetic略过</p>
+<h3 id="Initialization"><a href="#Initialization" class="headerlink" title="Initialization"></a>Initialization</h3><p>Before an object can be used, it must be given a value. C++ offers a variety of notations for expressing initialization.</p>
+<p>a universal form based on curly-brace-delimited initializer lists<br>也称作统一初始化（Uniform Initialization），一些例子</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line"><span class="built_in">complex</span>&lt;<span class="keyword">double</span>&gt; z2 &#123;d1,d2&#125;;</span><br></pre></td></tr></table></figure>
+<p>使用统一初始化的好处之一是在有缩窄转换时编译器会提醒报错</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i&#123;<span class="number">7.0</span>&#125;;</span><br></pre></td></tr></table></figure>
+<p>在使用<code>auto</code>关键字，倾向于使用<code>=</code>进行初始化，因为使用<code>&#123;&#125;</code>可能会导致一些类型转换，当然如果为了统一，也是可以使用<code>&#123;&#125;</code>的。</p>
+<p>We use <code>auto</code> where we don’t have a specific reason to mention the type explicitly. ‘‘Specific reasons’’ include:</p>
+<ul>
+<li>The definition is in a large scope where we want to make the type clearly visible to readers of our code.</li>
+<li>We want to be explicit about a variable’s range or precision (e.g., double rather than float).</li>
+</ul>
+<h2 id="Scope-and-Lifetime"><a href="#Scope-and-Lifetime" class="headerlink" title="Scope and Lifetime"></a>Scope and Lifetime</h2><p>Scoped: Local, Class, namespace</p>
+<h2 id="Constants"><a href="#Constants" class="headerlink" title="Constants"></a>Constants</h2><p>对于不变的概念在c++中有两种定义：<code>const</code>和<code>constexpr</code><br><code>const</code>：This is used primarily to<br>specify interfaces so that data can be passed to functions using pointers and references with- out fear of it being modified. 运行期时确定。</p>
+<p><code>constexpr</code>:：编译时确定<br>更多关于<code>constexpr</code><a target="_blank" rel="noopener" href="https://changkun.de/modern-cpp/zh-cn/02-usability/#constexpr">可以参见</a></p>
+<p>指针，引用，赋值略过</p>
+<h2 id="User-Defined-Type"><a href="#User-Defined-Type" class="headerlink" title="User-Defined Type"></a>User-Defined Type</h2><p>Struct,Class,Uion略</p>
+<h3 id="Enumerations"><a href="#Enumerations" class="headerlink" title="Enumerations"></a>Enumerations</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="keyword">class</span> <span class="title">Color</span> &#123;</span>Red, Green&#125;;</span><br></pre></td></tr></table></figure>
+<p>以前的用法<br>Enumerations are used to represent small sets of integer values.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Color</span> &#123;</span>Red, Green&#125;;</span><br></pre></td></tr></table></figure>
+<p>以前枚举类被当作整数，会在意想不到的地方出问题。</p>
+<h2 id="Modularity"><a href="#Modularity" class="headerlink" title="Modularity"></a>Modularity</h2><p>c++中，我们一般在头文件中进行声明<strong>declaration</strong>，而在源文件中进行定义<strong>defination</strong>。当然这不是绝对的。</p>
+<h3 id="Separate-Compilation"><a href="#Separate-Compilation" class="headerlink" title="Separate Compilation"></a>Separate Compilation</h3><p>分离编译的概念，声明和定义是可以分开的，而且使用者可以仅仅使用声明即可。</p>
+<p>所以我们将接口声明在一个文件中以供他人使用，而在其他文件中实现这些声明。</p>
+<p><strong>translation unit</strong>: A .cpp file that is compiled by itself (including the h files it #includes)</p>
+<p>The compiler processes each translation unit in a program independently to generate an object file.</p>
+<p>如果编译单元能够正确生成目标文件，随后会交给链接器去处理，链接目标文件中的使用的外部定义，链接器会把其他目标文件链接起来。</p>
+<p>声明可以存在多个，而定义只能存在一个。</p>
+<p>In a given translation unit, no variable, function, class type, enumeration type, or template must ever be defined more than once. You can have more than one declaration for a variable or function, for example, but there must never be more than one definition that determines what it is and causes it to be created. If there’s more than one definition within the same translation unit, the code will not compile.</p>
+<p>Note: a declaration introduces a name into a scope. a definition not only introduces the name but also defines what it is. in other words, all definitions are declarations, but not all declarations are definitions.</p>
+<p>Modules以及Namespace和</p>
+<h3 id="Error-Handling"><a href="#Error-Handling" class="headerlink" title="Error Handling"></a>Error Handling</h3><p>关注运行期错误处理。</p>
+<p>Use of the exception-handling mechanisms can make error handling simpler, more systematic, and more readable. To achieve that, don’t overuse try-statements. The main technique for making error handling simple and systematic. RAII</p>
+<p>如果一个函数被声明为<code>noexcept</code>说明这个函数是不会抛出任何的异常的<br>If all good intent and planning fails, so that user() still throws, std::terminate() is called to immedi-<br>ately terminate the program.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">()</span> <span class="keyword">noexcept</span></span>;</span><br></pre></td></tr></table></figure>
+<p>In well-designed code try-blocks are rare. Avoid overuse by systematically using the RAII technique</p>
+<p>这个<strong>Invariant</strong>我不太理解</p>
+<p>c++提供一些宏帮助debug。<code>assert()</code>假定一个条件，在运行期总是满足</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">int</span> i;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  assert(i == <span class="number">1</span>); <span class="comment">// 我们断定此时i一定为1</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>If the condition of an assert() fails in ‘‘debug mode,’’ the program terminates. If we are not in debug mode, the assert() is not checked.</p>
+<p>Static Assertions语法</p>
+<blockquote>
+<p>static_assert ( bool_constexpr , string )</p>
+</blockquote>
+<p>在编译时期的断言</p>
+<p>Function Arguments and Return Values略过</p>
+<h2 id="Classes"><a href="#Classes" class="headerlink" title="Classes"></a>Classes</h2><p>Concrete classes，Abstract classes，Classes in class hierarchies</p>
+<p>类这块我感觉看设计模式更好一些</p>
+<p><code>dynamic_cast</code></p>
+<p>If at run time the object pointed to by the argument of <code>dynamic_cast</code> is not of the expected type (here, Smiley) or a class derived from the expected type, dynamic_cast returns nullptr.<br>We use <code>dynamic_cast</code> to a pointer type when a pointer to an object of a different derived class is a valid argument.</p>
+<p>When a different type is unacceptable, we can simply <code>dynamic_cast</code> to a reference type. If the object is not of the expected type, <code>dynamic_cast</code> throws a bad_cast exception:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A* a&#123;&#125;;</span><br><span class="line">B&amp; b&#123;<span class="keyword">dynamic_cast</span>&lt;A&amp;&gt;(*a)&#125;;</span><br></pre></td></tr></table></figure>
+<p>Code is cleaner when dynamic_cast is used with restraint.</p>
+<p>If we can avoid using type information, we can write simpler and more efficient code, but occasionally type information is lost and must be recovered.</p>
+<h2 id="Essential-Operations"><a href="#Essential-Operations" class="headerlink" title="Essential Operations"></a>Essential Operations</h2><h2 id="Template"><a href="#Template" class="headerlink" title="Template"></a>Template</h2><p>泛型编程我直接过</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/15/Github-SSH-kex-exchange-identification-Connection-closed-by-remote-host/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -179,10 +305,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2023-02-15 23:29:58 / 修改时间：23:34:40" itemprop="dateCreated datePublished" datetime="2023-02-15T23:29:58+08:00">2023-02-15</time>
+              <time title="创建时间：2023-02-15 23:29:58" itemprop="dateCreated datePublished" datetime="2023-02-15T23:29:58+08:00">2023-02-15</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-02-22 17:31:21" itemprop="dateModified" datetime="2023-02-22T17:31:21+08:00">2023-02-22</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -751,7 +883,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-14 17:04:22" itemprop="dateModified" datetime="2023-02-14T17:04:22+08:00">2023-02-14</time>
+                <time title="修改时间：2023-02-28 15:18:35" itemprop="dateModified" datetime="2023-02-28T15:18:35+08:00">2023-02-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -775,7 +907,7 @@
 
       
           <blockquote>
-<p><a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/">CMake Help</a><br>系列基于<a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/guide/tutorial/index.html">CMake Tutorial</a><br>本文基于<a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/guide/tutorial/A%20Basic%20Starting%20Point.html">Step 1: A Basic Starting Point</a><br>环境Apple clang version 14.0.0 (clang-1400.0.29.202)以及cmake version 3.25.0<br>一些可以参考的资料<a target="_blank" rel="noopener" href="https://github.com/Akagi201/learning-cmake">learnCmake</a></p>
+<p><a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/">CMake Help</a><br>系列基于<a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/guide/tutorial/index.html">CMake Tutorial</a><br>本文基于<a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/guide/tutorial/A%20Basic%20Starting%20Point.html">Step 1: A Basic Starting Point</a><br>环境Apple clang version 14.0.0 (clang-1400.0.29.202)以及cmake version 3.25.0<br>一些可以参考的资料<a target="_blank" rel="noopener" href="https://github.com/Akagi201/learning-cmake">learnCmake</a>，<a target="_blank" rel="noopener" href="https://cliutils.gitlab.io/modern-cmake/">An Introduction to Modern CMake</a></p>
 </blockquote>
 <p>利用CMake构建一个简单的可执行文件。</p>
           <!--noindex-->
@@ -869,93 +1001,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/16/%E5%B9%B3%E9%9D%A2%E6%B3%A2%E5%85%A5%E5%B0%84%E5%88%B0%E5%88%86%E5%B1%82%E4%BB%8B%E8%B4%A8%E4%B8%AD/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
-      <meta itemprop="name" content="MH">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MH's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/16/%E5%B9%B3%E9%9D%A2%E6%B3%A2%E5%85%A5%E5%B0%84%E5%88%B0%E5%88%86%E5%B1%82%E4%BB%8B%E8%B4%A8%E4%B8%AD/" class="post-title-link" itemprop="url">平面波入射到分层介质中</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-10-16 15:17:37" itemprop="dateCreated datePublished" datetime="2022-10-16T15:17:37+08:00">2022-10-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%94%B5%E7%A3%81%E5%9C%BA/" itemprop="url" rel="index"><span itemprop="name">电磁场</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>考虑平面波斜入射到一分层介质中，一共有$n+1$层分界面，从$0$开始计数，$0$代表入射开始的那一层和$n+1$是只有透射波。记第$l$个介质的介质参数为$\varepsilon_l,\mu_l$。</p>
-<p>本文全为时谐场复数形式的平面波，时谐因子为$\exp-\mathrm{i}\omega t$，介质为线性均匀各向同性。</p>
-<p>对平面波可将其分解为平面波TE极化和平面波TM极化的合成</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/10/16/%E5%B9%B3%E9%9D%A2%E6%B3%A2%E5%85%A5%E5%B0%84%E5%88%B0%E5%88%86%E5%B1%82%E4%BB%8B%E8%B4%A8%E4%B8%AD/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1023,14 +1072,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-count">51</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -1142,59 +1191,6 @@ if (document.querySelectorAll('pre.mermaid').length) {
   
 
   
-      
-
-<script>
-  if (typeof MathJax === 'undefined') {
-    window.MathJax = {
-      loader: {
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
-      }
-    };
-    (function () {
-      var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    })();
-  } else {
-    MathJax.startup.document.state(0);
-    MathJax.texReset();
-    MathJax.typeset();
-  }
-</script>
-
-    
 
   
 
