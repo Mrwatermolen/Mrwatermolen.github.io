@@ -21,23 +21,19 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="挖个坑由于实验数据绘图的需要，本来在树莓派上装了octave好像是缺了什么依赖跑不起来，最后换了gnuplot">
+  <meta name="description" content="Standary Library Overivew略过">
 <meta property="og:type" content="article">
-<meta property="og:title" content="绘图软件gnuplot的简单使用">
-<meta property="og:url" content="http://example.com/2020/11/18/%E7%BB%98%E5%9B%BE%E8%BD%AF%E4%BB%B6gnuplot%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:title" content="MyTourofCPP02">
+<meta property="og:url" content="http://example.com/2023/04/20/MyTourofCPP02/index.html">
 <meta property="og:site_name" content="MH&#39;s Blog">
-<meta property="og:description" content="挖个坑由于实验数据绘图的需要，本来在树莓派上装了octave好像是缺了什么依赖跑不起来，最后换了gnuplot">
+<meta property="og:description" content="Standary Library Overivew略过">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://mh.hicaiji.com/upload/2020/11/%E6%88%AA%E5%9B%BE_2020-11-19_08-36-04-6a951fbf21b040aa9aad73ae3acaded4-thumbnail.png">
-<meta property="article:published_time" content="2020-11-17T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-01-23T15:55:27.027Z">
+<meta property="article:published_time" content="2023-04-19T19:32:03.000Z">
+<meta property="article:modified_time" content="2023-04-19T19:32:03.479Z">
 <meta property="article:author" content="MH">
-<meta property="article:tag" content="gnuplot">
-<meta property="article:tag" content="math">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://mh.hicaiji.com/upload/2020/11/%E6%88%AA%E5%9B%BE_2020-11-19_08-36-04-6a951fbf21b040aa9aad73ae3acaded4-thumbnail.png">
 
-<link rel="canonical" href="http://example.com/2020/11/18/%E7%BB%98%E5%9B%BE%E8%BD%AF%E4%BB%B6gnuplot%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/">
+<link rel="canonical" href="http://example.com/2023/04/20/MyTourofCPP02/">
 
 
 <script id="page-configurations">
@@ -50,7 +46,7 @@
   };
 </script>
 
-  <title>绘图软件gnuplot的简单使用 | MH's Blog</title>
+  <title>MyTourofCPP02 | MH's Blog</title>
   
 
 
@@ -165,7 +161,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/18/%E7%BB%98%E5%9B%BE%E8%BD%AF%E4%BB%B6gnuplot%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/20/MyTourofCPP02/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
@@ -178,7 +174,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          绘图软件gnuplot的简单使用
+          MyTourofCPP02
         </h1>
 
         <div class="post-meta">
@@ -188,23 +184,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-11-18 00:00:00" itemprop="dateCreated datePublished" datetime="2020-11-18T00:00:00+08:00">2020-11-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-01-23 23:55:27" itemprop="dateModified" datetime="2023-01-23T23:55:27+08:00">2023-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
-                </span>
+              <time title="创建时间：2023-04-20 03:32:03" itemprop="dateCreated datePublished" datetime="2023-04-20T03:32:03+08:00">2023-04-20</time>
             </span>
 
           
@@ -218,17 +198,31 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="挖个坑"><a href="#挖个坑" class="headerlink" title="挖个坑"></a>挖个坑</h2><p>由于实验数据绘图的需要，本来在树莓派上装了octave好像是缺了什么依赖跑不起来，最后换了gnuplot</p>
+        <h2 id="Standary-Library-Overivew"><a href="#Standary-Library-Overivew" class="headerlink" title="Standary Library Overivew"></a>Standary Library Overivew</h2><p>略过</p>
 <span id="more"></span>
-<h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p> <code>sudo apt install gnuplot</code></p>
-<h2 id="2-简单使用"><a href="#2-简单使用" class="headerlink" title="2. 简单使用"></a>2. 简单使用</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">gnuplot #进人gnuplot命令环境</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">plot ［-pi:pi］ sin(x) <span class="comment">#绘制二维图</span></span></span><br><span class="line">＞splot [-1:1] [-1:1] x**2+y**2 #绘制三维图</span><br><span class="line"><span class="meta">#</span><span class="bash">　设置范围</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"><span class="built_in">set</span> xrange[2:4]</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 命名</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"><span class="built_in">set</span> title <span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"><span class="built_in">set</span> xlabel <span class="string">&quot;xname&quot;</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"><span class="built_in">set</span> ylable <span class="string">&quot;yname&quot;</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">replot　<span class="comment">#重绘</span></span></span><br></pre></td></tr></table></figure>
-<p>在gnuplot命令环境下也能够运行终端命令不过要在前面加！<br> <code>&gt;!ls</code></p>
-<h2 id="3-绘制数据图"><a href="#3-绘制数据图" class="headerlink" title="3. 绘制数据图"></a>3. 绘制数据图</h2><p> <code>plot &#39;&lt;file_name&gt;&#39; &#123;&#125;</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;plot &quot;Documents&#x2F;1.dat&quot;</span><br><span class="line">&gt;plot &quot;Documents&#x2F;1.dat&quot; using 2:1 #使用第二列作x　第一列作y</span><br><span class="line">&gt;plot &quot;Documents&#x2F;1.dat&quot; with line #将点连线</span><br></pre></td></tr></table></figure>
-<h2 id="4-数据拟合"><a href="#4-数据拟合" class="headerlink" title="4. 数据拟合"></a>4. 数据拟合</h2><p>以线性回归为列</p>
-<p> <code>&gt;fit a*x+b &quot;data.dat&quot; via a,b</code></p>
-<p><img src="http://mh.hicaiji.com/upload/2020/11/%E6%88%AA%E5%9B%BE_2020-11-19_08-36-04-6a951fbf21b040aa9aad73ae3acaded4-thumbnail.png" alt="获得ａ，ｂ参数"></p>
-<p> <code>&gt;plot 2606.23*x-7.1706, &quot;data.dat&quot;</code></p>
+<h2 id="Strings"><a href="#Strings" class="headerlink" title="Strings"></a>Strings</h2><p>If you need a C-style string (a zero-terminated array of char), string offers read-only access to its contained characters.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp; s)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;For people who like printf: %s\n&quot;</span>,s.c_str());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>A string literal is by definition a <code>const char*</code>. To get a literal of type <code>std::string</code> use a <code>s</code> suffix.</p>
+<h3 id="String-Implementation"><a href="#String-Implementation" class="headerlink" title="String Implementation"></a>String Implementation</h3><p>现在的字符串的实现使用了<code>short string optimitized</code>，对短的字符串，把字符串存储在对象本身中，如果是长的字符串则用把字符串存在<code>free store</code>，然后指向它。长短的定义有实现决定。</p>
+<p>In particular, in multi-threaded implementations, memory allocation can be relatively costly. Also, when lots of strings of differing lengths are used, memory fragmentation can result. These are the main reasons that the short-string optimization has become ubiquitous.</p>
+<p>To handle multiple character sets，<code>string</code>其实是<code>basic_string&lt;char&gt;</code>的别名</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Char&gt; <span class="class"><span class="keyword">class</span> <span class="title">basic_string</span> &#123;</span></span><br><span class="line"><span class="comment">// ... string of Char ... </span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">string</span> = basic_string&lt;<span class="keyword">char</span>&gt;;</span><br></pre></td></tr></table></figure>
+<h3 id="String-View"><a href="#String-View" class="headerlink" title="String View"></a>String View</h3><p>对于传递字符串而言，由于字符串的类型多样比如<code>std::string</code>，C风格的字符串等，而这可能使得情况变得复杂（？）为解决可以使用<code>std::string_view</code>。注意能使用<code>std::string_view</code>的场景必须是只读的。<code>std::string_view</code>的实现类似于一个指针指向头，然后内部记录一个长度。</p>
+<h2 id="Regular-Expressions"><a href="#Regular-Expressions" class="headerlink" title="Regular Expressions"></a>Regular Expressions</h2><p>标准库提供了正则表达式的支持<br>To learn</p>
+<h2 id="Input-and-Output"><a href="#Input-and-Output" class="headerlink" title="Input and Output"></a>Input and Output</h2><p>标准库没有网络流的IO。</p>
+<p>IO流。Output流提供操作符<code>&lt;&lt;</code>把目标加入到流中。<code>&lt;ostream&gt;</code>头文件中全局变量<code>std::cout</code>是标准输出流，<code>std::cerr</code>是标准错误输出流。对于<code>char</code>类型（或是八位的整型）<code>std::cout</code>会将它们转换为ASCII码对应的字符。<br>Input流提供<code>&gt;&gt;</code>从流中读取数据。<code>&lt;istream&gt;</code>头文件中的全局变量<code>std::cin</code>是标准输入流。</p>
+<h3 id="File-System"><a href="#File-System" class="headerlink" title="File System"></a>File System</h3><p>标准库提供文件系统库，在头文件<code>&lt;filesystem&gt;</code>中。<br>Using<code>&lt;filesystem&gt;</code>, we can portably</p>
+<ul>
+<li>浏览文件系统以及传递文件系统路径</li>
+<li>知晓文件类型已经权限</li>
+</ul>
+<h2 id="Containers"><a href="#Containers" class="headerlink" title="Containers"></a>Containers</h2><h3 id="Algorithms"><a href="#Algorithms" class="headerlink" title="Algorithms"></a>Algorithms</h3><h2 id="Utilties"><a href="#Utilties" class="headerlink" title="Utilties"></a>Utilties</h2><h3 id="Resource-Management"><a href="#Resource-Management" class="headerlink" title="Resource Management"></a>Resource Management</h3><p>管理资源是个大问题。一些资源必须要请求，之后又要必须释放，否则系统就会认为这个资源并未闲置，正在被人占有。对于一个长期运行的程序来说，无法正确及时地释放资源被称作泄漏，会有大问题。即使是一些short program，也是有大问题的。</p>
+<p>RAII思想。Resource acquistion is initialization。<br>智能指针<code>unique_ptr</code>以及<code>shared_ptr</code></p>
+<p>Where do we use ‘‘smart pointers’’ (such as unique_ptr) rather than resource handles with oper- ations designed specifically for the resource (such as vector or thread)? Unsurprisingly, the answer is ‘‘when we need pointer semantics.’’<br>比如分享目标需要传递指针时，或使用类的多态时。</p>
+<p>锁的管理<code>scoped_lock</code>和<code>unique_lock</code>等</p>
+<h3 id="移动语义"><a href="#移动语义" class="headerlink" title="移动语义"></a>移动语义</h3><p>本章略过</p>
+<h2 id="Numerics"><a href="#Numerics" class="headerlink" title="Numerics"></a>Numerics</h2><p>略过</p>
+<h2 id="Concurrency"><a href="#Concurrency" class="headerlink" title="Concurrency"></a>Concurrency</h2><p>参考《C++ Concurrency in Action》</p>
 
     </div>
 
@@ -237,10 +231,6 @@
     
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/gnuplot/" rel="tag"># gnuplot</a>
-              <a href="/tags/math/" rel="tag"># math</a>
-          </div>
 
         
 
@@ -248,13 +238,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/11/17/vim%E7%9A%84%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/" rel="prev" title="vim的安装配置">
-      <i class="fa fa-chevron-left"></i> vim的安装配置
+    <a href="/2023/04/07/CPP%E7%9A%84std-call-once%E4%B8%8E%E6%A8%A1%E7%89%88%E7%BC%96%E7%A8%8B%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E5%9D%91/" rel="prev" title="CPP的std::call_once与模版编程的一个小坑">
+      <i class="fa fa-chevron-left"></i> CPP的std::call_once与模版编程的一个小坑
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/11/19/%E4%BD%BF%E7%94%A8pandoc%E5%B0%86markdown%E8%BD%AC%E4%B8%BApdf%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/" rel="next" title="使用pandoc将markdown转为pdf遇到的问题">
-      使用pandoc将markdown转为pdf遇到的问题 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -313,7 +300,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%96%E4%B8%AA%E5%9D%91"><span class="nav-text">挖个坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85"><span class="nav-text">1. 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-text">2. 简单使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%BB%98%E5%88%B6%E6%95%B0%E6%8D%AE%E5%9B%BE"><span class="nav-text">3. 绘制数据图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%95%B0%E6%8D%AE%E6%8B%9F%E5%90%88"><span class="nav-text">4. 数据拟合</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Standary-Library-Overivew"><span class="nav-text">Standary Library Overivew</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Strings"><span class="nav-text">Strings</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#String-Implementation"><span class="nav-text">String Implementation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String-View"><span class="nav-text">String View</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Regular-Expressions"><span class="nav-text">Regular Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Input-and-Output"><span class="nav-text">Input and Output</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#File-System"><span class="nav-text">File System</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Containers"><span class="nav-text">Containers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Algorithms"><span class="nav-text">Algorithms</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Utilties"><span class="nav-text">Utilties</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Resource-Management"><span class="nav-text">Resource Management</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89"><span class="nav-text">移动语义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Numerics"><span class="nav-text">Numerics</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Concurrency"><span class="nav-text">Concurrency</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
