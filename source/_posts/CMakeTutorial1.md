@@ -12,7 +12,7 @@ tags:
 系列基于[CMake Tutorial](https://cmake.org/cmake/help/latest/guide/tutorial/index.html)
 本文基于[Step 1: A Basic Starting Point](https://cmake.org/cmake/help/latest/guide/tutorial/A%20Basic%20Starting%20Point.html)
 环境Apple clang version 14.0.0 (clang-1400.0.29.202)以及cmake version 3.25.0
-一些可以参考的资料[learnCmake](https://github.com/Akagi201/learning-cmake)
+一些可以参考的资料[learnCmake](https://github.com/Akagi201/learning-cmake)，[An Introduction to Modern CMake](https://cliutils.gitlab.io/modern-cmake/)
 
 利用CMake构建一个简单的可执行文件。
 
