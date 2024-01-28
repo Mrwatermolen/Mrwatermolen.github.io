@@ -8,12 +8,6 @@ date: 2023-11-12 16:42:10
 mathjax: true
 ---
 
-
-$$
-\begin{equation}
-\end{equation}
-$$
-
 ## 基本原理
 
 两条基本假设：
@@ -311,10 +305,10 @@ $$
 \begin{equation}
 A =
 \begin{bmatrix}
-\gamma & 0 & 0 &  -\mathrm{i}\beta\gamma \\
+\gamma & 0 & 0 &  \mathrm{i}\beta\gamma \\
 0 & 1 & 0 & 0 \\
 0 & 0 & 1 & 0 \\
-\mathrm{i}\beta\gamma & 0 & 0 & \gamma \\
+-\mathrm{i}\beta\gamma & 0 & 0 & \gamma \\
 \end{bmatrix}
 \end{equation}
 $$
@@ -380,3 +374,8 @@ $$
 U_{\mu} = \gamma (u_1, u_2, u_3, ic)^T
 \end{equation}
 $$
+
+## TODO
+
+1. 固有时的概念
+2. <https://en.wikipedia.org/wiki/Lorentz_transformation#Proper_transformations>
