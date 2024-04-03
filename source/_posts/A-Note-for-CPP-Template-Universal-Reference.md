@@ -63,7 +63,11 @@ auto y = myFunc(0.1);
 }
 ```
 
-注意完美转发`std::forward<double>(x)`，这里将左值`x`转换为了右值（引用？）***The parameter cast to the specified type.***。TODO:啥意思呀，完美
+注意完美转发`std::forward<double>(x)`，其实就相当于
+
+```cpp
+double foo(double x) {return x;}
+```
 
 ## Reason
 
