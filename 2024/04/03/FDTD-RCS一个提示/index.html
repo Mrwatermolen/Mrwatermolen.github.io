@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="记录一下FDTD仿真遇到的一个问题。碎碎念  考虑如下一个球体散射的例子  球体半径为0.1。入射场是沿着z轴传播的平面波，极化方向为x，波形为高斯波形。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FDTD计算RCS的一个问题">
+<meta property="og:url" content="http://example.com/2024/04/03/FDTD-RCS%E4%B8%80%E4%B8%AA%E6%8F%90%E7%A4%BA/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="记录一下FDTD仿真遇到的一个问题。碎碎念  考虑如下一个球体散射的例子  球体半径为0.1。入射场是沿着z轴传播的平面波，极化方向为x，波形为高斯波形。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/04/02/aMP2m8dYLi9vEWy.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/b8IZEOMxit4LTBA.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/MQYt2CODErwseRj.gif">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/idKskVxPXD8ywFY.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/RXayvQtju2BhnrD.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/sjmy9auDIpFGVfx.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/k51BKj679enhOlM.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/tziYHypE6d42MsX.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/JnB2csrPp5N7RVf.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/GaY2FUs57HSC3Ne.png">
+<meta property="article:published_time" content="2024-04-03T02:39:47.000Z">
+<meta property="article:modified_time" content="2024-04-03T02:39:47.867Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="FDTD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2024/04/02/aMP2m8dYLi9vEWy.png">
+
+<link rel="canonical" href="http://example.com/2024/04/03/FDTD-RCS%E4%B8%80%E4%B8%AA%E6%8F%90%E7%A4%BA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>FDTD计算RCS的一个问题 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">54</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">58</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/04/03/FDTD-RCS%E4%B8%80%E4%B8%AA%E6%8F%90%E7%A4%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          FDTD计算RCS的一个问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-04-03 10:39:47" itemprop="dateCreated datePublished" datetime="2024-04-03T10:39:47+08:00">2024-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%B5%E7%A3%81%E5%9C%BA/" itemprop="url" rel="index"><span itemprop="name">电磁场</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>记录一下FDTD仿真遇到的一个问题。碎碎念</p>
+</blockquote>
+<p>考虑如下一个球体散射的例子</p>
+<p><img src="https://s2.loli.net/2024/04/02/aMP2m8dYLi9vEWy.png" alt="球体散射" width="50%"></p>
+<p>球体半径为0.1。入射场是沿着z轴传播的平面波，极化方向为x，波形为高斯波形。<br><span id="more"></span></p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>一开始是做完了，但是精度惨不忍睹，尤其是后向散射这一块。针对双站的RCS。取网格尺寸为0.75cm。</p>
+<p><img src="https://s2.loli.net/2024/04/03/b8IZEOMxit4LTBA.png" alt="Figure_1.png"></p>
+<p>C++的数据是我做的，后向散射那和Mie理论的误差太大了。</p>
+<h2 id="寻找问题来源"><a href="#寻找问题来源" class="headerlink" title="寻找问题来源"></a>寻找问题来源</h2><h3 id="TFSF泄漏"><a href="#TFSF泄漏" class="headerlink" title="TFSF泄漏"></a>TFSF泄漏</h3><p>先说结论：没有泄漏</p>
+<p>最开始我认为是TFSF产生了泄漏。虽然TFSF场我在2维时已经验证过没有泄漏，但3维的情况并未验证。<br>画了一下仿真时的XZ平面的切面图，肉眼没有发现泄漏。（XY、YZ平面都画了，这里就只放一个就好了）</p>
+<p><img src="https://s2.loli.net/2024/04/03/MQYt2CODErwseRj.gif" alt="ex_xz.gif"></p>
+<p>然后和纯散射场的结果进行了对比，在距离CPML边界3个网格的地方取一点（其实也就是NF2FF的惠更斯面）观察散射场。</p>
+<p><img src="https://s2.loli.net/2024/04/03/idKskVxPXD8ywFY.png" alt="scatter_ex_time.png"></p>
+<p>橙色是TFSF的散射场，绿色是纯散射场。可以看出两者只有时延。做了一下FFT，验证了两个波的一致性。</p>
+<p><img src="https://s2.loli.net/2024/04/03/RXayvQtju2BhnrD.png" alt="scatter_ex_freq.png"></p>
+<h3 id="NF2FF"><a href="#NF2FF" class="headerlink" title="NF2FF"></a>NF2FF</h3><p>先说结论：没有问题</p>
+<p>会不会是近远场变换出了问题呢。把六个惠更斯面都拆分了，一个个分析。直接上有问题比较大的那几个</p>
+<p>法向量是XN的平面的结果，先放势函数。</p>
+<p><img src="https://s2.loli.net/2024/04/03/sjmy9auDIpFGVfx.png" alt="a_theta.png"></p>
+<p><img src="https://s2.loli.net/2024/04/03/k51BKj679enhOlM.png" alt="f_phi.png"></p>
+<p>实部虚部和相位这些不用看，因为我的场和Matlab计算产生的场有一个时延，所以肯定是不一样的，看模值即可，基本是吻合的。然后计算一下E面的RCS。</p>
+<p><img src="https://s2.loli.net/2024/04/03/tziYHypE6d42MsX.png" alt="rcs_db.png"></p>
+<p>在后向散射这块，RCS出现了2个dB的误差！试着把dB去掉。</p>
+<p><img src="https://s2.loli.net/2024/04/03/JnB2csrPp5N7RVf.png" alt="rcs.png"></p>
+<p>也许是因为数值太小了，0.0001的波动都会使得结果有较大浮动。（我真的以为这个就是结论了）</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><h3 id="时间步问题"><a href="#时间步问题" class="headerlink" title="时间步问题"></a>时间步问题</h3><p>FDTD的更新框架是：H-&gt;E。<br>于是我的TFSF也是这么更新入射场的。</p>
+<p>整体的更新框架：<br>TFSF更新入射场<br>FDTD更新磁场<br>修正磁场<br>FDTD更新电场<br>修正电场</p>
+<p>但是问题在于：</p>
+<p>t=0.5时，FDTD修正TFSF边界上的磁场需要用到的是t=0时刻时的电场值。如果TFSF是H-&gt;E，那么TFSF里的入射场就永远超前了。</p>
+<p>所以，把TFSF改为E-&gt;H。</p>
+<p>结果呢：</p>
+<p><img src="https://s2.loli.net/2024/04/03/GaY2FUs57HSC3Ne.png" alt="Figure_2.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FDTD/" rel="tag"># FDTD</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/13/A-Note-for-CPP-Template-Universal-Reference/" rel="prev" title="A Note for CPP Template Universal Reference">
+      <i class="fa fa-chevron-left"></i> A Note for CPP Template Universal Reference
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BB%E6%89%BE%E9%97%AE%E9%A2%98%E6%9D%A5%E6%BA%90"><span class="nav-text">寻找问题来源</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TFSF%E6%B3%84%E6%BC%8F"><span class="nav-text">TFSF泄漏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NF2FF"><span class="nav-text">NF2FF</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3"><span class="nav-text">解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E6%AD%A5%E9%97%AE%E9%A2%98"><span class="nav-text">时间步问题</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">54</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
