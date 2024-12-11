@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="基于Development of a CUDA Implementation of the 3D FDTD Method">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FDTD_GPU">
+<meta property="og:url" content="http://example.com/2024/12/11/FDTD-GPU/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="基于Development of a CUDA Implementation of the 3D FDTD Method">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-12-11T12:09:33.000Z">
+<meta property="article:modified_time" content="2024-12-11T12:11:07.405Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="并行计算">
+<meta property="article:tag" content="性能分析">
+<meta property="article:tag" content="benchmark">
+<meta property="article:tag" content="CUDA">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2024/12/11/FDTD-GPU/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>FDTD_GPU | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">59</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">62</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/12/11/FDTD-GPU/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          FDTD_GPU
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-12-11 20:09:33 / 修改时间：20:11:07" itemprop="dateCreated datePublished" datetime="2024-12-11T20:09:33+08:00">2024-12-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FDTD/" itemprop="url" rel="index"><span itemprop="name">FDTD</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>基于<a target="_blank" rel="noopener" href="https://doi.org/10.1109/MAP.2012.6348145">Development of a CUDA Implementation of the 3D FDTD Method</a></p>
+</blockquote>
+<span id="more"></span>
+<h2 id="简单区域划分法"><a href="#简单区域划分法" class="headerlink" title="简单区域划分法"></a>简单区域划分法</h2><p>最显而易见的方法，区域划分法。将CUDA中的GRID与FDTD的网格相对应。</p>
+<p>FDTD问题空间网格为：</p>
+<script type="math/tex; mode=display">N_x \times N_y \times N_z</script><p>CUDA的配置为：</p>
+<script type="math/tex; mode=display">Grid = Bs= (Bs_x, Bs_y, Bs_z), Block = Ts = (Ts_x, Ts_y, Ts_z)</script><p>对于一确定的Blcok(blockIdx.x, blockIdx.y, blockIdx.z)，其对应的FDTD网格范围（左闭右开）为：</p>
+<script type="math/tex; mode=display">
+\text{blockRangeX} = \left [ \text{blockIdx.x} \times Q_x,  (\text{ blockIdx.x} + 1) \times Q_x \right )</script><p>其中$Q_x = \left \lceil \frac{N_x}{\text{Bs}_x} \right \rceil$，</p>
+<p>其余方向同理。</p>
+<p>由此得到一三元组，代表了一特定Blcok所负责计算的范围：</p>
+<script type="math/tex; mode=display">
+\text{blockRange} = \left ( \text{blockRangeX}, \text{blockRangeY}, \text{blockRangeZ} \right )</script><p>继续划分，可以容易得到一个线程所负责的计算范围：</p>
+<script type="math/tex; mode=display">
+\text{threadRangeX} = \left [ \text{threadIdx.x} \times P_x,  (\text{ threadIdx.x} + 1) \times P_x \right ) + \text{blockRangeX.start}</script><p>其中$P_x = \left \lceil \frac{Q_x}{\text{Ts}_x} \right \rceil$，</p>
+<p>其余方向同理。</p>
+<p>简单易懂，但是需要正确配置。</p>
+<p>对于一FDTD网格空间大小为$128 \times 128 \times 128$的问题，采用不同配置的CUDA配置。</p>
+<ul>
+<li>$Bs = (128, 128, 2), Ts = (1, 1, 64)$: -g 128 128 2 -b 1 1 64 : 162.095 ms</li>
+<li>$Bs = (128, 64, 4), Ts = (1, 2, 32)$: -g 128 64 4 -b 1 2 32 : 162.229 ms</li>
+<li>$Bs = (128, 32, 8), Ts = (1, 4, 16)$: -g 128 32 8 -b 1 4 16 : 167.255 ms</li>
+<li>$Bs = (128, 16, 16), Ts = (1, 8, 8)$: -g 128 16 16 -b 1 8 8 : 198.067 ms</li>
+<li>$Bs = (64, 128, 2), Ts = (2, 1, 64)$: -g 64 128 2 -b 2 1 64 : 164.887 ms</li>
+<li>$Bs = (64, 64, 4), Ts = (2, 2, 32)$: -g 64 64 4 -b 2 2 32 : 164.926 ms</li>
+<li>$Bs = (64, 32, 8), Ts = (2, 4, 16)$: -g 64 32 8 -b 2 4 16 : 172.138 ms</li>
+<li>$Bs = (64, 16, 16), Ts = (2, 8, 8)$: -g 64 16 16 -b 2 8 8 : 528.082 ms</li>
+<li>$Bs = (32, 128, 2), Ts = (4, 1, 64)$: -g 32 128 2 -b 4 1 64 : 170.784 ms</li>
+<li>$Bs = (32, 64, 4), Ts = (4, 2, 32)$: -g 32 64 4 -b 4 2 32 : 173.578 ms</li>
+<li>$Bs = (32, 32, 8), Ts = (4, 4, 16)$: -g 32 32 8 -b 4 4 16 : 187.168 ms</li>
+<li>$Bs = (32, 16, 16), Ts = (4, 8, 8)$: -g 32 16 16 -b 4 8 8 : 229.692 ms</li>
+<li>$Bs = (16, 128, 2), Ts = (8, 1, 64)$: -g 16 128 2 -b 8 1 64 : 221.052 ms</li>
+<li>$Bs = (16, 64, 4), Ts = (8, 2, 32)$: -g 16 64 4 -b 8 2 32 : 232.625 ms</li>
+<li>$Bs = (16, 32, 8), Ts = (8, 4, 16)$: -g 16 32 8 -b 8 4 16 : 234.326 ms</li>
+<li>$Bs = (16, 16, 16), Ts = (8, 8, 8)$: -g 16 16 16 -b 8 8 8 : 301.751 ms</li>
+<li>$Bs = (2, 128, 128), Ts = (64, 1, 1)$: -g 2 128 128 -b 64 1 1 : 561.679 ms</li>
+</ul>
+<p>先不分析，但显然这个方法对于如何配置CUDA是有一定要求的，正确配置可以得到较好的性能，而错误配置会导致性能下降。</p>
+<h2 id="简单区域划分法适配其他方法"><a href="#简单区域划分法适配其他方法" class="headerlink" title="简单区域划分法适配其他方法"></a>简单区域划分法适配其他方法</h2><h3 id="4-2-Second-Approach"><a href="#4-2-Second-Approach" class="headerlink" title="4.2 Second Approach"></a>4.2 Second Approach</h3><p>文章<a target="_blank" rel="noopener" href="https://doi.org/10.1109/MAP.2012.6348145">Development of a CUDA Implementation of the 3D FDTD Method</a>中的4.2 Second Approach中提到了一种划分方法，可以等价于简单区域划分法的一种特殊形式。</p>
+<blockquote>
+<p>in this case, each thread executes all of the elements in the z direction in a for loop</p>
+</blockquote>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Bs_x = any, Bs_y = any, Bs_z = 1 \\
+Ts_x = any, Ts_y = any, Ts_z = 1 \\
+\end{aligned}</script><p>考虑到C++行优先存储，应该等价于：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Bs_x = 1, Bs_y = any, Bs_z = any \\
+Ts_x = 1, Ts_y = any, Ts_z = any \\
+\end{aligned}</script><p>对于一FDTD网格空间大小为$128 \times 128 \times 128$的问题，采用不同配置的CUDA配置。</p>
+<ul>
+<li>$Bs = (1, 128, 128), Ts = (1, 1, 1)$: -g 1 128 128 -b 1 1 1 : 2419.56 m</li>
+<li>$Bs = (1, 64, 64), Ts = (1, 2, 2)$: -g 1 64 64 -b 1 2 2 : 838.7 ms</li>
+<li>$Bs = (1, 32, 32), Ts = (1, 4, 4)$: -g 1 32 32 -b 1 4 4 : 372.919 ms</li>
+<li>$Bs = (1, 16, 16), Ts = (1, 8, 8)$: -g 1 16 16 -b 1 8 8 : 328.063 ms</li>
+<li>$Bs = (1, 8, 8), Ts = (1, 16, 16)$: -g 1 8 8 -b 1 16 16 : 228.957 ms</li>
+<li>$Bs = (1, 4, 4), Ts = (1, 32, 32)$: -g 1 4 4 -b 1 32 32 : CUDA Error: too many resources requested for launch</li>
+<li>$Bs = (1, 64, 64), Ts = (1, 1, 4)$: -g 1 64 64 -b 1 1 4 : 1383.64 ms</li>
+<li>$Bs = (1, 32, 32), Ts = (1, 2, 8)$: -g 1 32 32 -b 1 2 8 : 524.478 ms</li>
+<li>$Bs = (1, 16, 16), Ts = (1, 4, 16)$: -g 1 16 16 -b 1 4 16 : 385.855 ms</li>
+<li>$Bs = (1, 16, 16), Ts = (1, 16, 4)$: -g 1 16 16 -b 1 16 4 : 387.436 ms</li>
+<li>$Bs = (1, 8, 8), Ts = (1, 8, 32)$: -g 1 8 8 -b 1 8 32 : 309.327 ms</li>
+<li>$Bs = (1, 8, 8), Ts = (1, 32, 8)$: -g 1 8 8 -b 1 32 8 : 286.032 ms</li>
+</ul>
+<p>当然如果不考虑行优先存储，按照文章中的描述，应该是：</p>
+<ul>
+<li>$Bs = (128, 128, 1), Ts = (1, 1, 1)$: -g 128 128 1 -b 1 1 1 : 1890.58 ms</li>
+<li>$Bs = (64, 64, 1), Ts = (2, 2, 1)$: -g 64 64 1 -b 2 2 1 : 771.171 ms</li>
+<li>$Bs = (32, 32, 1), Ts = (4, 4, 1)$: -g 32 32 1 -b 4 4 1 : 3259.66 ms</li>
+<li>$Bs = (16, 16, 1), Ts = (8, 8, 1)$: -g 16 16 1 -b 8 8 1 : 3665.98 ms</li>
+<li>$Bs = (8, 8, 1), Ts = (16, 16, 1)$: -g 8 8 1 -b 16 16 1 : 3743.38 ms</li>
+<li>$Bs = (4, 4, 1), Ts = (32, 32, 1)$: -g 4 4 1 -b 32 32 1 : CUDA Error: too many resources requested for launch</li>
+</ul>
+<p>显然，这种方法对于CUDA的启动配置也有一定要求。而且这种方法的性能没有达到最大化的并行度，正如文章所说：</p>
+<blockquote>
+<p>Each approach has a maximum of xy NN × threads, where x N and y N are the size of the FDTD space in the x and y dimensions.</p>
+</blockquote>
+<h3 id="4-3-Third-Approach"><a href="#4-3-Third-Approach" class="headerlink" title="4.3 Third Approach"></a>4.3 Third Approach</h3><p>Block在二维上分配整个网格空间，Thread分配剩下的一维空间。</p>
+<p>一种等价的分配形式为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Bs_x = N_x, Bs_y = N_y, Bs_z = 1 \\
+Ts_x = 1, Ts_y = 1, Ts_z = any \\
+\end{aligned}</script><p>然而这并非是一个完美的等价，因为这种等价要求Thread只能在Z轴上分布，而文章的原意应该是允许Thread可以在任意方向上分布。当然要实现这么一个逻辑也很简单，但我想基于这个等价的性能测试也是足以说明问题的。</p>
+<p>对于一FDTD网格空间大小为$128 \times 128 \times 128$的问题，采用不同配置的CUDA配置。</p>
+<ul>
+<li>$Bs = (128, 128, 1), Ts = (1, 1, 64)$: -g 128 128 1 -b 1 1 64 : 179.11 ms</li>
+<li>$Bs = (128, 128, 1), Ts = (1, 1, 32)$: -g 128 128 1 -b 1 1 32 : 287.759 ms</li>
+<li>$Bs = (128, 128, 1), Ts = (1, 1, 16)$: -g 128 128 1 -b 1 1 16 : 331.508 ms</li>
+<li>$Bs = (128, 128, 1), Ts = (1, 1, 8)$: -g 128 128 1 -b 1 1 8 : 551.388 ms</li>
+</ul>
+<p>该方法锁死了配置，但是性能表现不错，基本上达到了最大并行度。<br>在CUDA中（至少在我的测试设备上），有如下参数：</p>
+<blockquote>
+<p>Maximum number of thread per block:           1024<br>Maximum size of each dimension of a block:    1024 x 1024 x 64<br>Maximum size of each dimension of a grid:     2147483647 x 65535 x 65535</p>
+</blockquote>
+<p>对于一般问题，该划分方法已经足够好了。基本上达到了越多线程越好的性能。</p>
+<h3 id="5-Our-Implementations-of-the-FDTD-Method-on-GPU-Hardware"><a href="#5-Our-Implementations-of-the-FDTD-Method-on-GPU-Hardware" class="headerlink" title="5. Our Implementations of the FDTD Method on GPU Hardware"></a>5. Our Implementations of the FDTD Method on GPU Hardware</h3><p>相对于4.3方法提出了改进，提出了之前方法从未考虑到的问题Memory Access Pattern。</p>
+<p>之前的方法对内存的访问模式是uncoalesced的，而这种访问模式会导致性能下降。</p>
+<blockquote>
+<p>memory access is un-coalesced, since the threads within a block simultaneously access memory locations that are not adjacent.</p>
+</blockquote>
+<p>为了实现coalesced memory access，即在同一个Block中的线程访问连续的内存，需要修正4.3中Thread的任务分配方式。不再使用threadRange作为任务分配方式。假定：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Bs_x = N_x, Bs_y = N_y, Bs_z = 1 \\
+Ts_x = 1, Ts_y = 1, Ts_z = a \\
+\end{aligned}</script><p>对任意一线程属于某个特定Block，其任务为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\text{Task} &= \left [ \text{threadIdx.z} + i \times a \right ] \\
+i &= 0, 1, 2, \cdots, b-1 \\
+b &= \left \lceil \frac{N_z}{a} \right \rceil \\
+\end{aligned}</script><p>是否存在一个更为普适的方法去表述这个任务分配方式呢？存在。</p>
+<h2 id="Decomposing-Domain-Based-on-Coalesced-Memory-Access"><a href="#Decomposing-Domain-Based-on-Coalesced-Memory-Access" class="headerlink" title="Decomposing Domain Based on Coalesced Memory Access"></a>Decomposing Domain Based on Coalesced Memory Access</h2><p>本质上不就是一维的获取吗？根本不需要这么麻烦。对问题空间：</p>
+<script type="math/tex; mode=display">N_x \times N_y \times N_z</script><p>实质上是一维数组存储的，只需要将其看作一维数组$[0, N_x \times N_y \times N_z)$，然后按照一维数组的方式去分配任务即可。</p>
+<p>对于一确定的Block，其对应的FDTD网格范围（左闭右开）为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\text{blockRange} &= \left [ \text{Index}_{\text{b}} \times a,  (\text{Index}_{\text{b}} + 1) \times a  \right ) \\
+a &= \left \lceil \frac{N_x \times N_y \times N_z}{\text{Bs}_x \times \text{Bs}_y \times \text{Bs}_z} \right \rceil \\
+\text{Index}_{\text{b}} &= \text{blockIdx.x} + \text{blockIdx.y} \times \text{gridDim.x} + \text{blockIdx.z} \times \text{gridDim.x} \times \text{gridDim.y}
+\end{aligned}</script><p>对任意一线程属于某个特定Block，其任务为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\text{Task} &= \left [ \text{Index}_{\text{t}} + i \times n \right ] + \text{blockRange.start} \\
+n &= \text{num of thread} \\
+i &= 0, 1, 2, \cdots, b-1 \\
+b &= \left \lceil \frac{\text{blockRange.size}}{\text{num of thread}} \right \rceil \\
+\end{aligned}</script>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97/" rel="tag"># 并行计算</a>
+              <a href="/tags/%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/" rel="tag"># 性能分析</a>
+              <a href="/tags/benchmark/" rel="tag"># benchmark</a>
+              <a href="/tags/CUDA/" rel="tag"># CUDA</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/09/30/c-%E5%8D%8F%E7%A8%8B%E5%88%9D%E8%AF%86/" rel="prev" title="c++协程初识">
+      <i class="fa fa-chevron-left"></i> c++协程初识
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%8C%BA%E5%9F%9F%E5%88%92%E5%88%86%E6%B3%95"><span class="nav-text">简单区域划分法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%8C%BA%E5%9F%9F%E5%88%92%E5%88%86%E6%B3%95%E9%80%82%E9%85%8D%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95"><span class="nav-text">简单区域划分法适配其他方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-Second-Approach"><span class="nav-text">4.2 Second Approach</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-Third-Approach"><span class="nav-text">4.3 Third Approach</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Our-Implementations-of-the-FDTD-Method-on-GPU-Hardware"><span class="nav-text">5. Our Implementations of the FDTD Method on GPU Hardware</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Decomposing-Domain-Based-on-Coalesced-Memory-Access"><span class="nav-text">Decomposing Domain Based on Coalesced Memory Access</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">59</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
