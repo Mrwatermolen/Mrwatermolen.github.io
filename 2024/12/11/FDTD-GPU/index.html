@@ -29,7 +29,7 @@
 <meta property="og:description" content="基于Development of a CUDA Implementation of the 3D FDTD Method">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-12-11T12:09:33.000Z">
-<meta property="article:modified_time" content="2024-12-11T12:11:07.405Z">
+<meta property="article:modified_time" content="2024-12-12T02:50:31.753Z">
 <meta property="article:author" content="MH">
 <meta property="article:tag" content="并行计算">
 <meta property="article:tag" content="性能分析">
@@ -187,10 +187,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2024-12-11 20:09:33 / 修改时间：20:11:07" itemprop="dateCreated datePublished" datetime="2024-12-11T20:09:33+08:00">2024-12-11</time>
+              <time title="创建时间：2024-12-11 20:09:33" itemprop="dateCreated datePublished" datetime="2024-12-11T20:09:33+08:00">2024-12-11</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-12-12 10:50:31" itemprop="dateModified" datetime="2024-12-12T10:50:31+08:00">2024-12-12</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -343,7 +349,66 @@ a &= \left \lceil \frac{N_x \times N_y \times N_z}{\text{Bs}_x \times \text{Bs}_
 n &= \text{num of thread} \\
 i &= 0, 1, 2, \cdots, b-1 \\
 b &= \left \lceil \frac{\text{blockRange.size}}{\text{num of thread}} \right \rceil \\
-\end{aligned}</script>
+\end{aligned}</script><p>对于一FDTD网格空间大小为$128 \times 128 \times 128$的问题，采用不同配置的CUDA配置。</p>
+<ul>
+<li>$Bs = (128, 128, 2), Ts = (1, 1, 64)$: -g 128 128 2 -b 1 1 64 : 159.378 ms</li>
+<li>$Bs = (128, 64, 4), Ts = (1, 2, 32)$: -g 128 64 4 -b 1 2 32 : 157.845 ms</li>
+<li>$Bs = (128, 32, 8), Ts = (1, 4, 16)$: -g 128 32 8 -b 1 4 16 : 157.851 ms</li>
+<li>$Bs = (128, 16, 16), Ts = (1, 8, 8)$: -g 128 16 16 -b 1 8 8 : 157.825 ms</li>
+<li>$Bs = (64, 128, 2), Ts = (2, 1, 64)$: -g 64 128 2 -b 2 1 64 : 157.839 ms</li>
+<li>$Bs = (64, 64, 4), Ts = (2, 2, 32)$: -g 64 64 4 -b 2 2 32 : 157.679 ms</li>
+<li>$Bs = (64, 32, 8), Ts = (2, 4, 16)$: -g 64 32 8 -b 2 4 16 : 157.768</li>
+<li>$Bs = (64, 16, 16), Ts = (2, 8, 8)$: -g 64 16 16 -b 2 8 8 : 157.834 ms</li>
+<li>$Bs = (32, 128, 2), Ts = (4, 1, 64)$: -g 32 128 2 -b 4 1 64 : 157.715 ms</li>
+<li>$Bs = (32, 64, 4), Ts = (4, 2, 32)$: -g 32 64 4 -b 4 2 32 : 157.837 ms</li>
+<li>$Bs = (32, 32, 8), Ts = (4, 4, 16)$: -g 32 32 8 -b 4 4 16 : 157.549 ms</li>
+<li>$Bs = (32, 16, 16), Ts = (4, 8, 8)$: -g 32 16 16 -b 4 8 8 : 157.938 ms</li>
+<li>$Bs = (16, 128, 2), Ts = (8, 1, 64)$: -g 16 128 2 -b 8 1 64 : 171.853 ms</li>
+<li>$Bs = (16, 64, 4), Ts = (8, 2, 32)$: -g 16 64 4 -b 8 2 32 : 177.085 ms</li>
+<li>$Bs = (16, 32, 8), Ts = (8, 4, 16)$: -g 16 32 8 -b 8 4 16 : 177.191 ms</li>
+<li>$Bs = (16, 16, 16), Ts = (8, 8, 8)$: -g 16 16 16 -b 8 8 8 : 175.584 ms</li>
+<li>$Bs = (2, 128, 128), Ts = (64, 1, 1)$: -g 2 128 128 -b 64 1 1 : 157.835 ms</li>
+</ul>
+<p>比较简单区域划分法，这种方法不需要考虑如何配置CUDA，无论何种配置都可以得到几乎是最优的性能，中间有一段时间慢了20ms，可以发现是Block中包含了太多的线程，和资源有关TODO。</p>
+<p>针对block大小的测试</p>
+<ul>
+<li>$Bs = (256, 256, 2), Ts = (4, 4, 1)$: -g 256 256 2 -b 4 4 1 : 223.763 ms</li>
+<li>$Bs = (256, 256, 1), Ts = (8, 4, 1)$: -g 256 256 1 -b 8 4 1 : 157.958 ms</li>
+<li>$Bs = (256, 128, 1), Ts = (8, 8, 1)$: -g 256 128 1 -b 8 8 1 : 157.785 ms</li>
+<li>$Bs = (128, 128, 1), Ts = (16, 8, 1)$: -g 128 128 1 -b 16 8 1 : 157.772 ms</li>
+<li>$Bs = (128, 64, 1), Ts = (16, 16, 1)$: -g 128 64 1 -b 16 16 1 : 157.878 ms</li>
+<li>$Bs = (128, 32, 1), Ts = (16, 32, 1)$: -g 128 32 1 -b 16 32 1 : 177.233 ms</li>
+<li>$Bs = (64, 64, 1), Ts = (32, 16, 1)$: -g 64 64 1 -b 32 16 1 : 173.292 ms</li>
+<li>$Bs = (32, 128, 1), Ts = (64, 8, 1)$: -g 32 128 1 -b 64 8 1 : 177.273 ms</li>
+<li>$Bs = (64, 32, 1), Ts = (32, 32, 1)$: -g 64 32 1 -b 32 32 1 : CUDA Error: too many resources requested for launch</li>
+</ul>
+<p>可以看到当Block中的Thread数量过多，大于等于512时, 会出现性能下降。当然也不能太小，一个Wrap中的Thread数量为32，所以最小也应该是32。</p>
+<p>考虑和Second Approach的对比：</p>
+<ul>
+<li>$Bs = (1, 128, 128), Ts = (1, 1, 1)$: -g 1 128 128 -b 1 1 1 : 2300.58 m</li>
+<li>$Bs = (1, 64, 64), Ts = (1, 2, 2)$: -g 1 64 64 -b 1 2 2 : 753.165 ms</li>
+<li>$Bs = (1, 32, 32), Ts = (1, 4, 4)$: -g 1 32 32 -b 1 4 4 : 289.601 ms</li>
+<li>$Bs = (1, 16, 16), Ts = (1, 8, 8)$: -g 1 16 16 -b 1 8 8 : 200.878 ms</li>
+<li>$Bs = (1, 8, 8), Ts = (1, 16, 16)$: -g 1 8 8 -b 1 16 16 : 214.539 ms</li>
+<li>$Bs = (1, 4, 4), Ts = (1, 32, 32)$: -g 1 4 4 -b 1 32 32 : CUDA Error: too many resources requested for launch</li>
+<li>$Bs = (1, 64, 64), Ts = (1, 1, 4)$: -g 1 64 64 -b 1 1 4 : 751.263 ms</li>
+<li>$Bs = (1, 32, 32), Ts = (1, 2, 8)$: -g 1 32 32 -b 1 2 8 : 292.818 ms</li>
+<li>$Bs = (1, 16, 16), Ts = (1, 4, 16)$: -g 1 16 16 -b 1 4 16 : 200.761 ms</li>
+<li>$Bs = (1, 16, 16), Ts = (1, 16, 4)$: -g 1 16 16 -b 1 16 4 : 200.755 ms</li>
+<li>$Bs = (1, 8, 8), Ts = (1, 8, 32)$: -g 1 8 8 -b 1 8 32 : 214.654 ms</li>
+<li>$Bs = (1, 8, 8), Ts = (1, 32, 8)$: -g 1 8 8 -b 1 32 8 : 214.517 ms</li>
+</ul>
+<p>全面的性能提升。</p>
+<p>考虑和Third Approach的对比：</p>
+<ul>
+<li>$Bs = (128, 128, 1), Ts = (1, 1, 64)$: -g 128 128 1 -b 1 1 64 : 166.745 ms</li>
+<li>$Bs = (128, 128, 1), Ts = (1, 1, 32)$: -g 128 128 1 -b 1 1 32 : 175.438 ms</li>
+<li>$Bs = (128, 128, 1), Ts = (1, 1, 16)$: -g 128 128 1 -b 1 1 16 : 231.391 ms</li>
+<li>$Bs = (128, 128, 1), Ts = (1, 1, 8)$: -g 128 128 1 -b 1 1 8 : 432.519 ms</li>
+</ul>
+<p>同样的全面的性能提升。</p>
+<p>需要说明的是如果每一个Thread仅负责一个网格的计算，也就是总的网格数等于总的Thread数，那么Third Approach的内存访问模式就是coalesced的。</p>
+
     </div>
 
     
