@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="如何挂载 EXT4 硬盘 在 WSL 2 中装载 Linux 磁盘  确定磁盘，在powershell中运行以下命令： 1Get-Disk | Format-Table Number, FriendlyName, Size, HealthStatus">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WSL 开机启动并挂载 EXT4 硬盘">
+<meta property="og:url" content="http://example.com/2025/08/26/wsl%E6%8C%82%E8%BD%BD/index.html">
+<meta property="og:site_name" content="MH&#39;s Blog">
+<meta property="og:description" content="如何挂载 EXT4 硬盘 在 WSL 2 中装载 Linux 磁盘  确定磁盘，在powershell中运行以下命令： 1Get-Disk | Format-Table Number, FriendlyName, Size, HealthStatus">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-26T15:35:24.000Z">
+<meta property="article:modified_time" content="2025-08-26T15:44:13.139Z">
+<meta property="article:author" content="MH">
+<meta property="article:tag" content="WSL">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2025/08/26/wsl%E6%8C%82%E8%BD%BD/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>WSL 开机启动并挂载 EXT4 硬盘 | MH's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MH's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">60</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">63</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/08/26/wsl%E6%8C%82%E8%BD%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+      <meta itemprop="name" content="MH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MH's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WSL 开机启动并挂载 EXT4 硬盘
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-08-26 23:35:24 / 修改时间：23:44:13" itemprop="dateCreated datePublished" datetime="2025-08-26T23:35:24+08:00">2025-08-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" itemprop="url" rel="index"><span itemprop="name">问题记录</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="如何挂载-EXT4-硬盘"><a href="#如何挂载-EXT4-硬盘" class="headerlink" title="如何挂载 EXT4 硬盘"></a>如何挂载 EXT4 硬盘</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/wsl/wsl2-mount-disk">在 WSL 2 中装载 Linux 磁盘</a></p>
+</blockquote>
+<p>确定磁盘，在<code>powershell</code>中运行以下命令：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Disk</span> | <span class="built_in">Format-Table</span> Number, FriendlyName, Size, HealthStatus</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>输出为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Number FriendlyName                         Size HealthStatus</span><br><span class="line">------ ------------                         ---- ------------</span><br><span class="line">     0 Fanxiang S100Pro 1TB        1024209543168 Healthy</span><br><span class="line">     1 HGST HUS728T8TALE6L4        8001563222016 Healthy</span><br><span class="line">     3 SanDisk Ultra 3D NVMe 500GB  500107862016 Healthy</span><br><span class="line">     2 ZHITAI TiPlus7100 2TB       2048408248320 Healthy</span><br></pre></td></tr></table></figure>
+<p>选择<code>HGST HUS728T8TALE6L4</code>确定分区</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Partition</span> <span class="literal">-DiskNumber</span> <span class="number">1</span> | <span class="built_in">Format-Table</span> PartitionNumber, Size, <span class="built_in">Type</span></span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">PartitionNumber          Size Type</span><br><span class="line">---------------          ---- ----</span><br><span class="line">              1 6597069766656 Unknown</span><br><span class="line">              2 1404492054528 Basic</span><br></pre></td></tr></table></figure>
+<p>选择分区<code>1</code></p>
+<p>准备进行挂载操作<br>首先确定<code>Disk</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-CimInstance</span> <span class="literal">-Query</span> <span class="string">&quot;SELECT * from Win32_DiskDrive&quot;</span></span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">DeviceID           Caption                     Partitions Size          Model</span><br><span class="line">--------           -------                     ---------- ----          -----</span><br><span class="line">\\.\PHYSICALDRIVE3 SanDisk Ultra 3D NVMe 500GB 2          500105249280  SanDisk Ultra 3D NVMe 500GB</span><br><span class="line">\\.\PHYSICALDRIVE0 Fanxiang S100Pro 1TB        1          1024203640320 Fanxiang S100Pro 1TB</span><br><span class="line">\\.\PHYSICALDRIVE1 HGST HUS728T8TALE6L4        2          8001560609280 HGST HUS728T8TALE6L4</span><br><span class="line">\\.\PHYSICALDRIVE2 ZHITAI TiPlus7100 2TB       3          2048407280640 ZHITAI TiPlus7100 2TB</span><br></pre></td></tr></table></figure>
+<p>为<code>\\.\PHYSICALDRIVE1</code></p>
+<p>挂载命令，注意挂载命令需要以管理员权限运行</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wsl.exe -<span class="literal">-mount</span> &lt;Disk&gt; -<span class="literal">-partition</span> &lt;Index&gt; -<span class="literal">-type</span> &lt;<span class="built_in">Type</span>&gt;</span><br><span class="line">wsl.exe -<span class="literal">-mount</span> \\.\PHYSICALDRIVE1 -<span class="literal">-partition</span> <span class="number">1</span> -<span class="literal">-type</span> ext4</span><br></pre></td></tr></table></figure>
+<p>打开 WSL ,不需要管理员权限，在 WSL 中查看是否挂载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /mnt/wsl/</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PHYSICALDRIVE1  PHYSICALDRIVE1p1  resolv.conf</span><br></pre></td></tr></table></figure>
+<p>在 WSL 2 中运行以下命令来列出分区：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsblk</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span><br><span class="line">sda      8:0    0 388.4M  1 disk</span><br><span class="line">sdb      8:16   0   186M  1 disk</span><br><span class="line">sdc      8:32   0     6G  0 disk [SWAP]</span><br><span class="line">sdd      8:48   0   7.3T  0 disk</span><br><span class="line">├─sdd1   8:49   0     6T  0 part &#x2F;mnt&#x2F;wsl&#x2F;PHYSICALDRIVE1p1</span><br><span class="line">└─sdd2   8:50   0   1.3T  0 part</span><br><span class="line">sde      8:64   0     1T  0 disk &#x2F;var&#x2F;lib&#x2F;docker</span><br><span class="line">                                 &#x2F;mnt&#x2F;wslg&#x2F;distro</span><br><span class="line">                                 &#x2F;</span><br></pre></td></tr></table></figure>
+<p>可以看到分区已经成功挂载到<code>/mnt/wsl/PHYSICALDRIVE1p1</code> 。</p>
+<h3 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h3><p>已经可以结束了，但是为了方便，创建软连接管理一下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p /mnt/data &amp;&amp; sudo ln -s /mnt/wsl/PHYSICALDRIVE1p1 /mnt/data/myLibrary</span><br></pre></td></tr></table></figure>
+<p>验证</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /mnt/data/myLibrary</span><br></pre></td></tr></table></figure>
+<p>搬输出出来，把<code>ntfs</code>分区的数据拿出来，以后吧</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mount -t ntfs-3g -o uid=1000,gid=1000,<span class="built_in">umask</span>=022 /dev/sdX1 /mnt/ntfs_data</span><br></pre></td></tr></table></figure>
+<h2 id="如何开机启动-WSL"><a href="#如何开机启动-WSL" class="headerlink" title="如何开机启动 WSL"></a>如何开机启动 WSL</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://sjdhome.com/blog/post/wsl2-auto-start/">实现 WSL 2 开机免登录自动启动</a></p>
+</blockquote>
+<p>做个备份吧，万一那个 blog 没了呢。</p>
+<p>步骤</p>
+<ol>
+<li>一定要确保 WSL 当前处于最新版本（即 WSL September 2023 update 之后的版本），系统自带版本不支持这种开机启动。</li>
+<li>打开任务计划程序。</li>
+<li>点击右边的创建任务。</li>
+<li>任务的名称和描述可以随便写，安全选项需要选择“不管用户是否登录都要运行”。</li>
+<li>点击上方的“触发器”选项卡，点新建按钮，然后会卡几秒（微软的老 BUG ）。开始任务中选择“启动时”，然后点击确定。</li>
+<li>“操作”选项卡中，点新建按钮，然后“程序或脚本”下的文本框里输入”C:\Program Files\WSL\wsl.exe”，引号也要带上（非常重要，除了这个目录下的wsl.exe，其他位置的都不行）。添加参数可以根据需要填写，比如-d Debian指定发行版。</li>
+<li>“条件”选项卡中，所有选项全部取消勾选。</li>
+<li>”设置“选项卡中，除了“允许按需执行任务”，其他全部取消勾选。</li>
+<li>点击确定关闭窗口。可以先右键运行试试效果。这种方法运行的 WSL 即使当前用户注销也是会继续运行的。</li>
+</ol>
+<p>在<code>powershell</code>命令中运行命令查看是否成功</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl -<span class="literal">-list</span> -<span class="literal">-running</span></span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">适用于 Linux 的 Windows 子系统分发:</span><br><span class="line">Ubuntu (默认值)</span><br></pre></td></tr></table></figure>
+<h2 id="启动-WSL-后自动挂载-EXT4-硬盘"><a href="#启动-WSL-后自动挂载-EXT4-硬盘" class="headerlink" title="启动 WSL 后自动挂载 EXT4 硬盘"></a>启动 WSL 后自动挂载 EXT4 硬盘</h2><blockquote>
+<p>思路来源于：<a target="_blank" rel="noopener" href="https://github.com/microsoft/WSL/issues/6073#issuecomment-1266405095">https://github.com/microsoft/WSL/issues/6073#issuecomment-1266405095</a></p>
+</blockquote>
+<p>不过他的对我来说有点问题，执行老是不成功，我自己结合我的情况写了一个，但思路是差不多的。编辑 WSL 中的<code>/etc/wsl.conf</code>文件，自动运行命令挂载硬盘。</p>
+<p>AI 生成了一个<code>ps1</code>脚本自动挂载硬盘，脚本使用<code>powershell7</code>运行，所有先决条件是安装<code>powershell7</code>。脚本内容</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ===========================================</span></span><br><span class="line"><span class="comment"># WSL 自动挂载脚本 (简化版)</span></span><br><span class="line"><span class="comment"># 用途：开机自动挂载多个物理磁盘分区</span></span><br><span class="line"><span class="comment"># ===========================================</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置区域 - 可根据需要修改</span></span><br><span class="line"><span class="variable">$isStdout</span> = <span class="variable">$true</span></span><br><span class="line"><span class="variable">$LogPath</span> = <span class="string">&quot;C:\Users\Kumi\wsl-mount.log&quot;</span></span><br><span class="line"><span class="variable">$InitialDelay</span> = <span class="number">1</span> <span class="comment"># 启动后延迟执行时间（秒）</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#region 函数定义</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Write-Log</span></span> &#123;</span><br><span class="line">    <span class="keyword">param</span> (</span><br><span class="line">        [<span class="built_in">string</span>]<span class="variable">$Message</span>,</span><br><span class="line">        [<span class="built_in">bool</span>]<span class="variable">$isHeader</span>=<span class="variable">$false</span></span><br><span class="line">    )</span><br><span class="line">    <span class="variable">$timestamp</span> = <span class="keyword">if</span> (<span class="variable">$isHeader</span>) &#123; <span class="built_in">Get-Date</span> <span class="literal">-Format</span> <span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span> &#125; <span class="keyword">else</span> &#123; <span class="built_in">Get-Date</span> <span class="literal">-Format</span> <span class="string">&quot;HH:mm:ss&quot;</span> &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$isStdout</span>) &#123;</span><br><span class="line">        <span class="built_in">Write-Host</span> <span class="string">&quot;[<span class="variable">$timestamp</span>] <span class="variable">$Message</span>&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="string">&quot;[<span class="variable">$timestamp</span>] <span class="variable">$Message</span>&quot;</span> | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$LogPath</span> <span class="literal">-Append</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加固定延迟（替代WSL响应检查）</span></span><br><span class="line"><span class="string">&quot;[<span class="variable">$</span>(Get-Date -Format &#x27;HH:mm:ss&#x27;)] 等待 <span class="variable">$InitialDelay</span> 秒让系统初始化...&quot;</span> | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$LogPath</span> <span class="literal">-Append</span></span><br><span class="line"><span class="built_in">Start-Sleep</span> <span class="literal">-Seconds</span> <span class="variable">$InitialDelay</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Check-IsElevated</span></span> &#123;</span><br><span class="line">    <span class="variable">$id</span> = [<span class="type">System.Security.Principal.WindowsIdentity</span>]::GetCurrent()</span><br><span class="line">    <span class="variable">$p</span> = <span class="built_in">New-Object</span> System.Security.Principal.WindowsPrincipal(<span class="variable">$id</span>)</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$p</span>.IsInRole([<span class="type">System.Security.Principal.WindowsBuiltInRole</span>]::Administrator)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$false</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Mount-DiskPartition</span></span> &#123;</span><br><span class="line">    <span class="keyword">param</span>(</span><br><span class="line">        [<span class="built_in">int</span>]<span class="variable">$DiskNumber</span>,</span><br><span class="line">        [<span class="built_in">int</span>]<span class="variable">$PartitionNumber</span>,</span><br><span class="line">        [<span class="built_in">string</span>]<span class="variable">$FileSystemType</span> = <span class="string">&quot;ext4&quot;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="variable">$mountPoint</span> = <span class="string">&quot;PHYSICALDRIVE<span class="variable">$</span>&#123;DiskNumber&#125;p<span class="variable">$</span>&#123;PartitionNumber&#125;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 检查是否已挂载</span></span><br><span class="line">    <span class="variable">$isMounted</span> = wsl.exe <span class="built_in">ls</span> /mnt/wsl/ <span class="number">2</span>&gt;<span class="variable">$null</span> | findstr /i <span class="variable">$mountPoint</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$isMounted</span>) &#123;</span><br><span class="line">        <span class="string">&quot;[<span class="variable">$</span>(Get-Date -Format &#x27;HH:mm:ss&#x27;)] 警告：分区 <span class="variable">$mountPoint</span> 已挂载，跳过操作&quot;</span> | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$LogPath</span> <span class="literal">-Append</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 确保磁盘离线</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="built_in">Set-Disk</span> <span class="literal">-Number</span> <span class="variable">$DiskNumber</span> <span class="literal">-IsOffline</span> <span class="variable">$true</span> <span class="literal">-ErrorAction</span> Stop</span><br><span class="line">        <span class="string">&quot;[<span class="variable">$</span>(Get-Date -Format &#x27;HH:mm:ss&#x27;)] 已将磁盘 <span class="variable">$DiskNumber</span> 设置为离线状态&quot;</span> | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$LogPath</span> <span class="literal">-Append</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> &#123;</span><br><span class="line">        <span class="string">&quot;[<span class="variable">$</span>(Get-Date -Format &#x27;HH:mm:ss&#x27;)] 注意：磁盘 <span class="variable">$DiskNumber</span> 可能已离线或不存在 - <span class="variable">$</span>(<span class="variable">$_</span>.Exception.Message)&quot;</span> | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$LogPath</span> <span class="literal">-Append</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 执行挂载</span></span><br><span class="line">    <span class="variable">$isAdmin</span> = Check<span class="literal">-IsElevated</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="operator">-not</span> <span class="variable">$isAdmin</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="string">&quot;挂载操作需要管理员权限&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="string">&quot;[<span class="variable">$</span>(Get-Date -Format &#x27;HH:mm:ss&#x27;)] 开始挂载：磁盘 <span class="variable">$DiskNumber</span> 分区 <span class="variable">$PartitionNumber</span>&quot;</span> | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$LogPath</span> <span class="literal">-Append</span></span><br><span class="line">    wsl.exe -<span class="literal">-mount</span> <span class="string">&quot;\\.\PHYSICALDRIVE<span class="variable">$</span>&#123;DiskNumber&#125;&quot;</span> -<span class="literal">-partition</span> <span class="variable">$PartitionNumber</span> -<span class="literal">-type</span> <span class="variable">$FileSystemType</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 验证挂载结果</span></span><br><span class="line">    <span class="variable">$mountSuccess</span> = wsl.exe <span class="built_in">ls</span> /mnt/wsl/ | findstr /i <span class="variable">$mountPoint</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$mountSuccess</span>) &#123;</span><br><span class="line">        <span class="string">&quot;[<span class="variable">$</span>(Get-Date -Format &#x27;HH:mm:ss&#x27;)] 成功挂载：\\.\PHYSICALDRIVE<span class="variable">$</span>&#123;DiskNumber&#125; 分区 <span class="variable">$</span>&#123;PartitionNumber&#125; -&gt; /mnt/wsl/<span class="variable">$</span>&#123;mountPoint&#125;&quot;</span> | <span class="built_in">Out-File</span> <span class="literal">-FilePath</span> <span class="variable">$LogPath</span> <span class="literal">-Append</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="string">&quot;挂载失败：无法访问 /mnt/wsl/<span class="variable">$</span>&#123;mountPoint&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">#endregion</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">Write-Log</span> <span class="literal">-Message</span> <span class="string">&quot;===== WSL 挂载脚本开始执行 =====&quot;</span> <span class="literal">-isHeader</span> <span class="variable">$true</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment"># 定义要挂载的磁盘配置</span></span><br><span class="line">    <span class="variable">$disksToMount</span> = <span class="selector-tag">@</span>(</span><br><span class="line">        <span class="selector-tag">@</span>&#123; DiskNumber = <span class="number">1</span>; PartitionNumber = <span class="number">1</span>; FileSystemType = <span class="string">&quot;ext4&quot;</span> &#125;,</span><br><span class="line">        <span class="selector-tag">@</span>&#123; DiskNumber = <span class="number">3</span>; PartitionNumber = <span class="number">1</span>; FileSystemType = <span class="string">&quot;ext4&quot;</span> &#125;</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 逐个挂载磁盘分区</span></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$disk</span> <span class="keyword">in</span> <span class="variable">$disksToMount</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="built_in">Write-Log</span> <span class="literal">-Message</span> <span class="string">&quot;===== 开始处理磁盘 <span class="variable">$</span>(<span class="variable">$disk</span>.DiskNumber) 分区 <span class="variable">$</span>(<span class="variable">$disk</span>.PartitionNumber) =====&quot;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 执行挂载操作</span></span><br><span class="line">            <span class="variable">$mountResult</span> = <span class="built_in">Mount-DiskPartition</span> `</span><br><span class="line">                <span class="literal">-DiskNumber</span> <span class="variable">$disk</span>.DiskNumber `</span><br><span class="line">                <span class="literal">-PartitionNumber</span> <span class="variable">$disk</span>.PartitionNumber `</span><br><span class="line">                <span class="literal">-FileSystemType</span> <span class="variable">$disk</span>.FileSystemType</span><br><span class="line"></span><br><span class="line">            <span class="built_in">Write-Log</span> <span class="literal">-Message</span> <span class="string">&quot;===== 磁盘 <span class="variable">$</span>(<span class="variable">$disk</span>.DiskNumber) 分区 <span class="variable">$</span>(<span class="variable">$disk</span>.PartitionNumber) 处理完成 =====`n&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> &#123;</span><br><span class="line">            <span class="built_in">Write-Log</span> <span class="literal">-Message</span> <span class="string">&quot;❌ 处理磁盘 <span class="variable">$</span>(<span class="variable">$disk</span>.DiskNumber) 时出错：<span class="variable">$</span>(<span class="variable">$_</span>.Exception.Message)&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">Write-Log</span> <span class="literal">-Message</span> <span class="string">&quot;所有挂载操作已完成&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> &#123;</span><br><span class="line">    <span class="variable">$errorMsg</span> = <span class="variable">$_</span>.Exception.Message</span><br><span class="line">    <span class="built_in">Write-Log</span> <span class="literal">-Message</span> <span class="string">&quot;❌ 脚本级错误：<span class="variable">$errorMsg</span>&quot;</span></span><br><span class="line">    <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="built_in">Write-Log</span> <span class="literal">-Message</span> <span class="string">&quot;===== WSL 挂载脚本执行结束 =====`n&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>脚本在本机中的路径<code>C:\Users\Kumi\wsl-mount.ps1</code></p>
+<p>在 WSL 中，创建文件<code>/path/to/wsl-auto-mount.sh</code>，内容为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">/mnt/c/Program\ Files/PowerShell/7/pwsh.exe -NoProfile -ExecutionPolicy Bypass -File  C:\\Users\\Kumi\\wsl-mount.ps1 &gt; /tmp/wsl-auto-mount.log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<p>修改 WSL 中的<code>/etc/wsl.conf</code>文件，添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[boot]</span><br><span class="line">command&#x3D;&quot;bash &#x2F;path&#x2F;to&#x2F;wsl-auto-mount.sh&quot;</span><br></pre></td></tr></table></figure>
+<p>可以关闭 WSL 看看效果。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl -<span class="literal">-shutdown</span></span><br></pre></td></tr></table></figure>
+<p>然后在运行 WSL 看看情况，这里可以运行之前设定好的开机任务测试一下，日志在<code>/tmp/wsl-auto-mount.log</code>中。</p>
+<p>注意日志编码问题，可以使用以下命令查看：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /tmp/wsl-auto-mount.log | iconv -f GBK -t UTF-8</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WSL/" rel="tag"># WSL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/12/11/CUDA-implementation-of-FDTD-algorithm-parallel-optimization-spatial-partitioning/" rel="prev" title="CUDA实现FDTD算法的并行优化：针对空间划分">
+      <i class="fa fa-chevron-left"></i> CUDA实现FDTD算法的并行优化：针对空间划分
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%8C%82%E8%BD%BD-EXT4-%E7%A1%AC%E7%9B%98"><span class="nav-text">如何挂载 EXT4 硬盘</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%98%E5%A4%96%E8%AF%9D"><span class="nav-text">题外话</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8-WSL"><span class="nav-text">如何开机启动 WSL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8-WSL-%E5%90%8E%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BD-EXT4-%E7%A1%AC%E7%9B%98"><span class="nav-text">启动 WSL 后自动挂载 EXT4 硬盘</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="MH"
+      src="https://s2.loli.net/2022/03/16/Gohs3aZKxyScgvL.png">
+  <p class="site-author-name" itemprop="name">MH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Mrwatermolen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Mrwatermolen" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MH</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
