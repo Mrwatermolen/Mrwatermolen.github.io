@@ -18,6 +18,8 @@ categories:
  Get-Disk | Format-Table Number, FriendlyName, Size, HealthStatus
 ```
 
+<!-- more -->
+
 输出为
 
 ```plain
@@ -306,7 +308,7 @@ finally {
 
 ```conf
 [boot]
-command="bash /path/to/wsl-auto-mount.sh
+command="bash /path/to/wsl-auto-mount.sh"
 ```
 
 可以关闭 WSL 看看效果。
