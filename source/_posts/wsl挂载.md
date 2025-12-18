@@ -166,6 +166,7 @@ Ubuntu (默认值)
 不过他的对我来说有点问题，执行老是不成功，我自己结合我的情况写了一个，但思路是差不多的。编辑 WSL 中的`/etc/wsl.conf`文件，自动运行命令挂载硬盘。
 
 AI 生成了一个`ps1`脚本自动挂载硬盘，脚本使用`powershell7`运行，所有先决条件是安装`powershell7`。脚本内容
+记得变量`$LogPath`路径要改成自己的放置日志路径。
 
 ```powershell
 # ===========================================
@@ -178,7 +179,7 @@ $isStdout = $true
 $LogPath = "C:\Users\Kumi\wsl-mount.log"
 $InitialDelay = 1 # 启动后延迟执行时间（秒）
 
-#region 函数定义
+# define logging function
 function Write-Log {
     param (
         [string]$Message,
@@ -191,11 +192,8 @@ function Write-Log {
     "[$timestamp] $Message" | Out-File -FilePath $LogPath -Append
 }
 
-# 添加固定延迟（替代WSL响应检查）
-"[$(Get-Date -Format 'HH:mm:ss')] 等待 $InitialDelay 秒让系统初始化..." | Out-File -FilePath $LogPath -Append
-Start-Sleep -Seconds $InitialDelay
-
-function Check-IsElevated {
+#region 函数定义
+function Test-IsElevated {
     $id = [System.Security.Principal.WindowsIdentity]::GetCurrent()
     $p = New-Object System.Security.Principal.WindowsPrincipal($id)
     if ($p.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -218,33 +216,36 @@ function Mount-DiskPartition {
     # 检查是否已挂载
     $isMounted = wsl.exe ls /mnt/wsl/ 2>$null | findstr /i $mountPoint
     if ($isMounted) {
-        "[$(Get-Date -Format 'HH:mm:ss')] 警告：分区 $mountPoint 已挂载，跳过操作" | Out-File -FilePath $LogPath -Append
+        Write-Log -Message "注意：分区 $mountPoint 已挂载，跳过操作"
         return $true
     }
 
     # 确保磁盘离线
     try {
         Set-Disk -Number $DiskNumber -IsOffline $true -ErrorAction Stop
-        "[$(Get-Date -Format 'HH:mm:ss')] 已将磁盘 $DiskNumber 设置为离线状态" | Out-File -FilePath $LogPath -Append
+        Write-Log -Message "已将磁盘 $DiskNumber 设置为离线状态"
     }
     catch {
-        "[$(Get-Date -Format 'HH:mm:ss')] 注意：磁盘 $DiskNumber 可能已离线或不存在 - $($_.Exception.Message)" | Out-File -FilePath $LogPath -Append
+        Write-Log -Message "警告：磁盘 $DiskNumber 可能已离线或不存在 - $($_.Exception.Message)"
     }
 
     # 执行挂载
-    $isAdmin = Check-IsElevated
+    $isAdmin = Test-IsElevated
 
     if (-not $isAdmin) {
-        throw "挂载操作需要管理员权限"
+        # throw "挂载操作需要管理员权限"
+        Write-Log -Message "警告：当前未以管理员权限运行，挂载操作可能失败"
+    } else {
+        Write-Log -Message "当前以管理员权限运行"
     }
 
-    "[$(Get-Date -Format 'HH:mm:ss')] 开始挂载：磁盘 $DiskNumber 分区 $PartitionNumber" | Out-File -FilePath $LogPath -Append
+    Write-Log -Message "开始挂载：磁盘 $DiskNumber 分区 $PartitionNumber"
     wsl.exe --mount "\\.\PHYSICALDRIVE${DiskNumber}" --partition $PartitionNumber --type $FileSystemType
 
     # 验证挂载结果
     $mountSuccess = wsl.exe ls /mnt/wsl/ | findstr /i $mountPoint
     if ($mountSuccess) {
-        "[$(Get-Date -Format 'HH:mm:ss')] 成功挂载：\\.\PHYSICALDRIVE${DiskNumber} 分区 ${PartitionNumber} -> /mnt/wsl/${mountPoint}" | Out-File -FilePath $LogPath -Append
+        write-Log -Message "成功挂载：\\.\PHYSICALDRIVE${DiskNumber} 分区 ${PartitionNumber} -> /mnt/wsl/${mountPoint}"
         return $true
     }
     else {
@@ -255,6 +256,10 @@ function Mount-DiskPartition {
 
 
 Write-Log -Message "===== WSL 挂载脚本开始执行 =====" -isHeader $true
+
+# 添加固定延迟（替代WSL响应检查）
+Write-Log -Message "等待 $InitialDelay 秒以确保 WSL 已启动..."
+Start-Sleep -Seconds $InitialDelay
 
 try {
     # 定义要挂载的磁盘配置
@@ -322,3 +327,5 @@ wsl --shutdown
 ```bash
 cat /tmp/wsl-auto-mount.log | iconv -f GBK -t UTF-8
 ```
+
+当然也可以直接在 Windows 中查看`$LogPath`日志文件。
